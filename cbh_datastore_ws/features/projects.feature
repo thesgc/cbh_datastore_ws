@@ -18,7 +18,6 @@ Feature: Project List
     Scenario Outline: Project list includes my project if I have privileges
         Given a User
         and my user is member of a group
-        and I have a valid molfile
         and a valid project exists proja
         and I automatically have editor permissions as creator
         and I remove my permissions

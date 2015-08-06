@@ -6,4 +6,5 @@ Feature: Datastore Assay
         and my user is member of a group 
         and a valid project exists proja
         and I automatically have editor permissions as creator
-        and the project is configured for a simple assay and bioactivity 
+        and the project is configured for a simple assay and bioactivity
+        and there is 2 datapoints in the database 
