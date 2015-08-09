@@ -13,6 +13,37 @@ http://pypi.python.org/pypi/BeautifulSoup/
 Acknowledgements:
 For the basic solution: https://github.com/nathforge/django-mechanize/
 
+  %load_ext autoreload
+%autoreload 2
+from tastypie.test import TestApiClient
+api_client = TestApiClient()
+from django.test.simple import DjangoTestSuiteRunner
+runner = DjangoTestSuiteRunner(interactive=False)
+runner.setup_test_environment()
+
+
+from django.core.management import call_command
+call_command("loaddata", "src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/test_fixtures.json")
+
+api_client.client.login(username="tester",password="tester")
+
+
+#Feature new project adding first assay
+
+# @step("List the forms that are configured for proja")
+
+api_client.client.get("/dev/datastore/cbh_projects")
+
+#@step("User picks a form (e.g. ic50 study) and sees that there is no data for that study")
+
+
+#@step("User fills in the first top level form and submits it")
+
+
+#@step("system now lists the new study")
+
+
+#@step("user now uses the second level form to submit two child objects to the new study")
 """
 
 

@@ -36,7 +36,9 @@ def step(context):
                                         name=field["key"],
                                         description=field["placeholder"])
 
-    ProjectType.objects.create(name="myassay", level_0=cfc, level_1=cfc2)
+    ptype = ProjectType.objects.create(name="myassay", level_0=cfc, level_1=cfc2)
+    proj.project_type = ptype
+    proj.save()
     dp1 = DataPoint.objects.create(created_by=context.u, project_data={"Description" : "Test Assay"})
     dp2 = DataPoint.objects.create(created_by=context.u, project_data={"IC50 (nm)" : 50})
 
