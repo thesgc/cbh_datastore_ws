@@ -1,8 +1,9 @@
-from tastypie.resources import ModelResource, Resource
+from tastypie.resources import ModelResource, Resource , ALL, ALL_WITH_RELATIONS
+
 from tastypie.serializers import Serializer
 from cbh_core_ws.resources import CoreProjectResource, CustomFieldConfigResource, DataTypeResource, UserResource, CoreProjectResource, ProjectTypeResource
-from cbh_datastore_model.models import DataPoint, DataPointClassification
-from cbh_core_model.models import PinnedCustomField, ProjectType, DataFormConfig, Project
+from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission
+from cbh_core_model.models import PinnedCustomField, ProjectType, DataFormConfig, Project, CustomFieldConfig
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from django.contrib.auth import get_user_model
@@ -42,9 +43,10 @@ class DataPointProjectFieldResource(ModelResource):
         resource_name = 'cbh_datapoint_fields'
         #authorization = Authorization()
         include_resource_uri = True
-        allowed_methods = ['get', ]
+        allowed_methods = ['get','post' ]
         default_format = 'application/json'
         authentication = SessionAuthentication()
+        authorization = Authorization()
         level = None
 
 
@@ -253,16 +255,31 @@ class DataPointProjectFieldResource(ModelResource):
 
 
 
-class SimpleCustomFieldConfigResource(CustomFieldConfigResource):
+class SimpleCustomFieldConfigResource(ModelResource):
     '''Return only the project type and custom field config name as returning the full field list would be '''
-    data_type = fields.ForeignKey(DataTypeResource, 'data_type', null=True, blank=False, default=None, full=True)
-    project_data_fields = fields.ToManyField(DataPointProjectFieldResource, "pinned_custom_field")
+    data_type = fields.ForeignKey("cbh_core_ws.resources.DataTypeResource", 'data_type', null=True, blank=False, default=None, full=True)
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.DataPointProjectFieldResource", "pinned_custom_field", null=True, blank=False, default=None)
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by')
+
     class Meta:
+        object_class = CustomFieldConfig
+        queryset = CustomFieldConfig.objects.all()
         excludes  = ("schemaform")
+        include_resource_uri = False
+        resource_name = 'cbh_custom_field_config'
+        authentication = SessionAuthentication()
+        authorization = Authorization()
+        include_resource_uri = True
+        default_format = 'application/json'
+        serializer = Serializer()
 
+        allowed_methods = ['get', 'post', 'put', 'patch']
 
-
-
+    def hydrate_created_by(self, bundle):
+        user = get_user_model().objects.get(pk=bundle.request.user.pk)
+        bundle.obj.created_by = user
+        
+        return bundle
 
 
 
@@ -270,63 +287,89 @@ class SimpleCustomFieldConfigResource(CustomFieldConfigResource):
 
 class FullCustomFieldConfigResource(CustomFieldConfigResource):
     '''Return only the project type and custom field config full object '''
-    data_type = fields.ForeignKey(DataTypeResource, 'data_type', null=True, blank=False, default=None, full=True)
+    data_type = fields.ForeignKey("cbh_core_ws.resources.DataTypeResource", 'data_type')
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by')
+
     class Meta:
-        excludes  = ("schemaform")
+        queryset = CustomFieldConfig.objects.all()
+        include_resource_uri = True
+        resource_name = 'cbh_custom_field_config2'
+        authentication = SessionAuthentication()
+        authorization = Authorization()
+        default_format = 'application/json'
+        serializer = Serializer()
+
+        allowed_methods = ['get', 'post', 'put', 'patch']
+
+
+   
+
+
+
+
+
+# def full_list(bundle):
+#     if bundle.regest.GET.get("show_form", False):
+#         return True
+#     return False
+
+
+class L0DataPointProjectFieldResource(DataPointProjectFieldResource):
+    class Meta:
+        level = "l0"
+        resource_name="l0_cbh_custom_field_config"
+
+class L0FullCustomFieldResource(SimpleCustomFieldConfigResource):
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L0DataPointProjectFieldResource",'pinned_custom_field',full=True)
+
 
 
 
 class L1DataPointProjectFieldResource(DataPointProjectFieldResource):
     class Meta:
         level = "l1"
+        resource_name="l1_cbh_custom_field_config"
 
 class L1FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField(L1DataPointProjectFieldResource,'pinned_custom_field',full=True)
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L1DataPointProjectFieldResource",'pinned_custom_field',full=True)
 
 
 class L2DataPointProjectFieldResource(DataPointProjectFieldResource):
     class Meta:
         level = "l2"
+        resource_name="l2_cbh_custom_field_config"
 
 class L2FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField(L2DataPointProjectFieldResource,'pinned_custom_field',full=True)
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L2DataPointProjectFieldResource",'pinned_custom_field',full=True)
 
 
 class L3DataPointProjectFieldResource(DataPointProjectFieldResource):
     class Meta:
         level = "l3"
+        resource_name="l3_cbh_custom_field_config"
 
 class L3FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField(L3DataPointProjectFieldResource,'pinned_custom_field',full=True)
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L3DataPointProjectFieldResource",'pinned_custom_field',full=True)
 
 
 class L4DataPointProjectFieldResource(DataPointProjectFieldResource):
     class Meta:
         level = "l4"
+        resource_name="l4_cbh_custom_field_config"
 
 class L4FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField(L4DataPointProjectFieldResource,'pinned_custom_field',full=True)
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L4DataPointProjectFieldResource",'pinned_custom_field',full=True)
 
-
-class L5DataPointProjectFieldResource(DataPointProjectFieldResource):
-    class Meta:
-        level = "l5"
-
-class L5FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField(L5DataPointProjectFieldResource,'pinned_custom_field',full=True)
 
 
 
 
 class DataFormConfigResource(ModelResource):
-
-    l1 = fields.ForeignKey(L1FullCustomFieldResource,'l1', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l2 = fields.ForeignKey(L2FullCustomFieldResource,'l2', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l3 = fields.ForeignKey(L3FullCustomFieldResource,'l3', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l4 = fields.ForeignKey(L4FullCustomFieldResource,'l4', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l5 = fields.ForeignKey(L5FullCustomFieldResource,'l5', null=True, blank=False, readonly=False, help_text=None, full=True)
-
-
+    l0 = fields.ForeignKey("cbh_datastore_ws.resources.L0FullCustomFieldResource",'l0', null=True, blank=False, readonly=False, help_text=None, full=True)
+    l1 = fields.ForeignKey("cbh_datastore_ws.resources.L1FullCustomFieldResource",'l1', null=True, blank=False, readonly=False, help_text=None, full=True)
+    l2 = fields.ForeignKey("cbh_datastore_ws.resources.L2FullCustomFieldResource",'l2', null=True, blank=False, readonly=False, help_text=None, full=True)
+    l3 = fields.ForeignKey("cbh_datastore_ws.resources.L3FullCustomFieldResource",'l3', null=True, blank=False, readonly=False, help_text=None, full=True)
+    l4 = fields.ForeignKey("cbh_datastore_ws.resources.L4FullCustomFieldResource",'l4', null=True, blank=False, readonly=False, help_text=None, full=True)
 
     class Meta:
         always_return_data = True
@@ -334,16 +377,17 @@ class DataFormConfigResource(ModelResource):
         resource_name = 'cbh_data_form_config'
         #authorization = Authorization()
         include_resource_uri = True
-        allowed_methods = ['get', ]
+        allowed_methods = ['get','post','put' ]
         default_format = 'application/json'
         authentication = SessionAuthentication()
+        authorization = Authorization()
         level = None
 
 
 
-class ProjectWithDataFromResource(ModelResource):
-    project_type = fields.ForeignKey(ProjectTypeResource, 'project_type', blank=False, null=False, full=True)
-    enabled_forms = fields.ToManyField(DataFormConfigResource, "enabled_forms", full=True)
+class ProjectWithDataFormResource(ModelResource):
+    project_type = fields.ForeignKey("cbh_datastore_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
+    enabled_forms = fields.ToManyField("cbh_datastore_ws.resources.DataFormConfigResource", "enabled_forms", full=True)
 
     class Meta:
         excludes  = ("schemaform")
@@ -352,59 +396,48 @@ class ProjectWithDataFromResource(ModelResource):
         allowed_methods = ['get']        
         resource_name = 'cbh_projects_with_forms'
         authorization = Authorization()
-        include_resource_uri = False
+        include_resource_uri = True
         default_format = 'application/json'
-        #serializer = Serializer()
         serializer = Serializer()
- 
-    def get_object_list(self, request):
-        return super(ProjectWithDataFromResource, self).get_object_list(request).prefetch_related(Prefetch("project_type")).order_by('-modified')
 
 
-    # def alter_list_data_to_serialize(self, request, bundle):
-    #     '''Here we append a list of tags to the data of the GET request if the
-    #     search fields are required'''
-    #     userres = UserResource()
-    #     userbundle = userres.build_bundle(obj=request.user, request=request)
-    #     userbundle = userres.full_dehydrate(userbundle)
-    #     bundle['user'] = userbundle.data
 
 class DataPointResource(ModelResource):
-    custom_field_config = fields.ForeignKey(SimpleCustomFieldConfigResource,'custom_field_config', null=True, blank=False, readonly=False, help_text=None, full=True)
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
+    custom_field_config = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'custom_field_config')
     project_data = fields.DictField(attribute='project_data', null=True, blank=False, readonly=False, help_text=None)
     supplementary_data = fields.DictField(attribute='supplementary_data', null=True, blank=False, readonly=False, help_text=None)
-    l0 = fields.ForeignKey("DataPointClassificationResource", 'l0', null=True, blank=False, default=None, full=True)
-    l1 = fields.ForeignKey("DataPointClassificationResource", 'l1',null=True, blank=False, default=None, full=True)
-    l2 = fields.ForeignKey("DataPointClassificationResource", 'l2',null=True, blank=False, default=None, full=True)
-    l3 = fields.ForeignKey("DataPointClassificationResource", 'l3',null=True, blank=False, default=None, full=True)
-    l4 = fields.ForeignKey("DataPointClassificationResource", 'l4',null=True, blank=False, default=None, full=True)
-
-
-
-
     class Meta:
+        
         always_return_data = True
         queryset = DataPoint.objects.all()
         resource_name = 'cbh_datapoints'
-        #authorization = Authorization()
+        authorization = Authorization()
         include_resource_uri = True
         allowed_methods = ['get', 'post', 'put']
-        default_format = 'application/json'
         authentication = SessionAuthentication()
+        default_format = 'application/json'
+        serializer = Serializer()
 
 
+    def hydrate_created_by(self, bundle):
+        user = get_user_model().objects.get(pk=bundle.request.user.pk)
+        bundle.obj.created_by = user
+        
+        return bundle
 
 
 
 class DataPointClassificationResource(ModelResource):
     '''Returns individual rows in the object graph - note that the rows returned are denormalized data points '''
-    created_by = fields.ForeignKey(UserResource, 'created_by', null=True, blank=True, full=True, default=None)
-
-    l0 = fields.ForeignKey(DataPointResource, 'l0', null=True, blank=False, default=None, full=True)
-    l1 = fields.ForeignKey(DataPointResource, 'l1',null=True, blank=False, default=None, full=True)
-    l2 = fields.ForeignKey(DataPointResource, 'l2',null=True, blank=False, default=None, full=True)
-    l3 = fields.ForeignKey(DataPointResource, 'l3',null=True, blank=False, default=None, full=True)
-    l4 = fields.ForeignKey(DataPointResource, 'l4',null=True, blank=False, default=None, full=True)
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
+    data_form_config = fields.ForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
+    l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects")
+    l0 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l0', null=True, blank=False, default=None, full=True)
+    l1 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l1',null=True, blank=False, default=None, full=True)
+    l2 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l2',null=True, blank=False, default=None, full=True)
+    l3 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l3',null=True, blank=False, default=None, full=True)
+    l4 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l4',null=True, blank=False, default=None, full=True)
 
 
 
@@ -414,7 +447,11 @@ class DataPointClassificationResource(ModelResource):
         
         return bundle
 
+
     class Meta:
+        filtering = {
+            "data_form_config_id": ALL_WITH_RELATIONS
+        }
         always_return_data = True
         queryset = DataPointClassification.objects.all()
         resource_name = 'cbh_datapoint_classifications'
@@ -428,7 +465,45 @@ class DataPointClassificationResource(ModelResource):
         authorization = Authorization()
     
 
+    def save_m2m(self, bundle):
+        for field_name, field_object in self.fields.items():
+            if not getattr(field_object, 'is_m2m', False):
+                continue
+
+            if not field_object.attribute:
+                continue
+
+            for field in bundle.data[field_name]:
+                kwargs = {'data_point_classification_id': bundle.obj.id,
+                          'project': field.obj}
+
+                try: DataPointClassificationPermission.objects.get_or_create(**kwargs)
+                except IntegrityError: continue
 
 
 
+class DataPointClassificationPermissionResource(ModelResource):
+    data_point_classification = fields.ForeignKey("cbh_datastore_ws.resources.DataPointClassificationResource",'data_point_classification')
+    project = fields.ForeignKey("cbh_datastore_ws.resources.ProjectWithDataFormResource",'project')
 
+    def hydrate_created_by(self, bundle):
+        user = get_user_model().objects.get(pk=bundle.request.user.pk)
+        bundle.obj.created_by = user
+        return bundle
+
+    class Meta:
+        filtering = {
+            "project": ALL_WITH_RELATIONS
+        }
+        always_return_data = True
+        queryset = DataPointClassificationPermission.objects.all()
+        resource_name = 'cbh_datapoint_classification_permissions'
+        #authorization = Authorization()
+        default_format = 'application/json'
+        include_resource_uri = True
+        allowed_methods = ['get', 'post', 'put']
+        default_format = 'application/json'
+        serializer = Serializer()
+        authentication = SessionAuthentication()
+        authorization = Authorization()
+    

@@ -3,43 +3,144 @@
 """
 from behave import given, when, then
 import json
-from cbh_core_model.models import Project, CustomFieldConfig, PinnedCustomField, ProjectType, DataPoint, DataPointClassification
+from cbh_core_model.models import Project, CustomFieldConfig, PinnedCustomField, ProjectType
+from cbh_datastore_model.models import DataPoint, DataPointClassification
+from django.db import IntegrityError
 
-
-@given('the project is configured for a simple assay and bioactivity')
+@when('I log in')
 def step(context):
-    proj, created = Project.objects.get_or_create(name="proja", created_by=context.u)
-    cfc, cre = CustomFieldConfig.objects.get_or_create(name="Assay", created_by=context.u)
-    proj.custom_field_config = cfc
-    proj.save()
-    data = {"form": [{"field_type": "char", "title": "Description", "allowed_values": "", "key": "Description", "position": 0, "placeholder": "", "part_of_blinded_key": False}, {"field_type": "char", "title": "Assay Type", "allowed_values": "", "key": "Assay Type", "position": 1, "placeholder": "", "part_of_blinded_key": False}, {"field_type": "char", "title": "Cell line / tissue", "allowed_values": "", "key": "Cell line / tissue", "position": 2, "placeholder": "", "part_of_blinded_key": False}, {"field_type": "char", "title": "Target type", "allowed_values": "", "key": "Target type", "position": 3, "placeholder": "", "part_of_blinded_key": False}, {"field_type": "char", "title": "Model organism", "allowed_values": "", "key": "Model organism", "position": 4, "placeholder": "", "part_of_blinded_key": False}, {"field_type": "char", "title": "Target name", "allowed_values": "", "key": "Target name", "position": 5, "placeholder": "", "part_of_blinded_key": False}, {"field_type": "char", "title": "UniProt ID", "allowed_values": "", "key": "UniProt ID", "position": 6, "placeholder": "", "part_of_blinded_key": False}, {"field_type": "char", "title": "Target Organism", "allowed_values": "", "key": "Target Organism", "position": 7, "placeholder": "", "part_of_blinded_key": False}, {"field_type": "char", "title": "References (DOI)", "allowed_values": "", "key": "References (DOI)", "position": 8, "placeholder": "", "part_of_blinded_key": False}], "schema": {"required": [], "type": "object", "properties": {"Assay Type": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "Assay Type"}, "Description": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "Description"}, "Target type": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "Target type"}, "Target name": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "Target name"}, "Target Organism": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "Target Organism"}, "References (DOI)": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "References (DOI)"}, "Model organism": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "Model organism"}, "Cell line / tissue": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "Cell line / tissue"}, "UniProt ID": {"friendly_field_type": "Short text field", "placeholder": "", "type": "string", "title": "UniProt ID"}}}}
+    context.test_case.assertTrue(context.api_client.client.login(username="foo", password="bar"))
+ 
+ 
 
-    for position, field in enumerate(data["form"]):
-        PinnedCustomField.objects.create(allowed_values=field["allowed_values"],
-                                        custom_field_config=cfc,
-                                        field_type=field["field_type"],
-                                        position=field["position"],
-                                        name=field["key"],
-                                        description=field["placeholder"])
+@given("tester")
+def step(context):
+    print("test")
 
-    cfc2, cre = CustomFieldConfig.objects.get_or_create(name="BioActivity", created_by=context.u)
+@when("tester2")
+def step(context):
+    print("test")
+    
+@then("I get a project list Given I am an admin JSON data is available The first form from the test fixtures has the given URI")
+def step(context):
+    """"""
+    result = context.api_client.get("/dev/datastore/cbh_projects_with_forms")
+
+    data = json.loads(result.content)
+    context.test_case.assertEqual(data["objects"][0]["enabled_forms"][0]["resource_uri"], u"/dev/datastore/cbh_data_form_config/4")
 
 
-    data2 = {"form": [{"field_type": "number", "title": "IC50 (nm)", "allowed_values": "", "key": "IC50 (nm)", "position": 0, "placeholder": "", "part_of_blinded_key": False}], "schema": {"required": [], "type": "object", "properties": {"IC50 (nm)": {"friendly_field_type": "Decimal field", "placeholder": "", "title": "IC50 (nm)", "type": "number", "icon": "<span class ='glyphicon glyphicon-sound-5-1'></span>"}}}}
+@then("Given I have loaded one classification record into the database  Given I am an adminWhen I call get classifier I see no records")
+def step(context):
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 0)
+
+@then("I post and the response is valid JSON")
+def step(context):
+    print("mytest")
+    post_data = {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
+                
+                "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
+    created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+format="json", 
+data= post_data)
+    context.test_case.assertHttpCreated(created)
+    data = json.loads(created.content)
+    context.test_case.assertEquals(data["l0_permitted_projects"], ["/dev/datastore/cbh_projects_with_forms/8"])
 
 
-    for position, field in enumerate(data2["form"]):
-        PinnedCustomField.objects.create(allowed_values=field["allowed_values"],
-                                        custom_field_config=cfc2,
-                                        field_type=field["field_type"],
-                                        position=field["position"],
-                                        name=field["key"],
-                                        description=field["placeholder"])
+@then("appropriate post data When I create a single record If I post the same data back no Object is created")
+def step(context):
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 0)
 
-    ptype = ProjectType.objects.create(name="myassay", level_0=cfc, level_1=cfc2)
-    proj.project_type = ptype
-    proj.save()
-    dp1 = DataPoint.objects.create(created_by=context.u, project_data={"Description" : "Test Assay"})
-    dp2 = DataPoint.objects.create(created_by=context.u, project_data={"IC50 (nm)" : 50})
+    post_data = {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
+                "l0": {"custom_field_config":{"pk":577},"project_data":{"some_test":"project_data"}},
+                "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
+    created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+format="json", 
+data= post_data)
 
-    classification = DataPointClassification.objects.create(project=proj, l1=dp1, l2=dp2, created_by=context.u)
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 1)
+
+    data = json.loads(created.content)
+
+    created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+format="json", 
+data= data)
+
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 1)
+
+
+
+@then("I post the original data back with the new id no record is created and there is an error")
+def test_try_to_post_duplicate_using_id(context):
+    """
+    """
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 0)
+
+    post_data = {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
+                "l0": {"custom_field_config":{"pk":577},"project_data":{"some_test":"project_data"}},
+                "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
+    created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+format="json", 
+data= post_data)
+
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 1)
+    data = json.loads(created.content)
+
+    post_data["l0"]["id"] = data["l0"]["id"]
+    try:
+
+        created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+    format="json", 
+    data= post_data)
+    except IntegrityError:
+        pass
+    
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 1)
+
+
+@then("Given appropriate post data Given I am an adminWhen I create a single recordIf I post the original data back with the new URI no record is created and there is an error")
+def test_try_to_post_duplicate_using_id(context):
+    
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 0)
+
+    post_data = {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
+                "l0": {"custom_field_config":{"pk":577},"project_data":{"some_test":"project_data"}},
+                "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
+    created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+format="json", 
+data= post_data)
+
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 1)
+    data = json.loads(created.content)
+
+    #To post resource uris we just pass a string
+    post_data["l0"] = data["l0"]["resource_uri"]
+    try:
+        created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+    format="json", 
+    data= post_data)
+    except IntegrityError:
+        pass
+    
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 1)

@@ -22,6 +22,29 @@ except AttributeError:
 api = Api(api_name=api_name  + "/datastore")
 
 api.register(DataPointClassificationResource())
-api.register(ProjectWithDataFromResource())
+api.register(ProjectWithDataFormResource())
+api.register(DataFormConfigResource())
+api.register(DataPointProjectFieldResource())
+api.register(DataPointClassificationPermissionResource())
+api.register(DataPointResource())
+api.register(SimpleCustomFieldConfigResource())
+api.register(FullCustomFieldConfigResource())
+api.register(L0DataPointProjectFieldResource())
+api.register(L0FullCustomFieldResource())
+api.register(L1DataPointProjectFieldResource())
+api.register(L1FullCustomFieldResource())
+api.register(L2DataPointProjectFieldResource())
+api.register(L2FullCustomFieldResource())
+api.register(L3DataPointProjectFieldResource())
+api.register(L3FullCustomFieldResource())
+api.register(L4DataPointProjectFieldResource())
+api.register(L4FullCustomFieldResource())
+
+
+
+
+
+
+
 
 urlpatterns = api.urls
