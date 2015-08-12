@@ -17,8 +17,8 @@ from tastypie.exceptions import BadRequest
 from tastypie.authorization import Authorization
 
 from django.db.models import Prefetch
-
-
+from tastypie.http import HttpConflict
+from tastypie.exceptions import ImmediateHttpResponse
 
 class DataPointProjectFieldResource(ModelResource):
     """Provides the schema information about a field that is required by front end apps"""
@@ -458,12 +458,89 @@ class DataPointClassificationResource(ModelResource):
         #authorization = Authorization()
         default_format = 'application/json'
         include_resource_uri = True
-        allowed_methods = ['get', 'post', 'put']
+        allowed_methods = ['get', 'post', 'patch']
         default_format = 'application/json'
         serializer = Serializer()
         authentication = SessionAuthentication()
         authorization = Authorization()
     
+
+    def save_related(self, bundle):
+        """
+        Handles the saving of related non-M2M data.
+        Calling assigning ``child.parent = parent`` & then calling
+        ``Child.save`` isn't good enough to make sure the ``parent``
+        is saved.
+        To get around this, we go through all our related fields &
+        call ``save`` on them if they have related, non-M2M data.
+        M2M data is handled by the ``ModelResource.save_m2m`` method.
+        """
+        for field_name, field_object in self.fields.items():
+            if not getattr(field_object, 'is_related', False):
+                continue
+
+            if getattr(field_object, 'is_m2m', False):
+                continue
+
+            if not field_object.attribute:
+                continue
+
+            if field_object.readonly:
+                continue
+
+            if field_object.blank and not field_name in bundle.data:
+                continue
+
+            # Get the object.
+            try:
+                related_obj = getattr(bundle.obj, field_object.attribute)
+            except ObjectDoesNotExist:
+                # Django 1.8: unset related objects default to None, no error
+                related_obj = None
+
+            # We didn't get it, so maybe we created it but haven't saved it
+            if related_obj is None:
+                related_obj = bundle.related_objects_to_save.get(field_object.attribute, None)
+
+            if field_object.related_name:
+                if not self.get_bundle_detail_data(bundle):
+                    bundle.obj.save()
+
+                setattr(related_obj, field_object.related_name, bundle.obj)
+
+            related_resource = field_object.get_related_resource(related_obj)
+
+            # Before we build the bundle & try saving it, let's make sure we
+            # haven't already saved it.
+            if related_obj:
+                obj_id = self.create_identifier(related_obj)
+
+                if obj_id in bundle.objects_saved:
+                    # It's already been saved. We're done here.
+                    continue
+                if related_obj.__class__.__name__ == "DataPoint":
+                    if obj_id == "cbh_datastore_model.datapoint.1":
+                        if related_obj.project_data != {}:
+                            raise ImmediateHttpResponse(HttpConflict(
+                                "You are trying to update the default datapoint, this is not allowed, remove the id from the default datapoint before updating")
+                            )
+                             
+
+            if bundle.data.get(field_name) and hasattr(bundle.data[field_name], 'keys'):
+                # Only build & save if there's data, not just a URI.
+                related_bundle = related_resource.build_bundle(
+                    obj=related_obj,
+                    data=bundle.data.get(field_name),
+                    request=bundle.request,
+                    objects_saved=bundle.objects_saved
+                )
+                related_resource.full_hydrate(related_bundle)
+                related_resource.save(related_bundle)
+                related_obj = related_bundle.obj
+
+            if related_obj:
+                setattr(bundle.obj, field_object.attribute, related_obj)
+
 
     def save_m2m(self, bundle):
         for field_name, field_object in self.fields.items():
