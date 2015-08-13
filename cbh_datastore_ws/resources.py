@@ -671,6 +671,7 @@ class DataFormConfigResource(ModelResource):
 Provides data about a all levels of a data form config. 
 
 A data form config's name is built up from its different custom field configs by combining their names and data types in order
+```
   _____
 l0    |
 l1    |
@@ -678,7 +679,7 @@ l2    |----- These fields all list the full
 l3    |     information about a level of the data based 
 l4____|     upon its custom field configs - see below
 
-
+```
 data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
 ==================================================
 project_data_fields:
@@ -709,14 +710,15 @@ The fields that are in this particular custom field config:
 Provides data about a all levels of a data form config. 
 
 A data form config's name is built up from its different custom field configs by combining their names and data types in order
-  _____
+```
+  ____
 l0    |
 l1    |
 l2    |----- These fields all list the full 
 l3    |     information about a level of the data based 
 l4____|     upon its custom field configs - see below
 
-
+```
 data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
 ==============================================
 project_data_fields:
@@ -795,6 +797,8 @@ This is done with the data form config permission objects
 The project provides data about all levels of a data form configs that are attached to that project
 
 A data form config's name is built up from its different custom field configs by combining their names and data types in order
+
+```
   _____
 l0    |
 l1    |
@@ -802,7 +806,7 @@ l2    |----- These fields all list the full
 l3    |     information about a level of the data based 
 l4____|     upon its custom field configs - see below
 
-
+```
 data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
 =================================================
 project_data_fields:
@@ -840,6 +844,8 @@ This is done with the data form config permission objects
 The project provides data about all levels of a data form configs that are attached to that project
 
 A data form config's name is built up from its different custom field configs by combining their names and data types in order
+
+```
   _____
 l0    |
 l1    |
@@ -847,6 +853,7 @@ l2    |----- These fields all list the full
 l3    |     information about a level of the data based 
 l4____|     upon its custom field configs - see below
 
+```
 
 data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
 =================================================
@@ -1001,6 +1008,7 @@ This is the index of all of the data points (nodes of data) on the system. Altho
 Each form that is associated with a project will have its own tree of data within that project
 If the tree of data produced by a form looks like this then 
 
+```
         l0 project_X 
         ├── l1 subproject_A
         │   ├── l2 assay_A
@@ -1010,9 +1018,9 @@ If the tree of data produced by a form looks like this then
         │   └── l2 assay_B
         │       └── l4 bioactivity_Y
         └── l1 subproject_B
-
+```
 For each leaf node in the tree there will be one data point classification object
-
+```
         l0 project_X                        
         ├── l1 subproject_A
         │   ├── l2 assay_A
@@ -1032,6 +1040,7 @@ For each leaf node in the tree there will be one data point classification objec
 {"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_B" }
 {"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_Y"}
 {"l0" : "uri for project_X's data point", "l1": "uri for subproject_B" }
+```
 
 There is a lot of repetition in the output of this API hence the user requests the datapoints separately by calling the list ids endpoint
 
@@ -1056,6 +1065,7 @@ dev/data_point_classifications/?l0_permitted_projects__id=1&data_form_config__id
 This is the index of all of the data points (nodes of data) on the system. Although the data is in the form of a tree, it is stored in a flat format
 Each form that is associated with a project will have its own tree of data within that project
 If the tree of data produced by a form looks like this then 
+```
 l0 project_X   
 ├── l1 subproject_A
 │   ├── l2 assay_A
@@ -1065,9 +1075,10 @@ l0 project_X
 │   └── l2 assay_B
 │       └── l4 bioactivity_Y
 └── l1 subproject_B
+```
 
 For each leaf node in the tree there will be one data point classification object
-
+```
 l0 project_X                        
 ├── l1 subproject_A
 │   ├── l2 assay_A
@@ -1087,6 +1098,7 @@ l0 project_X
 {"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_B" }
 {"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_Y"}
 {"l0" : "uri for project_X's data point", "l1": "uri for subproject_B" }
+```
 
 There is a lot of repetition in the output of this API hence the user requests the datapoints separately by calling the list ids endpoint
 
@@ -1116,26 +1128,27 @@ Get the URIs for each of these based on their
 
 By posting to this API you create a datapoint classification object.
 To add an entirely new l0 object format needs to look like this:
+```
 {
     "data_form_config":"/dev/datastore/cbh_data_form_config/5", 
     "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/9"] }
     "l0": {"project_data":{"fields": "based", "on": "the", "custom": "field","config": "go here"} , 
     "custom_field_config" : "/dev/datastore/cbh_custom_field_config/744"}
 }
-
+```
 OR is could look like this:
-
+```
 {
     "data_form_config":{"pk":5}, 
     "l0_permitted_projects": [{"pk":5}] }
     "l0": {"project_data":{"fields": "based", "on": "the", "custom": "field","config": "go here"} , 
     "custom_field_config" : {"pk": 115}
 }
+```
 
 
-
-To add an "l1" the format should look like this:
-
+To add an "l1" to the existing l0 the format should look like this:
+```
 {
     "data_form_config":"/dev/datastore/cbh_data_form_config/4", 
     "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
@@ -1143,12 +1156,12 @@ To add an "l1" the format should look like this:
     "l1": {"project_data":{"fields": "based", "on": "the", "custom": "field","config": "go here"} , 
     "custom_field_config" : ""/dev/datastore/cbh_custom_field_configs/45"}
 }
-
+```
 Once that "l1" object has been added ensure it has an id in the UI
 
 Then, if the whole object is patched back in this case then only l1 will be updated
 If there is NO ID or URI or pk in the l1 object then a new leaf will be created
-
+```
 {
     "id": 453,
     "data_form_config":"/dev/datastore/cbh_data_form_config/4", 
@@ -1157,6 +1170,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
     "l1": {"id":999, project_data":{"fields": "deifferent", "on": "values", "custom": "this time","config": "go here"} , 
     "custom_field_config" : ""/dev/datastore/cbh_custom_field_configs/45"}
 }
+```
 """
 ,
 
