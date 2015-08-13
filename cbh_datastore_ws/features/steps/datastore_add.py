@@ -50,3 +50,27 @@ data= post_data)
     context.test_case.assertEquals(data["l0_permitted_projects"], ["/dev/datastore/cbh_projects_with_forms/8"])
 
 
+
+
+
+
+
+# @given("a valid project myproj where i have editor permissions as creator")
+# def step(context):
+#     Project.objects.create(   ProjectType.objects.filter()[0]
+#     Then I post to myproj and the response is valid JSON
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
