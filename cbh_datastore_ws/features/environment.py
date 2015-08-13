@@ -336,7 +336,7 @@ def before_all(context):
     context.runner.setup_test_environment()
     context.runner.setup_databases()
     from django.core.management import call_command
-    call_command("loaddata", "/home/vagrant/chembiohub_ws/src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/test_fixtures.json")
+    call_command("loaddata", "/home/vagrant/chembiohub_ws/src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/newtestfixture.json")
 
 
 
