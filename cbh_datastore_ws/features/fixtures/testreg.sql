@@ -58,7 +58,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: cbh_chembl_id_generator_cbhcompoundid; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_id_generator_cbhcompoundid; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_chembl_id_generator_cbhcompoundid (
@@ -70,10 +70,10 @@ CREATE TABLE cbh_chembl_id_generator_cbhcompoundid (
 );
 
 
-ALTER TABLE public.cbh_chembl_id_generator_cbhcompoundid OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_id_generator_cbhcompoundid OWNER TO chembl;
 
 --
--- Name: make_new_id(character, character, character); Type: FUNCTION; Schema: public; Owner: test_reg_user
+-- Name: make_new_id(character, character, character); Type: FUNCTION; Schema: public; Owner: chembl
 --
 
 CREATE FUNCTION make_new_id(structure_keyv character, id_key character, original_installation_keyv character) RETURNS SETOF cbh_chembl_id_generator_cbhcompoundid
@@ -113,10 +113,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.make_new_id(structure_keyv character, id_key character, original_installation_keyv character) OWNER TO test_reg_user;
+ALTER FUNCTION public.make_new_id(structure_keyv character, id_key character, original_installation_keyv character) OWNER TO chembl;
 
 --
--- Name: random_int_string(integer); Type: FUNCTION; Schema: public; Owner: test_reg_user
+-- Name: random_int_string(integer); Type: FUNCTION; Schema: public; Owner: chembl
 --
 
 CREATE FUNCTION random_int_string(length integer) RETURNS text
@@ -141,10 +141,10 @@ end;
 $$;
 
 
-ALTER FUNCTION public.random_int_string(length integer) OWNER TO test_reg_user;
+ALTER FUNCTION public.random_int_string(length integer) OWNER TO chembl;
 
 --
--- Name: random_string(integer); Type: FUNCTION; Schema: public; Owner: test_reg_user
+-- Name: random_string(integer); Type: FUNCTION; Schema: public; Owner: chembl
 --
 
 CREATE FUNCTION random_string(length integer) RETURNS text
@@ -169,10 +169,10 @@ end;
 $$;
 
 
-ALTER FUNCTION public.random_string(length integer) OWNER TO test_reg_user;
+ALTER FUNCTION public.random_string(length integer) OWNER TO chembl;
 
 --
--- Name: action_type; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: action_type; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE action_type (
@@ -182,10 +182,10 @@ CREATE TABLE action_type (
 );
 
 
-ALTER TABLE public.action_type OWNER TO test_reg_user;
+ALTER TABLE public.action_type OWNER TO chembl;
 
 --
--- Name: activities; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE activities (
@@ -221,10 +221,10 @@ CREATE TABLE activities (
 );
 
 
-ALTER TABLE public.activities OWNER TO test_reg_user;
+ALTER TABLE public.activities OWNER TO chembl;
 
 --
--- Name: activity_stds_lookup; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activity_stds_lookup; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE activity_stds_lookup (
@@ -237,10 +237,10 @@ CREATE TABLE activity_stds_lookup (
 );
 
 
-ALTER TABLE public.activity_stds_lookup OWNER TO test_reg_user;
+ALTER TABLE public.activity_stds_lookup OWNER TO chembl;
 
 --
--- Name: assay_parameters; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_parameters; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE assay_parameters (
@@ -252,10 +252,10 @@ CREATE TABLE assay_parameters (
 );
 
 
-ALTER TABLE public.assay_parameters OWNER TO test_reg_user;
+ALTER TABLE public.assay_parameters OWNER TO chembl;
 
 --
--- Name: assay_type; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_type; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE assay_type (
@@ -264,10 +264,10 @@ CREATE TABLE assay_type (
 );
 
 
-ALTER TABLE public.assay_type OWNER TO test_reg_user;
+ALTER TABLE public.assay_type OWNER TO chembl;
 
 --
--- Name: assays; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE assays (
@@ -320,10 +320,10 @@ CREATE TABLE assays (
 );
 
 
-ALTER TABLE public.assays OWNER TO test_reg_user;
+ALTER TABLE public.assays OWNER TO chembl;
 
 --
--- Name: atc_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: atc_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE atc_classification (
@@ -341,10 +341,10 @@ CREATE TABLE atc_classification (
 );
 
 
-ALTER TABLE public.atc_classification OWNER TO test_reg_user;
+ALTER TABLE public.atc_classification OWNER TO chembl;
 
 --
--- Name: auth_group; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE auth_group (
@@ -353,10 +353,10 @@ CREATE TABLE auth_group (
 );
 
 
-ALTER TABLE public.auth_group OWNER TO test_reg_user;
+ALTER TABLE public.auth_group OWNER TO chembl;
 
 --
--- Name: auth_group_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: auth_group_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE auth_group_id_seq
@@ -367,17 +367,17 @@ CREATE SEQUENCE auth_group_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_group_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.auth_group_id_seq OWNER TO chembl;
 
 --
--- Name: auth_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: auth_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE auth_group_id_seq OWNED BY auth_group.id;
 
 
 --
--- Name: auth_group_permissions; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group_permissions; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE auth_group_permissions (
@@ -387,10 +387,10 @@ CREATE TABLE auth_group_permissions (
 );
 
 
-ALTER TABLE public.auth_group_permissions OWNER TO test_reg_user;
+ALTER TABLE public.auth_group_permissions OWNER TO chembl;
 
 --
--- Name: auth_group_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE auth_group_permissions_id_seq
@@ -401,17 +401,17 @@ CREATE SEQUENCE auth_group_permissions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_group_permissions_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.auth_group_permissions_id_seq OWNER TO chembl;
 
 --
--- Name: auth_group_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE auth_group_permissions_id_seq OWNED BY auth_group_permissions.id;
 
 
 --
--- Name: auth_permission; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_permission; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE auth_permission (
@@ -422,10 +422,10 @@ CREATE TABLE auth_permission (
 );
 
 
-ALTER TABLE public.auth_permission OWNER TO test_reg_user;
+ALTER TABLE public.auth_permission OWNER TO chembl;
 
 --
--- Name: auth_permission_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: auth_permission_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE auth_permission_id_seq
@@ -436,17 +436,17 @@ CREATE SEQUENCE auth_permission_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_permission_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.auth_permission_id_seq OWNER TO chembl;
 
 --
--- Name: auth_permission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: auth_permission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE auth_permission_id_seq OWNED BY auth_permission.id;
 
 
 --
--- Name: auth_user; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE auth_user (
@@ -464,10 +464,10 @@ CREATE TABLE auth_user (
 );
 
 
-ALTER TABLE public.auth_user OWNER TO test_reg_user;
+ALTER TABLE public.auth_user OWNER TO chembl;
 
 --
--- Name: auth_user_groups; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_groups; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE auth_user_groups (
@@ -477,10 +477,10 @@ CREATE TABLE auth_user_groups (
 );
 
 
-ALTER TABLE public.auth_user_groups OWNER TO test_reg_user;
+ALTER TABLE public.auth_user_groups OWNER TO chembl;
 
 --
--- Name: auth_user_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE auth_user_groups_id_seq
@@ -491,17 +491,17 @@ CREATE SEQUENCE auth_user_groups_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_user_groups_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.auth_user_groups_id_seq OWNER TO chembl;
 
 --
--- Name: auth_user_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE auth_user_groups_id_seq OWNED BY auth_user_groups.id;
 
 
 --
--- Name: auth_user_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: auth_user_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE auth_user_id_seq
@@ -512,17 +512,17 @@ CREATE SEQUENCE auth_user_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_user_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.auth_user_id_seq OWNER TO chembl;
 
 --
--- Name: auth_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: auth_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE auth_user_id_seq OWNED BY auth_user.id;
 
 
 --
--- Name: auth_user_user_permissions; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_user_permissions; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE auth_user_user_permissions (
@@ -532,10 +532,10 @@ CREATE TABLE auth_user_user_permissions (
 );
 
 
-ALTER TABLE public.auth_user_user_permissions OWNER TO test_reg_user;
+ALTER TABLE public.auth_user_user_permissions OWNER TO chembl;
 
 --
--- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE auth_user_user_permissions_id_seq
@@ -546,17 +546,17 @@ CREATE SEQUENCE auth_user_user_permissions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_user_user_permissions_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.auth_user_user_permissions_id_seq OWNER TO chembl;
 
 --
--- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE auth_user_user_permissions_id_seq OWNED BY auth_user_user_permissions.id;
 
 
 --
--- Name: binding_sites; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: binding_sites; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE binding_sites (
@@ -566,10 +566,10 @@ CREATE TABLE binding_sites (
 );
 
 
-ALTER TABLE public.binding_sites OWNER TO test_reg_user;
+ALTER TABLE public.binding_sites OWNER TO chembl;
 
 --
--- Name: bio_component_sequences; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: bio_component_sequences; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE bio_component_sequences (
@@ -590,10 +590,10 @@ CREATE TABLE bio_component_sequences (
 );
 
 
-ALTER TABLE public.bio_component_sequences OWNER TO test_reg_user;
+ALTER TABLE public.bio_component_sequences OWNER TO chembl;
 
 --
--- Name: biotherapeutic_components; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: biotherapeutic_components; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE biotherapeutic_components (
@@ -603,10 +603,10 @@ CREATE TABLE biotherapeutic_components (
 );
 
 
-ALTER TABLE public.biotherapeutic_components OWNER TO test_reg_user;
+ALTER TABLE public.biotherapeutic_components OWNER TO chembl;
 
 --
--- Name: biotherapeutics; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: biotherapeutics; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE biotherapeutics (
@@ -616,10 +616,10 @@ CREATE TABLE biotherapeutics (
 );
 
 
-ALTER TABLE public.biotherapeutics OWNER TO test_reg_user;
+ALTER TABLE public.biotherapeutics OWNER TO chembl;
 
 --
--- Name: cbh_chembl_id_generator_cbhcompoundid_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_id_generator_cbhcompoundid_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_chembl_id_generator_cbhcompoundid_id_seq
@@ -630,17 +630,17 @@ CREATE SEQUENCE cbh_chembl_id_generator_cbhcompoundid_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_chembl_id_generator_cbhcompoundid_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_id_generator_cbhcompoundid_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_chembl_id_generator_cbhcompoundid_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_id_generator_cbhcompoundid_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_chembl_id_generator_cbhcompoundid_id_seq OWNED BY cbh_chembl_id_generator_cbhcompoundid.id;
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_chembl_model_extension_cbhcompoundbatch (
@@ -668,10 +668,10 @@ CREATE TABLE cbh_chembl_model_extension_cbhcompoundbatch (
 );
 
 
-ALTER TABLE public.cbh_chembl_model_extension_cbhcompoundbatch OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_cbhcompoundbatch OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_chembl_model_extension_cbhcompoundbatch_id_seq
@@ -682,17 +682,17 @@ CREATE SEQUENCE cbh_chembl_model_extension_cbhcompoundbatch_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_chembl_model_extension_cbhcompoundbatch_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_cbhcompoundbatch_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_chembl_model_extension_cbhcompoundbatch_id_seq OWNED BY cbh_chembl_model_extension_cbhcompoundbatch.id;
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_chembl_model_extension_cbhcompoundmultiplebatch (
@@ -707,10 +707,10 @@ CREATE TABLE cbh_chembl_model_extension_cbhcompoundmultiplebatch (
 );
 
 
-ALTER TABLE public.cbh_chembl_model_extension_cbhcompoundmultiplebatch OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_cbhcompoundmultiplebatch OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq
@@ -721,17 +721,17 @@ CREATE SEQUENCE cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq OWNED BY cbh_chembl_model_extension_cbhcompoundmultiplebatch.id;
 
 
 --
--- Name: cbh_core_model_customfieldconfig; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_customfieldconfig; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_core_model_customfieldconfig (
@@ -745,10 +745,10 @@ CREATE TABLE cbh_core_model_customfieldconfig (
 );
 
 
-ALTER TABLE public.cbh_core_model_customfieldconfig OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_customfieldconfig OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_customfieldconfig_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_customfieldconfig_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_chembl_model_extension_customfieldconfig_id_seq
@@ -759,17 +759,17 @@ CREATE SEQUENCE cbh_chembl_model_extension_customfieldconfig_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_chembl_model_extension_customfieldconfig_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_customfieldconfig_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_customfieldconfig_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_customfieldconfig_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_chembl_model_extension_customfieldconfig_id_seq OWNED BY cbh_core_model_customfieldconfig.id;
 
 
 --
--- Name: cbh_core_model_pinnedcustomfield; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_pinnedcustomfield; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_core_model_pinnedcustomfield (
@@ -790,10 +790,10 @@ CREATE TABLE cbh_core_model_pinnedcustomfield (
 );
 
 
-ALTER TABLE public.cbh_core_model_pinnedcustomfield OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_pinnedcustomfield OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_pinnedcustomfield_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_pinnedcustomfield_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_chembl_model_extension_pinnedcustomfield_id_seq
@@ -804,17 +804,17 @@ CREATE SEQUENCE cbh_chembl_model_extension_pinnedcustomfield_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_chembl_model_extension_pinnedcustomfield_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_pinnedcustomfield_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_pinnedcustomfield_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_pinnedcustomfield_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_chembl_model_extension_pinnedcustomfield_id_seq OWNED BY cbh_core_model_pinnedcustomfield.id;
 
 
 --
--- Name: cbh_core_model_project; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_project; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_core_model_project (
@@ -830,10 +830,10 @@ CREATE TABLE cbh_core_model_project (
 );
 
 
-ALTER TABLE public.cbh_core_model_project OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_project OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_project_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_project_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_chembl_model_extension_project_id_seq
@@ -844,17 +844,17 @@ CREATE SEQUENCE cbh_chembl_model_extension_project_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_chembl_model_extension_project_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_project_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_project_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_project_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_chembl_model_extension_project_id_seq OWNED BY cbh_core_model_project.id;
 
 
 --
--- Name: cbh_core_model_projecttype; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_projecttype; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_core_model_projecttype (
@@ -866,10 +866,10 @@ CREATE TABLE cbh_core_model_projecttype (
 );
 
 
-ALTER TABLE public.cbh_core_model_projecttype OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_projecttype OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_projecttype_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_projecttype_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_chembl_model_extension_projecttype_id_seq
@@ -880,17 +880,17 @@ CREATE SEQUENCE cbh_chembl_model_extension_projecttype_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_chembl_model_extension_projecttype_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_projecttype_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_projecttype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_projecttype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_chembl_model_extension_projecttype_id_seq OWNED BY cbh_core_model_projecttype.id;
 
 
 --
--- Name: cbh_core_model_skinningconfig; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_skinningconfig; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_core_model_skinningconfig (
@@ -901,10 +901,10 @@ CREATE TABLE cbh_core_model_skinningconfig (
 );
 
 
-ALTER TABLE public.cbh_core_model_skinningconfig OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_skinningconfig OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_skinningconfig_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_skinningconfig_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_chembl_model_extension_skinningconfig_id_seq
@@ -915,17 +915,17 @@ CREATE SEQUENCE cbh_chembl_model_extension_skinningconfig_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_chembl_model_extension_skinningconfig_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_chembl_model_extension_skinningconfig_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_chembl_model_extension_skinningconfig_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_skinningconfig_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_chembl_model_extension_skinningconfig_id_seq OWNED BY cbh_core_model_skinningconfig.id;
 
 
 --
--- Name: cbh_core_model_dataformconfig; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_core_model_dataformconfig (
@@ -941,10 +941,10 @@ CREATE TABLE cbh_core_model_dataformconfig (
 );
 
 
-ALTER TABLE public.cbh_core_model_dataformconfig OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_dataformconfig OWNER TO chembl;
 
 --
--- Name: cbh_core_model_dataformconfig_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_dataformconfig_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_core_model_dataformconfig_id_seq
@@ -955,17 +955,17 @@ CREATE SEQUENCE cbh_core_model_dataformconfig_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_core_model_dataformconfig_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_dataformconfig_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_core_model_dataformconfig_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_dataformconfig_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_core_model_dataformconfig_id_seq OWNED BY cbh_core_model_dataformconfig.id;
 
 
 --
--- Name: cbh_core_model_datatype; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_datatype; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_core_model_datatype (
@@ -976,10 +976,10 @@ CREATE TABLE cbh_core_model_datatype (
 );
 
 
-ALTER TABLE public.cbh_core_model_datatype OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_datatype OWNER TO chembl;
 
 --
--- Name: cbh_core_model_datatype_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_datatype_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_core_model_datatype_id_seq
@@ -990,17 +990,17 @@ CREATE SEQUENCE cbh_core_model_datatype_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_core_model_datatype_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_datatype_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_core_model_datatype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_datatype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_core_model_datatype_id_seq OWNED BY cbh_core_model_datatype.id;
 
 
 --
--- Name: cbh_core_model_project_enabled_forms; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_project_enabled_forms; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_core_model_project_enabled_forms (
@@ -1010,10 +1010,10 @@ CREATE TABLE cbh_core_model_project_enabled_forms (
 );
 
 
-ALTER TABLE public.cbh_core_model_project_enabled_forms OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_project_enabled_forms OWNER TO chembl;
 
 --
--- Name: cbh_core_model_project_enabled_forms_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_project_enabled_forms_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_core_model_project_enabled_forms_id_seq
@@ -1024,17 +1024,17 @@ CREATE SEQUENCE cbh_core_model_project_enabled_forms_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_core_model_project_enabled_forms_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_core_model_project_enabled_forms_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_core_model_project_enabled_forms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_project_enabled_forms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_core_model_project_enabled_forms_id_seq OWNED BY cbh_core_model_project_enabled_forms.id;
 
 
 --
--- Name: cbh_datastore_model_datapoint; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapoint; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_datastore_model_datapoint (
@@ -1048,10 +1048,10 @@ CREATE TABLE cbh_datastore_model_datapoint (
 );
 
 
-ALTER TABLE public.cbh_datastore_model_datapoint OWNER TO test_reg_user;
+ALTER TABLE public.cbh_datastore_model_datapoint OWNER TO chembl;
 
 --
--- Name: cbh_datastore_model_datapoint_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapoint_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_datastore_model_datapoint_id_seq
@@ -1062,17 +1062,17 @@ CREATE SEQUENCE cbh_datastore_model_datapoint_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_datastore_model_datapoint_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_datastore_model_datapoint_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_datastore_model_datapoint_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapoint_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_datastore_model_datapoint_id_seq OWNED BY cbh_datastore_model_datapoint.id;
 
 
 --
--- Name: cbh_datastore_model_datapointclassification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_datastore_model_datapointclassification (
@@ -1090,10 +1090,10 @@ CREATE TABLE cbh_datastore_model_datapointclassification (
 );
 
 
-ALTER TABLE public.cbh_datastore_model_datapointclassification OWNER TO test_reg_user;
+ALTER TABLE public.cbh_datastore_model_datapointclassification OWNER TO chembl;
 
 --
--- Name: cbh_datastore_model_datapointclassification_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapointclassification_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_datastore_model_datapointclassification_id_seq
@@ -1104,17 +1104,17 @@ CREATE SEQUENCE cbh_datastore_model_datapointclassification_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_datastore_model_datapointclassification_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_datastore_model_datapointclassification_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_datastore_model_datapointclassification_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapointclassification_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_datastore_model_datapointclassification_id_seq OWNED BY cbh_datastore_model_datapointclassification.id;
 
 
 --
--- Name: cbh_datastore_model_datapointclassificationpermission; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassificationpermission; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cbh_datastore_model_datapointclassificationpermission (
@@ -1126,10 +1126,10 @@ CREATE TABLE cbh_datastore_model_datapointclassificationpermission (
 );
 
 
-ALTER TABLE public.cbh_datastore_model_datapointclassificationpermission OWNER TO test_reg_user;
+ALTER TABLE public.cbh_datastore_model_datapointclassificationpermission OWNER TO chembl;
 
 --
--- Name: cbh_datastore_model_datapointclassificationpermission_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapointclassificationpermission_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE cbh_datastore_model_datapointclassificationpermission_id_seq
@@ -1140,17 +1140,17 @@ CREATE SEQUENCE cbh_datastore_model_datapointclassificationpermission_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cbh_datastore_model_datapointclassificationpermission_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.cbh_datastore_model_datapointclassificationpermission_id_seq OWNER TO chembl;
 
 --
--- Name: cbh_datastore_model_datapointclassificationpermission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapointclassificationpermission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE cbh_datastore_model_datapointclassificationpermission_id_seq OWNED BY cbh_datastore_model_datapointclassificationpermission.id;
 
 
 --
--- Name: cell_dictionary; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cell_dictionary; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE cell_dictionary (
@@ -1171,10 +1171,10 @@ CREATE TABLE cell_dictionary (
 );
 
 
-ALTER TABLE public.cell_dictionary OWNER TO test_reg_user;
+ALTER TABLE public.cell_dictionary OWNER TO chembl;
 
 --
--- Name: chembl_business_model_djangocheatsheet; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_djangocheatsheet; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE chembl_business_model_djangocheatsheet (
@@ -1205,10 +1205,10 @@ CREATE TABLE chembl_business_model_djangocheatsheet (
 );
 
 
-ALTER TABLE public.chembl_business_model_djangocheatsheet OWNER TO test_reg_user;
+ALTER TABLE public.chembl_business_model_djangocheatsheet OWNER TO chembl;
 
 --
--- Name: chembl_business_model_djangocheatsheet_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_djangocheatsheet_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE chembl_business_model_djangocheatsheet_id_seq
@@ -1219,17 +1219,17 @@ CREATE SEQUENCE chembl_business_model_djangocheatsheet_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.chembl_business_model_djangocheatsheet_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.chembl_business_model_djangocheatsheet_id_seq OWNER TO chembl;
 
 --
--- Name: chembl_business_model_djangocheatsheet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_djangocheatsheet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE chembl_business_model_djangocheatsheet_id_seq OWNED BY chembl_business_model_djangocheatsheet.id;
 
 
 --
--- Name: chembl_business_model_imageerrors; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_imageerrors; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE chembl_business_model_imageerrors (
@@ -1239,10 +1239,10 @@ CREATE TABLE chembl_business_model_imageerrors (
 );
 
 
-ALTER TABLE public.chembl_business_model_imageerrors OWNER TO test_reg_user;
+ALTER TABLE public.chembl_business_model_imageerrors OWNER TO chembl;
 
 --
--- Name: chembl_business_model_imageerrors_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_imageerrors_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE chembl_business_model_imageerrors_id_seq
@@ -1253,17 +1253,17 @@ CREATE SEQUENCE chembl_business_model_imageerrors_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.chembl_business_model_imageerrors_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.chembl_business_model_imageerrors_id_seq OWNER TO chembl;
 
 --
--- Name: chembl_business_model_imageerrors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_imageerrors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE chembl_business_model_imageerrors_id_seq OWNED BY chembl_business_model_imageerrors.id;
 
 
 --
--- Name: chembl_business_model_inchierrors; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_inchierrors; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE chembl_business_model_inchierrors (
@@ -1273,10 +1273,10 @@ CREATE TABLE chembl_business_model_inchierrors (
 );
 
 
-ALTER TABLE public.chembl_business_model_inchierrors OWNER TO test_reg_user;
+ALTER TABLE public.chembl_business_model_inchierrors OWNER TO chembl;
 
 --
--- Name: chembl_business_model_inchierrors_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_inchierrors_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE chembl_business_model_inchierrors_id_seq
@@ -1287,17 +1287,17 @@ CREATE SEQUENCE chembl_business_model_inchierrors_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.chembl_business_model_inchierrors_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.chembl_business_model_inchierrors_id_seq OWNER TO chembl;
 
 --
--- Name: chembl_business_model_inchierrors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_inchierrors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE chembl_business_model_inchierrors_id_seq OWNED BY chembl_business_model_inchierrors.id;
 
 
 --
--- Name: chembl_business_model_sdf; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_sdf; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE chembl_business_model_sdf (
@@ -1308,10 +1308,10 @@ CREATE TABLE chembl_business_model_sdf (
 );
 
 
-ALTER TABLE public.chembl_business_model_sdf OWNER TO test_reg_user;
+ALTER TABLE public.chembl_business_model_sdf OWNER TO chembl;
 
 --
--- Name: chembl_id_lookup; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_id_lookup; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE chembl_id_lookup (
@@ -1324,10 +1324,10 @@ CREATE TABLE chembl_id_lookup (
 );
 
 
-ALTER TABLE public.chembl_id_lookup OWNER TO test_reg_user;
+ALTER TABLE public.chembl_id_lookup OWNER TO chembl;
 
 --
--- Name: component_class; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_class; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE component_class (
@@ -1337,10 +1337,10 @@ CREATE TABLE component_class (
 );
 
 
-ALTER TABLE public.component_class OWNER TO test_reg_user;
+ALTER TABLE public.component_class OWNER TO chembl;
 
 --
--- Name: component_domains; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_domains; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE component_domains (
@@ -1354,10 +1354,10 @@ CREATE TABLE component_domains (
 );
 
 
-ALTER TABLE public.component_domains OWNER TO test_reg_user;
+ALTER TABLE public.component_domains OWNER TO chembl;
 
 --
--- Name: component_sequences; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_sequences; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE component_sequences (
@@ -1380,10 +1380,10 @@ CREATE TABLE component_sequences (
 );
 
 
-ALTER TABLE public.component_sequences OWNER TO test_reg_user;
+ALTER TABLE public.component_sequences OWNER TO chembl;
 
 --
--- Name: component_synonyms; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_synonyms; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE component_synonyms (
@@ -1395,10 +1395,10 @@ CREATE TABLE component_synonyms (
 );
 
 
-ALTER TABLE public.component_synonyms OWNER TO test_reg_user;
+ALTER TABLE public.component_synonyms OWNER TO chembl;
 
 --
--- Name: compound_images; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_images; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE compound_images (
@@ -1408,10 +1408,10 @@ CREATE TABLE compound_images (
 );
 
 
-ALTER TABLE public.compound_images OWNER TO test_reg_user;
+ALTER TABLE public.compound_images OWNER TO chembl;
 
 --
--- Name: compound_mols; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_mols; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE compound_mols (
@@ -1420,10 +1420,10 @@ CREATE TABLE compound_mols (
 );
 
 
-ALTER TABLE public.compound_mols OWNER TO test_reg_user;
+ALTER TABLE public.compound_mols OWNER TO chembl;
 
 --
--- Name: compound_properties; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE compound_properties (
@@ -1477,10 +1477,10 @@ CREATE TABLE compound_properties (
 );
 
 
-ALTER TABLE public.compound_properties OWNER TO test_reg_user;
+ALTER TABLE public.compound_properties OWNER TO chembl;
 
 --
--- Name: compound_records; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE compound_records (
@@ -1503,10 +1503,10 @@ CREATE TABLE compound_records (
 );
 
 
-ALTER TABLE public.compound_records OWNER TO test_reg_user;
+ALTER TABLE public.compound_records OWNER TO chembl;
 
 --
--- Name: compound_structures; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_structures; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE compound_structures (
@@ -1520,10 +1520,10 @@ CREATE TABLE compound_structures (
 );
 
 
-ALTER TABLE public.compound_structures OWNER TO test_reg_user;
+ALTER TABLE public.compound_structures OWNER TO chembl;
 
 --
--- Name: compund_structural_alerts; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compund_structural_alerts; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE compund_structural_alerts (
@@ -1536,10 +1536,10 @@ CREATE TABLE compund_structural_alerts (
 );
 
 
-ALTER TABLE public.compund_structural_alerts OWNER TO test_reg_user;
+ALTER TABLE public.compund_structural_alerts OWNER TO chembl;
 
 --
--- Name: confidence_score_lookup; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: confidence_score_lookup; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE confidence_score_lookup (
@@ -1550,10 +1550,10 @@ CREATE TABLE confidence_score_lookup (
 );
 
 
-ALTER TABLE public.confidence_score_lookup OWNER TO test_reg_user;
+ALTER TABLE public.confidence_score_lookup OWNER TO chembl;
 
 --
--- Name: corsheaders_corsmodel; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: corsheaders_corsmodel; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE corsheaders_corsmodel (
@@ -1562,10 +1562,10 @@ CREATE TABLE corsheaders_corsmodel (
 );
 
 
-ALTER TABLE public.corsheaders_corsmodel OWNER TO test_reg_user;
+ALTER TABLE public.corsheaders_corsmodel OWNER TO chembl;
 
 --
--- Name: corsheaders_corsmodel_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: corsheaders_corsmodel_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE corsheaders_corsmodel_id_seq
@@ -1576,17 +1576,17 @@ CREATE SEQUENCE corsheaders_corsmodel_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.corsheaders_corsmodel_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.corsheaders_corsmodel_id_seq OWNER TO chembl;
 
 --
--- Name: corsheaders_corsmodel_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: corsheaders_corsmodel_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE corsheaders_corsmodel_id_seq OWNED BY corsheaders_corsmodel.id;
 
 
 --
--- Name: curation_lookup; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: curation_lookup; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE curation_lookup (
@@ -1595,10 +1595,10 @@ CREATE TABLE curation_lookup (
 );
 
 
-ALTER TABLE public.curation_lookup OWNER TO test_reg_user;
+ALTER TABLE public.curation_lookup OWNER TO chembl;
 
 --
--- Name: data_validity_lookup; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: data_validity_lookup; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE data_validity_lookup (
@@ -1607,10 +1607,10 @@ CREATE TABLE data_validity_lookup (
 );
 
 
-ALTER TABLE public.data_validity_lookup OWNER TO test_reg_user;
+ALTER TABLE public.data_validity_lookup OWNER TO chembl;
 
 --
--- Name: defined_daily_dose; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: defined_daily_dose; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE defined_daily_dose (
@@ -1624,10 +1624,10 @@ CREATE TABLE defined_daily_dose (
 );
 
 
-ALTER TABLE public.defined_daily_dose OWNER TO test_reg_user;
+ALTER TABLE public.defined_daily_dose OWNER TO chembl;
 
 --
--- Name: django_admin_log; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_admin_log; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE django_admin_log (
@@ -1643,10 +1643,10 @@ CREATE TABLE django_admin_log (
 );
 
 
-ALTER TABLE public.django_admin_log OWNER TO test_reg_user;
+ALTER TABLE public.django_admin_log OWNER TO chembl;
 
 --
--- Name: django_admin_log_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: django_admin_log_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE django_admin_log_id_seq
@@ -1657,17 +1657,17 @@ CREATE SEQUENCE django_admin_log_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.django_admin_log_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.django_admin_log_id_seq OWNER TO chembl;
 
 --
--- Name: django_admin_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: django_admin_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
 
 
 --
--- Name: django_content_type; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_content_type; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE django_content_type (
@@ -1678,10 +1678,10 @@ CREATE TABLE django_content_type (
 );
 
 
-ALTER TABLE public.django_content_type OWNER TO test_reg_user;
+ALTER TABLE public.django_content_type OWNER TO chembl;
 
 --
--- Name: django_content_type_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: django_content_type_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE django_content_type_id_seq
@@ -1692,17 +1692,17 @@ CREATE SEQUENCE django_content_type_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.django_content_type_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.django_content_type_id_seq OWNER TO chembl;
 
 --
--- Name: django_content_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: django_content_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE django_content_type_id_seq OWNED BY django_content_type.id;
 
 
 --
--- Name: django_migrations; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_migrations; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE django_migrations (
@@ -1713,10 +1713,10 @@ CREATE TABLE django_migrations (
 );
 
 
-ALTER TABLE public.django_migrations OWNER TO test_reg_user;
+ALTER TABLE public.django_migrations OWNER TO chembl;
 
 --
--- Name: django_migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: django_migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE django_migrations_id_seq
@@ -1727,17 +1727,17 @@ CREATE SEQUENCE django_migrations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.django_migrations_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.django_migrations_id_seq OWNER TO chembl;
 
 --
--- Name: django_migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: django_migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE django_migrations_id_seq OWNED BY django_migrations.id;
 
 
 --
--- Name: django_session; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_session; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE django_session (
@@ -1747,10 +1747,10 @@ CREATE TABLE django_session (
 );
 
 
-ALTER TABLE public.django_session OWNER TO test_reg_user;
+ALTER TABLE public.django_session OWNER TO chembl;
 
 --
--- Name: django_site; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_site; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE django_site (
@@ -1760,10 +1760,10 @@ CREATE TABLE django_site (
 );
 
 
-ALTER TABLE public.django_site OWNER TO test_reg_user;
+ALTER TABLE public.django_site OWNER TO chembl;
 
 --
--- Name: django_site_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: django_site_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE django_site_id_seq
@@ -1774,17 +1774,17 @@ CREATE SEQUENCE django_site_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.django_site_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.django_site_id_seq OWNER TO chembl;
 
 --
--- Name: django_site_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: django_site_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE django_site_id_seq OWNED BY django_site.id;
 
 
 --
--- Name: docs; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE docs (
@@ -1811,10 +1811,10 @@ CREATE TABLE docs (
 );
 
 
-ALTER TABLE public.docs OWNER TO test_reg_user;
+ALTER TABLE public.docs OWNER TO chembl;
 
 --
--- Name: domains; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: domains; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE domains (
@@ -1827,10 +1827,10 @@ CREATE TABLE domains (
 );
 
 
-ALTER TABLE public.domains OWNER TO test_reg_user;
+ALTER TABLE public.domains OWNER TO chembl;
 
 --
--- Name: drug_mechanism; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: drug_mechanism; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE drug_mechanism (
@@ -1863,10 +1863,10 @@ CREATE TABLE drug_mechanism (
 );
 
 
-ALTER TABLE public.drug_mechanism OWNER TO test_reg_user;
+ALTER TABLE public.drug_mechanism OWNER TO chembl;
 
 --
--- Name: flowjs_flowfile; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: flowjs_flowfile; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE flowjs_flowfile (
@@ -1882,10 +1882,10 @@ CREATE TABLE flowjs_flowfile (
 );
 
 
-ALTER TABLE public.flowjs_flowfile OWNER TO test_reg_user;
+ALTER TABLE public.flowjs_flowfile OWNER TO chembl;
 
 --
--- Name: flowjs_flowfile_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: flowjs_flowfile_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE flowjs_flowfile_id_seq
@@ -1896,17 +1896,17 @@ CREATE SEQUENCE flowjs_flowfile_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.flowjs_flowfile_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.flowjs_flowfile_id_seq OWNER TO chembl;
 
 --
--- Name: flowjs_flowfile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: flowjs_flowfile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE flowjs_flowfile_id_seq OWNED BY flowjs_flowfile.id;
 
 
 --
--- Name: flowjs_flowfilechunk; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: flowjs_flowfilechunk; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE flowjs_flowfilechunk (
@@ -1918,10 +1918,10 @@ CREATE TABLE flowjs_flowfilechunk (
 );
 
 
-ALTER TABLE public.flowjs_flowfilechunk OWNER TO test_reg_user;
+ALTER TABLE public.flowjs_flowfilechunk OWNER TO chembl;
 
 --
--- Name: flowjs_flowfilechunk_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: flowjs_flowfilechunk_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE flowjs_flowfilechunk_id_seq
@@ -1932,17 +1932,17 @@ CREATE SEQUENCE flowjs_flowfilechunk_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.flowjs_flowfilechunk_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.flowjs_flowfilechunk_id_seq OWNER TO chembl;
 
 --
--- Name: flowjs_flowfilechunk_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: flowjs_flowfilechunk_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE flowjs_flowfilechunk_id_seq OWNED BY flowjs_flowfilechunk.id;
 
 
 --
--- Name: formulations; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: formulations; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE formulations (
@@ -1955,10 +1955,10 @@ CREATE TABLE formulations (
 );
 
 
-ALTER TABLE public.formulations OWNER TO test_reg_user;
+ALTER TABLE public.formulations OWNER TO chembl;
 
 --
--- Name: frac_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: frac_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE frac_classification (
@@ -1977,10 +1977,10 @@ CREATE TABLE frac_classification (
 );
 
 
-ALTER TABLE public.frac_classification OWNER TO test_reg_user;
+ALTER TABLE public.frac_classification OWNER TO chembl;
 
 --
--- Name: hrac_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: hrac_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE hrac_classification (
@@ -1995,10 +1995,10 @@ CREATE TABLE hrac_classification (
 );
 
 
-ALTER TABLE public.hrac_classification OWNER TO test_reg_user;
+ALTER TABLE public.hrac_classification OWNER TO chembl;
 
 --
--- Name: irac_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: irac_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE irac_classification (
@@ -2017,10 +2017,10 @@ CREATE TABLE irac_classification (
 );
 
 
-ALTER TABLE public.irac_classification OWNER TO test_reg_user;
+ALTER TABLE public.irac_classification OWNER TO chembl;
 
 --
--- Name: journal_articles; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE journal_articles (
@@ -2054,10 +2054,10 @@ CREATE TABLE journal_articles (
 );
 
 
-ALTER TABLE public.journal_articles OWNER TO test_reg_user;
+ALTER TABLE public.journal_articles OWNER TO chembl;
 
 --
--- Name: journals; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journals; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE journals (
@@ -2075,10 +2075,10 @@ CREATE TABLE journals (
 );
 
 
-ALTER TABLE public.journals OWNER TO test_reg_user;
+ALTER TABLE public.journals OWNER TO chembl;
 
 --
--- Name: ligand_eff; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: ligand_eff; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE ligand_eff (
@@ -2093,10 +2093,10 @@ CREATE TABLE ligand_eff (
 );
 
 
-ALTER TABLE public.ligand_eff OWNER TO test_reg_user;
+ALTER TABLE public.ligand_eff OWNER TO chembl;
 
 --
--- Name: mechanism_refs; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: mechanism_refs; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE mechanism_refs (
@@ -2110,10 +2110,10 @@ CREATE TABLE mechanism_refs (
 );
 
 
-ALTER TABLE public.mechanism_refs OWNER TO test_reg_user;
+ALTER TABLE public.mechanism_refs OWNER TO chembl;
 
 --
--- Name: molecule_atc_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_atc_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE molecule_atc_classification (
@@ -2123,10 +2123,10 @@ CREATE TABLE molecule_atc_classification (
 );
 
 
-ALTER TABLE public.molecule_atc_classification OWNER TO test_reg_user;
+ALTER TABLE public.molecule_atc_classification OWNER TO chembl;
 
 --
--- Name: molecule_dictionary; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE molecule_dictionary (
@@ -2202,10 +2202,10 @@ CREATE TABLE molecule_dictionary (
 );
 
 
-ALTER TABLE public.molecule_dictionary OWNER TO test_reg_user;
+ALTER TABLE public.molecule_dictionary OWNER TO chembl;
 
 --
--- Name: molecule_dictionary_molregno_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: molecule_dictionary_molregno_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE molecule_dictionary_molregno_seq
@@ -2216,17 +2216,17 @@ CREATE SEQUENCE molecule_dictionary_molregno_seq
     CACHE 1;
 
 
-ALTER TABLE public.molecule_dictionary_molregno_seq OWNER TO test_reg_user;
+ALTER TABLE public.molecule_dictionary_molregno_seq OWNER TO chembl;
 
 --
--- Name: molecule_dictionary_molregno_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: molecule_dictionary_molregno_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE molecule_dictionary_molregno_seq OWNED BY molecule_dictionary.molregno;
 
 
 --
--- Name: molecule_frac_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_frac_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE molecule_frac_classification (
@@ -2236,10 +2236,10 @@ CREATE TABLE molecule_frac_classification (
 );
 
 
-ALTER TABLE public.molecule_frac_classification OWNER TO test_reg_user;
+ALTER TABLE public.molecule_frac_classification OWNER TO chembl;
 
 --
--- Name: molecule_hierarchy; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hierarchy; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE molecule_hierarchy (
@@ -2249,10 +2249,10 @@ CREATE TABLE molecule_hierarchy (
 );
 
 
-ALTER TABLE public.molecule_hierarchy OWNER TO test_reg_user;
+ALTER TABLE public.molecule_hierarchy OWNER TO chembl;
 
 --
--- Name: molecule_hrac_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hrac_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE molecule_hrac_classification (
@@ -2262,10 +2262,10 @@ CREATE TABLE molecule_hrac_classification (
 );
 
 
-ALTER TABLE public.molecule_hrac_classification OWNER TO test_reg_user;
+ALTER TABLE public.molecule_hrac_classification OWNER TO chembl;
 
 --
--- Name: molecule_irac_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_irac_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE molecule_irac_classification (
@@ -2275,10 +2275,10 @@ CREATE TABLE molecule_irac_classification (
 );
 
 
-ALTER TABLE public.molecule_irac_classification OWNER TO test_reg_user;
+ALTER TABLE public.molecule_irac_classification OWNER TO chembl;
 
 --
--- Name: molecule_synonyms; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_synonyms; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE molecule_synonyms (
@@ -2290,10 +2290,10 @@ CREATE TABLE molecule_synonyms (
 );
 
 
-ALTER TABLE public.molecule_synonyms OWNER TO test_reg_user;
+ALTER TABLE public.molecule_synonyms OWNER TO chembl;
 
 --
--- Name: mols_rdkit; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: mols_rdkit; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE mols_rdkit (
@@ -2302,10 +2302,10 @@ CREATE TABLE mols_rdkit (
 );
 
 
-ALTER TABLE public.mols_rdkit OWNER TO test_reg_user;
+ALTER TABLE public.mols_rdkit OWNER TO chembl;
 
 --
--- Name: organism_class; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: organism_class; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE organism_class (
@@ -2318,10 +2318,10 @@ CREATE TABLE organism_class (
 );
 
 
-ALTER TABLE public.organism_class OWNER TO test_reg_user;
+ALTER TABLE public.organism_class OWNER TO chembl;
 
 --
--- Name: parameter_type; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: parameter_type; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE parameter_type (
@@ -2330,10 +2330,10 @@ CREATE TABLE parameter_type (
 );
 
 
-ALTER TABLE public.parameter_type OWNER TO test_reg_user;
+ALTER TABLE public.parameter_type OWNER TO chembl;
 
 --
--- Name: patient_use_codes; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: patient_use_codes; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE patient_use_codes (
@@ -2342,10 +2342,10 @@ CREATE TABLE patient_use_codes (
 );
 
 
-ALTER TABLE public.patient_use_codes OWNER TO test_reg_user;
+ALTER TABLE public.patient_use_codes OWNER TO chembl;
 
 --
--- Name: predicted_binding_domains; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: predicted_binding_domains; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE predicted_binding_domains (
@@ -2359,10 +2359,10 @@ CREATE TABLE predicted_binding_domains (
 );
 
 
-ALTER TABLE public.predicted_binding_domains OWNER TO test_reg_user;
+ALTER TABLE public.predicted_binding_domains OWNER TO chembl;
 
 --
--- Name: product_patents; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: product_patents; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE product_patents (
@@ -2383,10 +2383,10 @@ CREATE TABLE product_patents (
 );
 
 
-ALTER TABLE public.product_patents OWNER TO test_reg_user;
+ALTER TABLE public.product_patents OWNER TO chembl;
 
 --
--- Name: products; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: products; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE products (
@@ -2422,10 +2422,10 @@ CREATE TABLE products (
 );
 
 
-ALTER TABLE public.products OWNER TO test_reg_user;
+ALTER TABLE public.products OWNER TO chembl;
 
 --
--- Name: protein_class_synonyms; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_class_synonyms; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE protein_class_synonyms (
@@ -2437,10 +2437,10 @@ CREATE TABLE protein_class_synonyms (
 );
 
 
-ALTER TABLE public.protein_class_synonyms OWNER TO test_reg_user;
+ALTER TABLE public.protein_class_synonyms OWNER TO chembl;
 
 --
--- Name: protein_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE protein_classification (
@@ -2462,10 +2462,10 @@ CREATE TABLE protein_classification (
 );
 
 
-ALTER TABLE public.protein_classification OWNER TO test_reg_user;
+ALTER TABLE public.protein_classification OWNER TO chembl;
 
 --
--- Name: protein_family_classification; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_family_classification; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE protein_family_classification (
@@ -2482,10 +2482,10 @@ CREATE TABLE protein_family_classification (
 );
 
 
-ALTER TABLE public.protein_family_classification OWNER TO test_reg_user;
+ALTER TABLE public.protein_family_classification OWNER TO chembl;
 
 --
--- Name: relationship_type; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: relationship_type; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE relationship_type (
@@ -2494,10 +2494,10 @@ CREATE TABLE relationship_type (
 );
 
 
-ALTER TABLE public.relationship_type OWNER TO test_reg_user;
+ALTER TABLE public.relationship_type OWNER TO chembl;
 
 --
--- Name: research_companies; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: research_companies; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE research_companies (
@@ -2509,10 +2509,10 @@ CREATE TABLE research_companies (
 );
 
 
-ALTER TABLE public.research_companies OWNER TO test_reg_user;
+ALTER TABLE public.research_companies OWNER TO chembl;
 
 --
--- Name: research_stem; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: research_stem; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE research_stem (
@@ -2521,10 +2521,10 @@ CREATE TABLE research_stem (
 );
 
 
-ALTER TABLE public.research_stem OWNER TO test_reg_user;
+ALTER TABLE public.research_stem OWNER TO chembl;
 
 --
--- Name: site_components; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: site_components; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE site_components (
@@ -2536,10 +2536,10 @@ CREATE TABLE site_components (
 );
 
 
-ALTER TABLE public.site_components OWNER TO test_reg_user;
+ALTER TABLE public.site_components OWNER TO chembl;
 
 --
--- Name: source; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: source; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE source (
@@ -2549,10 +2549,10 @@ CREATE TABLE source (
 );
 
 
-ALTER TABLE public.source OWNER TO test_reg_user;
+ALTER TABLE public.source OWNER TO chembl;
 
 --
--- Name: south_migrationhistory; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: south_migrationhistory; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE south_migrationhistory (
@@ -2563,10 +2563,10 @@ CREATE TABLE south_migrationhistory (
 );
 
 
-ALTER TABLE public.south_migrationhistory OWNER TO test_reg_user;
+ALTER TABLE public.south_migrationhistory OWNER TO chembl;
 
 --
--- Name: south_migrationhistory_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: south_migrationhistory_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE south_migrationhistory_id_seq
@@ -2577,17 +2577,17 @@ CREATE SEQUENCE south_migrationhistory_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.south_migrationhistory_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.south_migrationhistory_id_seq OWNER TO chembl;
 
 --
--- Name: south_migrationhistory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: south_migrationhistory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE south_migrationhistory_id_seq OWNED BY south_migrationhistory.id;
 
 
 --
--- Name: structural_alert_sets; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: structural_alert_sets; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE structural_alert_sets (
@@ -2602,10 +2602,10 @@ CREATE TABLE structural_alert_sets (
 );
 
 
-ALTER TABLE public.structural_alert_sets OWNER TO test_reg_user;
+ALTER TABLE public.structural_alert_sets OWNER TO chembl;
 
 --
--- Name: structural_alerts; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: structural_alerts; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE structural_alerts (
@@ -2619,10 +2619,10 @@ CREATE TABLE structural_alerts (
 );
 
 
-ALTER TABLE public.structural_alerts OWNER TO test_reg_user;
+ALTER TABLE public.structural_alerts OWNER TO chembl;
 
 --
--- Name: target_components; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_components; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE target_components (
@@ -2638,10 +2638,10 @@ CREATE TABLE target_components (
 );
 
 
-ALTER TABLE public.target_components OWNER TO test_reg_user;
+ALTER TABLE public.target_components OWNER TO chembl;
 
 --
--- Name: target_dictionary; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE target_dictionary (
@@ -2664,10 +2664,10 @@ CREATE TABLE target_dictionary (
 );
 
 
-ALTER TABLE public.target_dictionary OWNER TO test_reg_user;
+ALTER TABLE public.target_dictionary OWNER TO chembl;
 
 --
--- Name: target_relations; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_relations; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE target_relations (
@@ -2680,10 +2680,10 @@ CREATE TABLE target_relations (
 );
 
 
-ALTER TABLE public.target_relations OWNER TO test_reg_user;
+ALTER TABLE public.target_relations OWNER TO chembl;
 
 --
--- Name: target_type; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_type; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE target_type (
@@ -2693,10 +2693,10 @@ CREATE TABLE target_type (
 );
 
 
-ALTER TABLE public.target_type OWNER TO test_reg_user;
+ALTER TABLE public.target_type OWNER TO chembl;
 
 --
--- Name: tastypie_apiaccess; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: tastypie_apiaccess; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE tastypie_apiaccess (
@@ -2709,10 +2709,10 @@ CREATE TABLE tastypie_apiaccess (
 );
 
 
-ALTER TABLE public.tastypie_apiaccess OWNER TO test_reg_user;
+ALTER TABLE public.tastypie_apiaccess OWNER TO chembl;
 
 --
--- Name: tastypie_apiaccess_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: tastypie_apiaccess_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE tastypie_apiaccess_id_seq
@@ -2723,17 +2723,17 @@ CREATE SEQUENCE tastypie_apiaccess_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.tastypie_apiaccess_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.tastypie_apiaccess_id_seq OWNER TO chembl;
 
 --
--- Name: tastypie_apiaccess_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: tastypie_apiaccess_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE tastypie_apiaccess_id_seq OWNED BY tastypie_apiaccess.id;
 
 
 --
--- Name: tastypie_apikey; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: tastypie_apikey; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE tastypie_apikey (
@@ -2744,10 +2744,10 @@ CREATE TABLE tastypie_apikey (
 );
 
 
-ALTER TABLE public.tastypie_apikey OWNER TO test_reg_user;
+ALTER TABLE public.tastypie_apikey OWNER TO chembl;
 
 --
--- Name: tastypie_apikey_id_seq; Type: SEQUENCE; Schema: public; Owner: test_reg_user
+-- Name: tastypie_apikey_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
 --
 
 CREATE SEQUENCE tastypie_apikey_id_seq
@@ -2758,17 +2758,17 @@ CREATE SEQUENCE tastypie_apikey_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.tastypie_apikey_id_seq OWNER TO test_reg_user;
+ALTER TABLE public.tastypie_apikey_id_seq OWNER TO chembl;
 
 --
--- Name: tastypie_apikey_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: test_reg_user
+-- Name: tastypie_apikey_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
 --
 
 ALTER SEQUENCE tastypie_apikey_id_seq OWNED BY tastypie_apikey.id;
 
 
 --
--- Name: usan_stems; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: usan_stems; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE usan_stems (
@@ -2788,10 +2788,10 @@ CREATE TABLE usan_stems (
 );
 
 
-ALTER TABLE public.usan_stems OWNER TO test_reg_user;
+ALTER TABLE public.usan_stems OWNER TO chembl;
 
 --
--- Name: version; Type: TABLE; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: version; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE TABLE version (
@@ -2801,248 +2801,248 @@ CREATE TABLE version (
 );
 
 
-ALTER TABLE public.version OWNER TO test_reg_user;
+ALTER TABLE public.version OWNER TO chembl;
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_group ALTER COLUMN id SET DEFAULT nextval('auth_group_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_group_permissions ALTER COLUMN id SET DEFAULT nextval('auth_group_permissions_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_permission ALTER COLUMN id SET DEFAULT nextval('auth_permission_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_user ALTER COLUMN id SET DEFAULT nextval('auth_user_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_user_groups ALTER COLUMN id SET DEFAULT nextval('auth_user_groups_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_user_user_permissions ALTER COLUMN id SET DEFAULT nextval('auth_user_user_permissions_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_id_generator_cbhcompoundid_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundbatch ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_model_extension_cbhcompoundbatch_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_customfieldconfig ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_model_extension_customfieldconfig_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig ALTER COLUMN id SET DEFAULT nextval('cbh_core_model_dataformconfig_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_datatype ALTER COLUMN id SET DEFAULT nextval('cbh_core_model_datatype_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_pinnedcustomfield ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_model_extension_pinnedcustomfield_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_project ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_model_extension_project_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_project_enabled_forms ALTER COLUMN id SET DEFAULT nextval('cbh_core_model_project_enabled_forms_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_projecttype ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_model_extension_projecttype_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_skinningconfig ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_model_extension_skinningconfig_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapoint ALTER COLUMN id SET DEFAULT nextval('cbh_datastore_model_datapoint_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification ALTER COLUMN id SET DEFAULT nextval('cbh_datastore_model_datapointclassification_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassificationpermission ALTER COLUMN id SET DEFAULT nextval('cbh_datastore_model_datapointclassificationpermission_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY chembl_business_model_djangocheatsheet ALTER COLUMN id SET DEFAULT nextval('chembl_business_model_djangocheatsheet_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY chembl_business_model_imageerrors ALTER COLUMN id SET DEFAULT nextval('chembl_business_model_imageerrors_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY chembl_business_model_inchierrors ALTER COLUMN id SET DEFAULT nextval('chembl_business_model_inchierrors_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY corsheaders_corsmodel ALTER COLUMN id SET DEFAULT nextval('corsheaders_corsmodel_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY django_admin_log ALTER COLUMN id SET DEFAULT nextval('django_admin_log_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY django_content_type ALTER COLUMN id SET DEFAULT nextval('django_content_type_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY django_migrations ALTER COLUMN id SET DEFAULT nextval('django_migrations_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY django_site ALTER COLUMN id SET DEFAULT nextval('django_site_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY flowjs_flowfile ALTER COLUMN id SET DEFAULT nextval('flowjs_flowfile_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY flowjs_flowfilechunk ALTER COLUMN id SET DEFAULT nextval('flowjs_flowfilechunk_id_seq'::regclass);
 
 
 --
--- Name: molregno; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: molregno; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_dictionary ALTER COLUMN molregno SET DEFAULT nextval('molecule_dictionary_molregno_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY south_migrationhistory ALTER COLUMN id SET DEFAULT nextval('south_migrationhistory_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY tastypie_apiaccess ALTER COLUMN id SET DEFAULT nextval('tastypie_apiaccess_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: test_reg_user
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY tastypie_apikey ALTER COLUMN id SET DEFAULT nextval('tastypie_apikey_id_seq'::regclass);
 
 
 --
--- Data for Name: action_type; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: action_type; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY action_type (action_type, description, parent_type) FROM stdin;
@@ -3050,7 +3050,7 @@ COPY action_type (action_type, description, parent_type) FROM stdin;
 
 
 --
--- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY activities (activity_id, assay_id, doc_id, record_id, molregno, standard_relation, published_value, published_units, standard_value, standard_units, standard_flag, standard_type, updated_by, updated_on, activity_comment, published_type, manual_curation_flag, data_validity_comment, potential_duplicate, published_relation, original_activity_id, pchembl_value, bao_endpoint, uo_units, qudt_units) FROM stdin;
@@ -3058,7 +3058,7 @@ COPY activities (activity_id, assay_id, doc_id, record_id, molregno, standard_re
 
 
 --
--- Data for Name: activity_stds_lookup; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: activity_stds_lookup; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY activity_stds_lookup (std_act_id, standard_type, definition, standard_units, normal_range_min, normal_range_max) FROM stdin;
@@ -3066,7 +3066,7 @@ COPY activity_stds_lookup (std_act_id, standard_type, definition, standard_units
 
 
 --
--- Data for Name: assay_parameters; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: assay_parameters; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY assay_parameters (assay_param_id, assay_id, parameter_type, parameter_value) FROM stdin;
@@ -3074,7 +3074,7 @@ COPY assay_parameters (assay_param_id, assay_id, parameter_type, parameter_value
 
 
 --
--- Data for Name: assay_type; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: assay_type; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY assay_type (assay_type, assay_desc) FROM stdin;
@@ -3082,7 +3082,7 @@ COPY assay_type (assay_type, assay_desc) FROM stdin;
 
 
 --
--- Data for Name: assays; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: assays; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY assays (assay_id, doc_id, description, assay_type, assay_test_type, assay_category, assay_organism, assay_tax_id, assay_strain, assay_tissue, assay_cell_type, assay_subcellular_fraction, tid, relationship_type, confidence_score, curated_by, activity_count, assay_source, src_id, src_assay_id, chembl_id, updated_on, updated_by, orig_description, a2t_complex, a2t_multi, mc_tax_id, mc_organism, mc_target_type, mc_target_name, mc_target_accession, a2t_assay_tax_id, a2t_assay_organism, a2t_updated_on, a2t_updated_by, cell_id, bao_format) FROM stdin;
@@ -3090,7 +3090,7 @@ COPY assays (assay_id, doc_id, description, assay_type, assay_test_type, assay_c
 
 
 --
--- Data for Name: atc_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: atc_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY atc_classification (who_name, level1, level2, level3, level4, level5, who_id, level1_description, level2_description, level3_description, level4_description) FROM stdin;
@@ -3098,7 +3098,7 @@ COPY atc_classification (who_name, level1, level2, level3, level4, level5, who_i
 
 
 --
--- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY auth_group (id, name) FROM stdin;
@@ -3108,14 +3108,14 @@ COPY auth_group (id, name) FROM stdin;
 
 
 --
--- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('auth_group_id_seq', 2, true);
 
 
 --
--- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY auth_group_permissions (id, group_id, permission_id) FROM stdin;
@@ -3134,14 +3134,14 @@ COPY auth_group_permissions (id, group_id, permission_id) FROM stdin;
 
 
 --
--- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('auth_group_permissions_id_seq', 32, true);
 
 
 --
--- Data for Name: auth_permission; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: auth_permission; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
@@ -3461,14 +3461,14 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 
 
 --
--- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('auth_permission_id_seq', 327, true);
 
 
 --
--- Data for Name: auth_user; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: auth_user; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
@@ -3483,7 +3483,7 @@ COPY auth_user (id, password, last_login, is_superuser, username, first_name, la
 
 
 --
--- Data for Name: auth_user_groups; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: auth_user_groups; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY auth_user_groups (id, user_id, group_id) FROM stdin;
@@ -3494,21 +3494,21 @@ COPY auth_user_groups (id, user_id, group_id) FROM stdin;
 
 
 --
--- Name: auth_user_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: auth_user_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('auth_user_groups_id_seq', 6, true);
 
 
 --
--- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('auth_user_id_seq', 6, true);
 
 
 --
--- Data for Name: auth_user_user_permissions; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: auth_user_user_permissions; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY auth_user_user_permissions (id, user_id, permission_id) FROM stdin;
@@ -3536,14 +3536,14 @@ COPY auth_user_user_permissions (id, user_id, permission_id) FROM stdin;
 
 
 --
--- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: auth_user_user_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('auth_user_user_permissions_id_seq', 27, true);
 
 
 --
--- Data for Name: binding_sites; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: binding_sites; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY binding_sites (site_id, site_name, tid) FROM stdin;
@@ -3551,7 +3551,7 @@ COPY binding_sites (site_id, site_name, tid) FROM stdin;
 
 
 --
--- Data for Name: bio_component_sequences; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: bio_component_sequences; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY bio_component_sequences (component_id, component_type, description, sequence, sequence_md5sum, tax_id, organism, updated_on, updated_by, insert_date, accession, db_source, db_version) FROM stdin;
@@ -3559,7 +3559,7 @@ COPY bio_component_sequences (component_id, component_type, description, sequenc
 
 
 --
--- Data for Name: biotherapeutic_components; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: biotherapeutic_components; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY biotherapeutic_components (biocomp_id, molregno, component_id) FROM stdin;
@@ -3567,7 +3567,7 @@ COPY biotherapeutic_components (biocomp_id, molregno, component_id) FROM stdin;
 
 
 --
--- Data for Name: biotherapeutics; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: biotherapeutics; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY biotherapeutics (molregno, description, helm_notation) FROM stdin;
@@ -3575,7 +3575,7 @@ COPY biotherapeutics (molregno, description, helm_notation) FROM stdin;
 
 
 --
--- Data for Name: cbh_chembl_id_generator_cbhcompoundid; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_chembl_id_generator_cbhcompoundid; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_chembl_id_generator_cbhcompoundid (id, structure_key, assigned_id, original_installation_key, current_batch_id) FROM stdin;
@@ -3583,14 +3583,14 @@ COPY cbh_chembl_id_generator_cbhcompoundid (id, structure_key, assigned_id, orig
 
 
 --
--- Name: cbh_chembl_id_generator_cbhcompoundid_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_id_generator_cbhcompoundid_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_chembl_id_generator_cbhcompoundid_id_seq', 1, false);
 
 
 --
--- Data for Name: cbh_chembl_model_extension_cbhcompoundbatch; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_chembl_model_extension_cbhcompoundbatch; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_chembl_model_extension_cbhcompoundbatch (id, created, modified, ctab, std_ctab, canonical_smiles, original_smiles, editable_by, uncurated_fields, created_by, related_molregno_id, standard_inchi, standard_inchi_key, warnings, properties, custom_fields, errors, multiple_batch_id, project_id, batch_number, blinded_batch_id) FROM stdin;
@@ -3686,14 +3686,14 @@ COPY cbh_chembl_model_extension_cbhcompoundbatch (id, created, modified, ctab, s
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_chembl_model_extension_cbhcompoundbatch_id_seq', 88, true);
 
 
 --
--- Data for Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_chembl_model_extension_cbhcompoundmultiplebatch (id, created, modified, created_by, uploaded_data, uploaded_file_id, project_id, saved) FROM stdin;
@@ -3736,49 +3736,49 @@ COPY cbh_chembl_model_extension_cbhcompoundmultiplebatch (id, created, modified,
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_chembl_model_extension_cbhcompoundmultiplebatch_id_seq', 35, true);
 
 
 --
--- Name: cbh_chembl_model_extension_customfieldconfig_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_customfieldconfig_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_chembl_model_extension_customfieldconfig_id_seq', 115, true);
 
 
 --
--- Name: cbh_chembl_model_extension_pinnedcustomfield_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_pinnedcustomfield_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_chembl_model_extension_pinnedcustomfield_id_seq', 467, true);
 
 
 --
--- Name: cbh_chembl_model_extension_project_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_project_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_chembl_model_extension_project_id_seq', 5, true);
 
 
 --
--- Name: cbh_chembl_model_extension_projecttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_projecttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_chembl_model_extension_projecttype_id_seq', 1, true);
 
 
 --
--- Name: cbh_chembl_model_extension_skinningconfig_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_skinningconfig_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_chembl_model_extension_skinningconfig_id_seq', 1, false);
 
 
 --
--- Data for Name: cbh_core_model_customfieldconfig; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_core_model_customfieldconfig; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_core_model_customfieldconfig (id, created, modified, name, created_by_id, schemaform, data_type_id) FROM stdin;
@@ -3898,7 +3898,7 @@ COPY cbh_core_model_customfieldconfig (id, created, modified, name, created_by_i
 
 
 --
--- Data for Name: cbh_core_model_dataformconfig; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_core_model_dataformconfig; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_core_model_dataformconfig (id, created, modified, created_by_id, l0_id, l1_id, l2_id, l3_id, l4_id) FROM stdin;
@@ -3911,14 +3911,14 @@ COPY cbh_core_model_dataformconfig (id, created, modified, created_by_id, l0_id,
 
 
 --
--- Name: cbh_core_model_dataformconfig_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_dataformconfig_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_core_model_dataformconfig_id_seq', 5, true);
 
 
 --
--- Data for Name: cbh_core_model_datatype; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_core_model_datatype; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_core_model_datatype (id, created, modified, name) FROM stdin;
@@ -3929,14 +3929,14 @@ COPY cbh_core_model_datatype (id, created, modified, name) FROM stdin;
 
 
 --
--- Name: cbh_core_model_datatype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_datatype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_core_model_datatype_id_seq', 3, true);
 
 
 --
--- Data for Name: cbh_core_model_pinnedcustomfield; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_core_model_pinnedcustomfield; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_core_model_pinnedcustomfield (id, created, modified, name, custom_field_config_id, required, part_of_blinded_key, field_type, allowed_values, "position", description, field_key, "default") FROM stdin;
@@ -4409,7 +4409,7 @@ COPY cbh_core_model_pinnedcustomfield (id, created, modified, name, custom_field
 
 
 --
--- Data for Name: cbh_core_model_project; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_core_model_project; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_core_model_project (id, created, modified, name, project_key, created_by_id, custom_field_config_id, is_default, project_type_id) FROM stdin;
@@ -4422,7 +4422,7 @@ COPY cbh_core_model_project (id, created, modified, name, project_key, created_b
 
 
 --
--- Data for Name: cbh_core_model_project_enabled_forms; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_core_model_project_enabled_forms; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_core_model_project_enabled_forms (id, project_id, dataformconfig_id) FROM stdin;
@@ -4444,14 +4444,14 @@ COPY cbh_core_model_project_enabled_forms (id, project_id, dataformconfig_id) FR
 
 
 --
--- Name: cbh_core_model_project_enabled_forms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_project_enabled_forms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_core_model_project_enabled_forms_id_seq', 14, true);
 
 
 --
--- Data for Name: cbh_core_model_projecttype; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_core_model_projecttype; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_core_model_projecttype (id, created, modified, name, show_compounds) FROM stdin;
@@ -4460,7 +4460,7 @@ COPY cbh_core_model_projecttype (id, created, modified, name, show_compounds) FR
 
 
 --
--- Data for Name: cbh_core_model_skinningconfig; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_core_model_skinningconfig; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_core_model_skinningconfig (id, instance_alias, project_alias, result_alias) FROM stdin;
@@ -4469,7 +4469,7 @@ COPY cbh_core_model_skinningconfig (id, instance_alias, project_alias, result_al
 
 
 --
--- Data for Name: cbh_datastore_model_datapoint; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_datastore_model_datapoint; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_datastore_model_datapoint (id, created, modified, project_data, supplementary_data, created_by_id, custom_field_config_id) FROM stdin;
@@ -4485,14 +4485,14 @@ COPY cbh_datastore_model_datapoint (id, created, modified, project_data, supplem
 
 
 --
--- Name: cbh_datastore_model_datapoint_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapoint_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_datastore_model_datapoint_id_seq', 8, true);
 
 
 --
--- Data for Name: cbh_datastore_model_datapointclassification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_datastore_model_datapointclassification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_datastore_model_datapointclassification (id, created, modified, description, created_by_id, l0_id, l1_id, l2_id, l3_id, l4_id, data_form_config_id) FROM stdin;
@@ -4507,14 +4507,14 @@ COPY cbh_datastore_model_datapointclassification (id, created, modified, descrip
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapointclassification_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_datastore_model_datapointclassification_id_seq', 7, true);
 
 
 --
--- Data for Name: cbh_datastore_model_datapointclassificationpermission; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cbh_datastore_model_datapointclassificationpermission; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cbh_datastore_model_datapointclassificationpermission (id, created, modified, data_point_classification_id, project_id) FROM stdin;
@@ -4522,14 +4522,14 @@ COPY cbh_datastore_model_datapointclassificationpermission (id, created, modifie
 
 
 --
--- Name: cbh_datastore_model_datapointclassificationpermission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_model_datapointclassificationpermission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('cbh_datastore_model_datapointclassificationpermission_id_seq', 1, false);
 
 
 --
--- Data for Name: cell_dictionary; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: cell_dictionary; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY cell_dictionary (cell_id, cell_name, cell_description, cell_source_tissue, cell_source_organism, cell_source_tax_id, clo_id, efo_id, cellosaurus_id, downgraded, chembl_id, cl_lincs_id) FROM stdin;
@@ -4537,7 +4537,7 @@ COPY cell_dictionary (cell_id, cell_name, cell_description, cell_source_tissue, 
 
 
 --
--- Data for Name: chembl_business_model_djangocheatsheet; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: chembl_business_model_djangocheatsheet; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY chembl_business_model_djangocheatsheet (id, "bigIntegerField", "booleanField", "charField", "commaSeparatedIntegerField", "dateField", "dateTimeField", "decimalField", "emailField", "filePathField", "floatField", "integerField", "ipAddressField", "genericIPAddressField", "nullBooleanField", "positiveIntegerField", "positiveSmallIntegerField", "slugField", "smallIntegerField", "textField", "timeField", "urlField") FROM stdin;
@@ -4545,14 +4545,14 @@ COPY chembl_business_model_djangocheatsheet (id, "bigIntegerField", "booleanFiel
 
 
 --
--- Name: chembl_business_model_djangocheatsheet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_djangocheatsheet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('chembl_business_model_djangocheatsheet_id_seq', 1, false);
 
 
 --
--- Data for Name: chembl_business_model_imageerrors; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: chembl_business_model_imageerrors; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY chembl_business_model_imageerrors (id, error_type, image_id) FROM stdin;
@@ -4560,14 +4560,14 @@ COPY chembl_business_model_imageerrors (id, error_type, image_id) FROM stdin;
 
 
 --
--- Name: chembl_business_model_imageerrors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_imageerrors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('chembl_business_model_imageerrors_id_seq', 1, false);
 
 
 --
--- Data for Name: chembl_business_model_inchierrors; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: chembl_business_model_inchierrors; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY chembl_business_model_inchierrors (id, error_type, structure_id) FROM stdin;
@@ -4575,14 +4575,14 @@ COPY chembl_business_model_inchierrors (id, error_type, structure_id) FROM stdin
 
 
 --
--- Name: chembl_business_model_inchierrors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_inchierrors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('chembl_business_model_inchierrors_id_seq', 1, false);
 
 
 --
--- Data for Name: chembl_business_model_sdf; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: chembl_business_model_sdf; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY chembl_business_model_sdf ("originalSDF", "originalHash", "cleanSDF", "cleanHash") FROM stdin;
@@ -4590,7 +4590,7 @@ COPY chembl_business_model_sdf ("originalSDF", "originalHash", "cleanSDF", "clea
 
 
 --
--- Data for Name: chembl_id_lookup; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: chembl_id_lookup; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY chembl_id_lookup (chembl_id, entity_type, entity_id, status) FROM stdin;
@@ -4652,7 +4652,7 @@ UOXDS04YGJ	COMPOUND	54	ACTIVE
 
 
 --
--- Data for Name: component_class; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: component_class; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY component_class (component_id, protein_class_id, comp_class_id) FROM stdin;
@@ -4660,7 +4660,7 @@ COPY component_class (component_id, protein_class_id, comp_class_id) FROM stdin;
 
 
 --
--- Data for Name: component_domains; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: component_domains; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY component_domains (compd_id, domain_id, component_id, start_position, end_position) FROM stdin;
@@ -4668,7 +4668,7 @@ COPY component_domains (compd_id, domain_id, component_id, start_position, end_p
 
 
 --
--- Data for Name: component_sequences; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: component_sequences; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY component_sequences (component_id, component_type, accession, sequence, sequence_md5sum, description, tax_id, organism, db_source, db_version, insert_date, updated_on, updated_by) FROM stdin;
@@ -4676,7 +4676,7 @@ COPY component_sequences (component_id, component_type, accession, sequence, seq
 
 
 --
--- Data for Name: component_synonyms; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: component_synonyms; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY component_synonyms (compsyn_id, component_id, component_synonym, syn_type) FROM stdin;
@@ -4684,7 +4684,7 @@ COPY component_synonyms (compsyn_id, component_id, component_synonym, syn_type) 
 
 
 --
--- Data for Name: compound_images; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: compound_images; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY compound_images (molregno, png, png_500) FROM stdin;
@@ -4692,7 +4692,7 @@ COPY compound_images (molregno, png, png_500) FROM stdin;
 
 
 --
--- Data for Name: compound_mols; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: compound_mols; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY compound_mols (molregno, ctab) FROM stdin;
@@ -4700,7 +4700,7 @@ COPY compound_mols (molregno, ctab) FROM stdin;
 
 
 --
--- Data for Name: compound_properties; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: compound_properties; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY compound_properties (molregno, mw_freebase, alogp, hba, hbd, psa, rtb, ro3_pass, num_ro5_violations, med_chem_friendly, acd_most_apka, acd_most_bpka, acd_logp, acd_logd, molecular_species, full_mwt, aromatic_rings, heavy_atoms, num_alerts, qed_weighted, updated_on, mw_monoisotopic, full_molformula, hba_lipinski, hbd_lipinski, num_lipinski_ro5_violations) FROM stdin;
@@ -4762,7 +4762,7 @@ COPY compound_properties (molregno, mw_freebase, alogp, hba, hbd, psa, rtb, ro3_
 
 
 --
--- Data for Name: compound_records; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: compound_records; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY compound_records (record_id, molregno, doc_id, compound_key, compound_name, filename, updated_by, updated_on, src_id, src_compound_id, removed, src_compound_id_version, curated) FROM stdin;
@@ -4770,7 +4770,7 @@ COPY compound_records (record_id, molregno, doc_id, compound_key, compound_name,
 
 
 --
--- Data for Name: compound_structures; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: compound_structures; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY compound_structures (molregno, molfile, standard_inchi, standard_inchi_key, canonical_smiles, structure_exclude_flag) FROM stdin;
@@ -4832,7 +4832,7 @@ COPY compound_structures (molregno, molfile, standard_inchi, standard_inchi_key,
 
 
 --
--- Data for Name: compund_structural_alerts; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: compund_structural_alerts; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY compund_structural_alerts (cpd_str_alert_id, alert_id, molregno) FROM stdin;
@@ -4840,7 +4840,7 @@ COPY compund_structural_alerts (cpd_str_alert_id, alert_id, molregno) FROM stdin
 
 
 --
--- Data for Name: confidence_score_lookup; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: confidence_score_lookup; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY confidence_score_lookup (confidence_score, description, target_mapping) FROM stdin;
@@ -4848,7 +4848,7 @@ COPY confidence_score_lookup (confidence_score, description, target_mapping) FRO
 
 
 --
--- Data for Name: corsheaders_corsmodel; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: corsheaders_corsmodel; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY corsheaders_corsmodel (id, cors) FROM stdin;
@@ -4856,14 +4856,14 @@ COPY corsheaders_corsmodel (id, cors) FROM stdin;
 
 
 --
--- Name: corsheaders_corsmodel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: corsheaders_corsmodel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('corsheaders_corsmodel_id_seq', 1, false);
 
 
 --
--- Data for Name: curation_lookup; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: curation_lookup; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY curation_lookup (curated_by, description) FROM stdin;
@@ -4871,7 +4871,7 @@ COPY curation_lookup (curated_by, description) FROM stdin;
 
 
 --
--- Data for Name: data_validity_lookup; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: data_validity_lookup; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY data_validity_lookup (data_validity_comment, description) FROM stdin;
@@ -4879,7 +4879,7 @@ COPY data_validity_lookup (data_validity_comment, description) FROM stdin;
 
 
 --
--- Data for Name: defined_daily_dose; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: defined_daily_dose; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY defined_daily_dose (atc_code, ddd_value, ddd_units, ddd_admr, ddd_comment, ddd_id) FROM stdin;
@@ -4887,7 +4887,7 @@ COPY defined_daily_dose (atc_code, ddd_value, ddd_units, ddd_admr, ddd_comment, 
 
 
 --
--- Data for Name: django_admin_log; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: django_admin_log; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, object_repr, action_flag, change_message) FROM stdin;
@@ -4943,14 +4943,14 @@ COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, obj
 
 
 --
--- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('django_admin_log_id_seq', 59, true);
 
 
 --
--- Data for Name: django_content_type; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: django_content_type; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY django_content_type (id, name, app_label, model) FROM stdin;
@@ -5119,14 +5119,14 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 
 
 --
--- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('django_content_type_id_seq', 166, true);
 
 
 --
--- Data for Name: django_migrations; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: django_migrations; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY django_migrations (id, app, name, applied) FROM stdin;
@@ -5200,14 +5200,14 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 
 
 --
--- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('django_migrations_id_seq', 66, true);
 
 
 --
--- Data for Name: django_session; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: django_session; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY django_session (session_key, session_data, expire_date) FROM stdin;
@@ -5262,7 +5262,7 @@ vv0b5cy3fqdhhx4i9qyg8madh5buzut9	YzFmNDE2YTBmMDU3YjA5NjU3ZmU1NmMwYTkxYzk0MDJkNTE
 
 
 --
--- Data for Name: django_site; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: django_site; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY django_site (id, domain, name) FROM stdin;
@@ -5271,14 +5271,14 @@ COPY django_site (id, domain, name) FROM stdin;
 
 
 --
--- Name: django_site_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: django_site_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('django_site_id_seq', 1, true);
 
 
 --
--- Data for Name: docs; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: docs; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY docs (doc_id, journal, year, volume, issue, first_page, last_page, pubmed_id, updated_on, updated_by, doi, chembl_id, title, doc_type, authors, abstract, journal_id) FROM stdin;
@@ -5286,7 +5286,7 @@ COPY docs (doc_id, journal, year, volume, issue, first_page, last_page, pubmed_i
 
 
 --
--- Data for Name: domains; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: domains; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY domains (domain_id, domain_type, source_domain_id, domain_name, domain_description) FROM stdin;
@@ -5294,7 +5294,7 @@ COPY domains (domain_id, domain_type, source_domain_id, domain_name, domain_desc
 
 
 --
--- Data for Name: drug_mechanism; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: drug_mechanism; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY drug_mechanism (mec_id, record_id, molregno, mechanism_of_action, tid, site_id, action_type, direct_interaction, molecular_mechanism, disease_efficacy, mechanism_comment, selectivity_comment, binding_site_comment, curated_by, date_added, date_removed, downgraded, downgrade_reason, curator_comment, curation_status) FROM stdin;
@@ -5302,7 +5302,7 @@ COPY drug_mechanism (mec_id, record_id, molregno, mechanism_of_action, tid, site
 
 
 --
--- Data for Name: flowjs_flowfile; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: flowjs_flowfile; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY flowjs_flowfile (id, identifier, original_filename, total_size, total_chunks, total_chunks_uploaded, state, created, updated) FROM stdin;
@@ -5313,14 +5313,14 @@ COPY flowjs_flowfile (id, identifier, original_filename, total_size, total_chunk
 
 
 --
--- Name: flowjs_flowfile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: flowjs_flowfile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('flowjs_flowfile_id_seq', 3, true);
 
 
 --
--- Data for Name: flowjs_flowfilechunk; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: flowjs_flowfilechunk; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY flowjs_flowfilechunk (id, parent_id, file, number, created_at) FROM stdin;
@@ -5329,14 +5329,14 @@ COPY flowjs_flowfilechunk (id, parent_id, file, number, created_at) FROM stdin;
 
 
 --
--- Name: flowjs_flowfilechunk_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: flowjs_flowfilechunk_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('flowjs_flowfilechunk_id_seq', 4, true);
 
 
 --
--- Data for Name: formulations; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: formulations; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY formulations (product_id, ingredient, strength, record_id, molregno, formulation_id) FROM stdin;
@@ -5344,7 +5344,7 @@ COPY formulations (product_id, ingredient, strength, record_id, molregno, formul
 
 
 --
--- Data for Name: frac_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: frac_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY frac_classification (frac_class_id, active_ingredient, level1, level1_description, level2, level2_description, level3, level3_description, level4, level4_description, level5, frac_code) FROM stdin;
@@ -5352,7 +5352,7 @@ COPY frac_classification (frac_class_id, active_ingredient, level1, level1_descr
 
 
 --
--- Data for Name: hrac_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: hrac_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY hrac_classification (hrac_class_id, active_ingredient, level1, level1_description, level2, level2_description, level3, hrac_code) FROM stdin;
@@ -5360,7 +5360,7 @@ COPY hrac_classification (hrac_class_id, active_ingredient, level1, level1_descr
 
 
 --
--- Data for Name: irac_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: irac_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY irac_classification (irac_class_id, active_ingredient, level1, level1_description, level2, level2_description, level3, level3_description, level4, irac_code) FROM stdin;
@@ -5368,7 +5368,7 @@ COPY irac_classification (irac_class_id, active_ingredient, level1, level1_descr
 
 
 --
--- Data for Name: journal_articles; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: journal_articles; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY journal_articles (int_pk, journal_id, volume, issue, year, month, day, pagination, first_page, last_page, pubmed_id, doi, title, abstract, authors, year_raw, month_raw, day_raw, volume_raw, issue_raw, date_loaded) FROM stdin;
@@ -5376,7 +5376,7 @@ COPY journal_articles (int_pk, journal_id, volume, issue, year, month, day, pagi
 
 
 --
--- Data for Name: journals; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: journals; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY journals (journal_id, title, iso_abbreviation, issn_print, issn_electronic, publication_start_year, nlm_id, doc_journal, core_journal_flag) FROM stdin;
@@ -5384,7 +5384,7 @@ COPY journals (journal_id, title, iso_abbreviation, issn_print, issn_electronic,
 
 
 --
--- Data for Name: ligand_eff; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: ligand_eff; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY ligand_eff (activity_id, bei, sei, le, lle) FROM stdin;
@@ -5392,7 +5392,7 @@ COPY ligand_eff (activity_id, bei, sei, le, lle) FROM stdin;
 
 
 --
--- Data for Name: mechanism_refs; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: mechanism_refs; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY mechanism_refs (mecref_id, mec_id, ref_type, ref_id, ref_url) FROM stdin;
@@ -5400,7 +5400,7 @@ COPY mechanism_refs (mecref_id, mec_id, ref_type, ref_id, ref_url) FROM stdin;
 
 
 --
--- Data for Name: molecule_atc_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: molecule_atc_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY molecule_atc_classification (mol_atc_id, level5, molregno) FROM stdin;
@@ -5408,7 +5408,7 @@ COPY molecule_atc_classification (mol_atc_id, level5, molregno) FROM stdin;
 
 
 --
--- Data for Name: molecule_dictionary; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: molecule_dictionary; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY molecule_dictionary (molregno, pref_name, chembl_id, max_phase, therapeutic_flag, dosed_ingredient, structure_key, structure_type, chebi_id, chebi_par_id, insert_date, molfile_update, downgraded, downgrade_reason, replacement_mrn, checked_by, nomerge, nomerge_reason, molecule_type, first_approval, oral, parenteral, topical, black_box_warning, natural_product, first_in_class, chirality, prodrug, exclude, inorganic_flag, usan_year, availability_type, usan_stem, polymer_flag, usan_substem, usan_stem_definition, indication_class, created_by_id, project_id, forced_reg_reason, forced_reg_index, public) FROM stdin;
@@ -5470,14 +5470,14 @@ COPY molecule_dictionary (molregno, pref_name, chembl_id, max_phase, therapeutic
 
 
 --
--- Name: molecule_dictionary_molregno_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: molecule_dictionary_molregno_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('molecule_dictionary_molregno_seq', 54, true);
 
 
 --
--- Data for Name: molecule_frac_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: molecule_frac_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY molecule_frac_classification (mol_frac_id, frac_class_id, molregno) FROM stdin;
@@ -5485,7 +5485,7 @@ COPY molecule_frac_classification (mol_frac_id, frac_class_id, molregno) FROM st
 
 
 --
--- Data for Name: molecule_hierarchy; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: molecule_hierarchy; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY molecule_hierarchy (molregno, parent_molregno, active_molregno) FROM stdin;
@@ -5493,7 +5493,7 @@ COPY molecule_hierarchy (molregno, parent_molregno, active_molregno) FROM stdin;
 
 
 --
--- Data for Name: molecule_hrac_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: molecule_hrac_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY molecule_hrac_classification (mol_hrac_id, hrac_class_id, molregno) FROM stdin;
@@ -5501,7 +5501,7 @@ COPY molecule_hrac_classification (mol_hrac_id, hrac_class_id, molregno) FROM st
 
 
 --
--- Data for Name: molecule_irac_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: molecule_irac_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY molecule_irac_classification (mol_irac_id, irac_class_id, molregno) FROM stdin;
@@ -5509,7 +5509,7 @@ COPY molecule_irac_classification (mol_irac_id, irac_class_id, molregno) FROM st
 
 
 --
--- Data for Name: molecule_synonyms; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: molecule_synonyms; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY molecule_synonyms (molregno, syn_type, molsyn_id, res_stem_id, synonyms) FROM stdin;
@@ -5517,7 +5517,7 @@ COPY molecule_synonyms (molregno, syn_type, molsyn_id, res_stem_id, synonyms) FR
 
 
 --
--- Data for Name: mols_rdkit; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: mols_rdkit; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY mols_rdkit (molregno, m) FROM stdin;
@@ -5525,7 +5525,7 @@ COPY mols_rdkit (molregno, m) FROM stdin;
 
 
 --
--- Data for Name: organism_class; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: organism_class; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY organism_class (oc_id, tax_id, l1, l2, l3) FROM stdin;
@@ -5533,7 +5533,7 @@ COPY organism_class (oc_id, tax_id, l1, l2, l3) FROM stdin;
 
 
 --
--- Data for Name: parameter_type; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: parameter_type; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY parameter_type (parameter_type, description) FROM stdin;
@@ -5541,7 +5541,7 @@ COPY parameter_type (parameter_type, description) FROM stdin;
 
 
 --
--- Data for Name: patient_use_codes; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: patient_use_codes; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY patient_use_codes (patent_use_code, definition) FROM stdin;
@@ -5549,7 +5549,7 @@ COPY patient_use_codes (patent_use_code, definition) FROM stdin;
 
 
 --
--- Data for Name: predicted_binding_domains; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: predicted_binding_domains; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY predicted_binding_domains (predbind_id, activity_id, site_id, prediction_method, confidence) FROM stdin;
@@ -5557,7 +5557,7 @@ COPY predicted_binding_domains (predbind_id, activity_id, site_id, prediction_me
 
 
 --
--- Data for Name: product_patents; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: product_patents; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY product_patents (prod_pat_id, patent_no, patent_expire_date, drug_substance_flag, drug_product_flag, delist_flag, in_products, patent_use_code, product_id) FROM stdin;
@@ -5565,7 +5565,7 @@ COPY product_patents (prod_pat_id, patent_no, patent_expire_date, drug_substance
 
 
 --
--- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY products (dosage_form, route, trade_name, approval_date, ad_type, oral, topical, parenteral, information_source, black_box_warning, product_class, applicant_full_name, innovator_company, product_id, load_date, removed_date, nda_type, tmp_ingred_count, exclude) FROM stdin;
@@ -5573,7 +5573,7 @@ COPY products (dosage_form, route, trade_name, approval_date, ad_type, oral, top
 
 
 --
--- Data for Name: protein_class_synonyms; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: protein_class_synonyms; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY protein_class_synonyms (protclasssyn_id, protein_class_id, protein_class_synonym, syn_type) FROM stdin;
@@ -5581,7 +5581,7 @@ COPY protein_class_synonyms (protclasssyn_id, protein_class_id, protein_class_sy
 
 
 --
--- Data for Name: protein_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: protein_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY protein_classification (protein_class_id, parent_id, pref_name, short_name, protein_class_desc, definition, downgraded, replaced_by, class_level, sort_order) FROM stdin;
@@ -5589,7 +5589,7 @@ COPY protein_classification (protein_class_id, parent_id, pref_name, short_name,
 
 
 --
--- Data for Name: protein_family_classification; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: protein_family_classification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY protein_family_classification (protein_class_id, protein_class_desc, l1, l2, l3, l4, l5, l6, l7, l8) FROM stdin;
@@ -5597,7 +5597,7 @@ COPY protein_family_classification (protein_class_id, protein_class_desc, l1, l2
 
 
 --
--- Data for Name: relationship_type; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: relationship_type; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY relationship_type (relationship_type, relationship_desc) FROM stdin;
@@ -5605,7 +5605,7 @@ COPY relationship_type (relationship_type, relationship_desc) FROM stdin;
 
 
 --
--- Data for Name: research_companies; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: research_companies; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY research_companies (co_stem_id, res_stem_id, company, country, previous_company) FROM stdin;
@@ -5613,7 +5613,7 @@ COPY research_companies (co_stem_id, res_stem_id, company, country, previous_com
 
 
 --
--- Data for Name: research_stem; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: research_stem; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY research_stem (res_stem_id, research_stem) FROM stdin;
@@ -5621,7 +5621,7 @@ COPY research_stem (res_stem_id, research_stem) FROM stdin;
 
 
 --
--- Data for Name: site_components; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: site_components; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY site_components (sitecomp_id, site_id, component_id, domain_id, site_residues) FROM stdin;
@@ -5629,7 +5629,7 @@ COPY site_components (sitecomp_id, site_id, component_id, domain_id, site_residu
 
 
 --
--- Data for Name: source; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: source; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY source (src_id, src_description, src_short_name) FROM stdin;
@@ -5637,7 +5637,7 @@ COPY source (src_id, src_description, src_short_name) FROM stdin;
 
 
 --
--- Data for Name: south_migrationhistory; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: south_migrationhistory; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY south_migrationhistory (id, app_name, migration, applied) FROM stdin;
@@ -5645,14 +5645,14 @@ COPY south_migrationhistory (id, app_name, migration, applied) FROM stdin;
 
 
 --
--- Name: south_migrationhistory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: south_migrationhistory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('south_migrationhistory_id_seq', 1, false);
 
 
 --
--- Data for Name: structural_alert_sets; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: structural_alert_sets; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY structural_alert_sets (alert_set_id, set_name, priority) FROM stdin;
@@ -5660,7 +5660,7 @@ COPY structural_alert_sets (alert_set_id, set_name, priority) FROM stdin;
 
 
 --
--- Data for Name: structural_alerts; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: structural_alerts; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY structural_alerts (alert_id, alert_name, smarts, alert_set_id) FROM stdin;
@@ -5668,7 +5668,7 @@ COPY structural_alerts (alert_id, alert_name, smarts, alert_set_id) FROM stdin;
 
 
 --
--- Data for Name: target_components; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: target_components; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY target_components (tid, component_id, relationship, stoichiometry, targcomp_id, homologue) FROM stdin;
@@ -5676,7 +5676,7 @@ COPY target_components (tid, component_id, relationship, stoichiometry, targcomp
 
 
 --
--- Data for Name: target_dictionary; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: target_dictionary; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY target_dictionary (tid, target_type, pref_name, tax_id, organism, updated_on, updated_by, chembl_id, insert_date, target_parent_type, species_group_flag, downgraded) FROM stdin;
@@ -5684,7 +5684,7 @@ COPY target_dictionary (tid, target_type, pref_name, tax_id, organism, updated_o
 
 
 --
--- Data for Name: target_relations; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: target_relations; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY target_relations (tid, relationship, related_tid, targrel_id) FROM stdin;
@@ -5692,7 +5692,7 @@ COPY target_relations (tid, relationship, related_tid, targrel_id) FROM stdin;
 
 
 --
--- Data for Name: target_type; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: target_type; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY target_type (target_type, target_desc, parent_type) FROM stdin;
@@ -5700,7 +5700,7 @@ COPY target_type (target_type, target_desc, parent_type) FROM stdin;
 
 
 --
--- Data for Name: tastypie_apiaccess; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: tastypie_apiaccess; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY tastypie_apiaccess (id, identifier, url, request_method, accessed) FROM stdin;
@@ -5708,14 +5708,14 @@ COPY tastypie_apiaccess (id, identifier, url, request_method, accessed) FROM std
 
 
 --
--- Name: tastypie_apiaccess_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: tastypie_apiaccess_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('tastypie_apiaccess_id_seq', 1, false);
 
 
 --
--- Data for Name: tastypie_apikey; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: tastypie_apikey; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY tastypie_apikey (id, user_id, key, created) FROM stdin;
@@ -5723,14 +5723,14 @@ COPY tastypie_apikey (id, user_id, key, created) FROM stdin;
 
 
 --
--- Name: tastypie_apikey_id_seq; Type: SEQUENCE SET; Schema: public; Owner: test_reg_user
+-- Name: tastypie_apikey_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
 SELECT pg_catalog.setval('tastypie_apikey_id_seq', 1, false);
 
 
 --
--- Data for Name: usan_stems; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: usan_stems; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY usan_stems (usan_stem_id, stem, subgroup, annotation, stem_class, major_class, who_extra, downgraded) FROM stdin;
@@ -5738,7 +5738,7 @@ COPY usan_stems (usan_stem_id, stem, subgroup, annotation, stem_class, major_cla
 
 
 --
--- Data for Name: version; Type: TABLE DATA; Schema: public; Owner: test_reg_user
+-- Data for Name: version; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
 COPY version (name, creation_date, comments) FROM stdin;
@@ -5746,7 +5746,7 @@ COPY version (name, creation_date, comments) FROM stdin;
 
 
 --
--- Name: action_type_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: action_type_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY action_type
@@ -5754,7 +5754,7 @@ ALTER TABLE ONLY action_type
 
 
 --
--- Name: activities_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY activities
@@ -5762,7 +5762,7 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: activity_stds_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activity_stds_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY activity_stds_lookup
@@ -5770,7 +5770,7 @@ ALTER TABLE ONLY activity_stds_lookup
 
 
 --
--- Name: activity_stds_lookup_standard_type_standard_units_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activity_stds_lookup_standard_type_standard_units_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY activity_stds_lookup
@@ -5778,7 +5778,7 @@ ALTER TABLE ONLY activity_stds_lookup
 
 
 --
--- Name: assay_parameters_assay_id_parameter_type_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_parameters_assay_id_parameter_type_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY assay_parameters
@@ -5786,7 +5786,7 @@ ALTER TABLE ONLY assay_parameters
 
 
 --
--- Name: assay_parameters_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_parameters_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY assay_parameters
@@ -5794,7 +5794,7 @@ ALTER TABLE ONLY assay_parameters
 
 
 --
--- Name: assay_type_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_type_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY assay_type
@@ -5802,7 +5802,7 @@ ALTER TABLE ONLY assay_type
 
 
 --
--- Name: assays_chembl_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_chembl_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY assays
@@ -5810,7 +5810,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY assays
@@ -5818,7 +5818,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: atc_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: atc_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY atc_classification
@@ -5826,7 +5826,7 @@ ALTER TABLE ONLY atc_classification
 
 
 --
--- Name: auth_group_name_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group_name_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_group
@@ -5834,7 +5834,7 @@ ALTER TABLE ONLY auth_group
 
 
 --
--- Name: auth_group_permissions_group_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group_permissions_group_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_group_permissions
@@ -5842,7 +5842,7 @@ ALTER TABLE ONLY auth_group_permissions
 
 
 --
--- Name: auth_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_group_permissions
@@ -5850,7 +5850,7 @@ ALTER TABLE ONLY auth_group_permissions
 
 
 --
--- Name: auth_group_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_group
@@ -5858,7 +5858,7 @@ ALTER TABLE ONLY auth_group
 
 
 --
--- Name: auth_permission_content_type_id_codename_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_permission_content_type_id_codename_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_permission
@@ -5866,7 +5866,7 @@ ALTER TABLE ONLY auth_permission
 
 
 --
--- Name: auth_permission_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_permission_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_permission
@@ -5874,7 +5874,7 @@ ALTER TABLE ONLY auth_permission
 
 
 --
--- Name: auth_user_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_user_groups
@@ -5882,7 +5882,7 @@ ALTER TABLE ONLY auth_user_groups
 
 
 --
--- Name: auth_user_groups_user_id_group_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_groups_user_id_group_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_user_groups
@@ -5890,7 +5890,7 @@ ALTER TABLE ONLY auth_user_groups
 
 
 --
--- Name: auth_user_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_user
@@ -5898,7 +5898,7 @@ ALTER TABLE ONLY auth_user
 
 
 --
--- Name: auth_user_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_user_user_permissions
@@ -5906,7 +5906,7 @@ ALTER TABLE ONLY auth_user_user_permissions
 
 
 --
--- Name: auth_user_user_permissions_user_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_user_permissions_user_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_user_user_permissions
@@ -5914,7 +5914,7 @@ ALTER TABLE ONLY auth_user_user_permissions
 
 
 --
--- Name: auth_user_username_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_username_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_user
@@ -5922,7 +5922,7 @@ ALTER TABLE ONLY auth_user
 
 
 --
--- Name: binding_sites_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: binding_sites_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY binding_sites
@@ -5930,7 +5930,7 @@ ALTER TABLE ONLY binding_sites
 
 
 --
--- Name: bio_component_sequences_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: bio_component_sequences_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY bio_component_sequences
@@ -5938,7 +5938,7 @@ ALTER TABLE ONLY bio_component_sequences
 
 
 --
--- Name: biotherapeutic_components_molregno_component_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: biotherapeutic_components_molregno_component_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY biotherapeutic_components
@@ -5946,7 +5946,7 @@ ALTER TABLE ONLY biotherapeutic_components
 
 
 --
--- Name: biotherapeutic_components_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: biotherapeutic_components_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY biotherapeutic_components
@@ -5954,7 +5954,7 @@ ALTER TABLE ONLY biotherapeutic_components
 
 
 --
--- Name: biotherapeutics_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: biotherapeutics_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY biotherapeutics
@@ -5962,7 +5962,7 @@ ALTER TABLE ONLY biotherapeutics
 
 
 --
--- Name: cbh_chembl_id_generator_cbhcompoundid_assigned_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_id_generator_cbhcompoundid_assigned_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid
@@ -5970,7 +5970,7 @@ ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid
 
 
 --
--- Name: cbh_chembl_id_generator_cbhcompoundid_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_id_generator_cbhcompoundid_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid
@@ -5978,7 +5978,7 @@ ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid
 
 
 --
--- Name: cbh_chembl_id_generator_cbhcompoundid_structure_key_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_id_generator_cbhcompoundid_structure_key_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid
@@ -5986,7 +5986,7 @@ ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundbatch
@@ -5994,7 +5994,7 @@ ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundbatch
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmult_uploaded_file_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundmult_uploaded_file_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch
@@ -6002,7 +6002,7 @@ ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch
@@ -6010,7 +6010,7 @@ ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch
 
 
 --
--- Name: cbh_chembl_model_extension_customfieldconfig_name_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_customfieldconfig_name_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_customfieldconfig
@@ -6018,7 +6018,7 @@ ALTER TABLE ONLY cbh_core_model_customfieldconfig
 
 
 --
--- Name: cbh_chembl_model_extension_customfieldconfig_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_customfieldconfig_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_customfieldconfig
@@ -6026,7 +6026,7 @@ ALTER TABLE ONLY cbh_core_model_customfieldconfig
 
 
 --
--- Name: cbh_chembl_model_extension_pinnedcustomfield_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_pinnedcustomfield_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_pinnedcustomfield
@@ -6034,7 +6034,7 @@ ALTER TABLE ONLY cbh_core_model_pinnedcustomfield
 
 
 --
--- Name: cbh_chembl_model_extension_project_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_project_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_project
@@ -6042,7 +6042,7 @@ ALTER TABLE ONLY cbh_core_model_project
 
 
 --
--- Name: cbh_chembl_model_extension_project_project_key_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_project_project_key_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_project
@@ -6050,7 +6050,7 @@ ALTER TABLE ONLY cbh_core_model_project
 
 
 --
--- Name: cbh_chembl_model_extension_projecttype_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_projecttype_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_projecttype
@@ -6058,7 +6058,7 @@ ALTER TABLE ONLY cbh_core_model_projecttype
 
 
 --
--- Name: cbh_chembl_model_extension_skinningconfig_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_skinningconfig_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_skinningconfig
@@ -6066,7 +6066,7 @@ ALTER TABLE ONLY cbh_core_model_skinningconfig
 
 
 --
--- Name: cbh_core_model_dataformconfig_l0_id_651d962751e00713_uniq; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig_l0_id_651d962751e00713_uniq; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig
@@ -6074,7 +6074,7 @@ ALTER TABLE ONLY cbh_core_model_dataformconfig
 
 
 --
--- Name: cbh_core_model_dataformconfig_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig
@@ -6082,7 +6082,7 @@ ALTER TABLE ONLY cbh_core_model_dataformconfig
 
 
 --
--- Name: cbh_core_model_datatype_name_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_datatype_name_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_datatype
@@ -6090,7 +6090,7 @@ ALTER TABLE ONLY cbh_core_model_datatype
 
 
 --
--- Name: cbh_core_model_datatype_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_datatype_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_datatype
@@ -6098,7 +6098,7 @@ ALTER TABLE ONLY cbh_core_model_datatype
 
 
 --
--- Name: cbh_core_model_project_enabled_forms_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_project_enabled_forms_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_project_enabled_forms
@@ -6106,7 +6106,7 @@ ALTER TABLE ONLY cbh_core_model_project_enabled_forms
 
 
 --
--- Name: cbh_core_model_project_enabled_project_id_dataformconfig_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_project_enabled_project_id_dataformconfig_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_core_model_project_enabled_forms
@@ -6114,7 +6114,7 @@ ALTER TABLE ONLY cbh_core_model_project_enabled_forms
 
 
 --
--- Name: cbh_datastore_model_d_data_form_config_id_7e3e6b79c4a8c299_uniq; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_d_data_form_config_id_7e3e6b79c4a8c299_uniq; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -6122,7 +6122,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: cbh_datastore_model_datapoint_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapoint_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapoint
@@ -6130,7 +6130,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapoint
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -6138,7 +6138,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: cbh_datastore_model_datapointclassificationpermission_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassificationpermission_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassificationpermission
@@ -6146,7 +6146,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassificationpermission
 
 
 --
--- Name: cell_dictionary_cell_name_cell_source_tax_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cell_dictionary_cell_name_cell_source_tax_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cell_dictionary
@@ -6154,7 +6154,7 @@ ALTER TABLE ONLY cell_dictionary
 
 
 --
--- Name: cell_dictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cell_dictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY cell_dictionary
@@ -6162,7 +6162,7 @@ ALTER TABLE ONLY cell_dictionary
 
 
 --
--- Name: chembl_business_model_djangocheatsheet_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_djangocheatsheet_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY chembl_business_model_djangocheatsheet
@@ -6170,7 +6170,7 @@ ALTER TABLE ONLY chembl_business_model_djangocheatsheet
 
 
 --
--- Name: chembl_business_model_imageerrors_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_imageerrors_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY chembl_business_model_imageerrors
@@ -6178,7 +6178,7 @@ ALTER TABLE ONLY chembl_business_model_imageerrors
 
 
 --
--- Name: chembl_business_model_inchierrors_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_inchierrors_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY chembl_business_model_inchierrors
@@ -6186,7 +6186,7 @@ ALTER TABLE ONLY chembl_business_model_inchierrors
 
 
 --
--- Name: chembl_business_model_sdf_originalHash_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_sdf_originalHash_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY chembl_business_model_sdf
@@ -6194,7 +6194,7 @@ ALTER TABLE ONLY chembl_business_model_sdf
 
 
 --
--- Name: chembl_business_model_sdf_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_sdf_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY chembl_business_model_sdf
@@ -6202,7 +6202,7 @@ ALTER TABLE ONLY chembl_business_model_sdf
 
 
 --
--- Name: chembl_id_lookup_entity_id_entity_type_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_id_lookup_entity_id_entity_type_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY chembl_id_lookup
@@ -6210,7 +6210,7 @@ ALTER TABLE ONLY chembl_id_lookup
 
 
 --
--- Name: chembl_id_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_id_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY chembl_id_lookup
@@ -6218,7 +6218,7 @@ ALTER TABLE ONLY chembl_id_lookup
 
 
 --
--- Name: component_class_component_id_protein_class_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_class_component_id_protein_class_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY component_class
@@ -6226,7 +6226,7 @@ ALTER TABLE ONLY component_class
 
 
 --
--- Name: component_class_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_class_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY component_class
@@ -6234,7 +6234,7 @@ ALTER TABLE ONLY component_class
 
 
 --
--- Name: component_domains_domain_id_component_id_start_position_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_domains_domain_id_component_id_start_position_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY component_domains
@@ -6242,7 +6242,7 @@ ALTER TABLE ONLY component_domains
 
 
 --
--- Name: component_domains_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_domains_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY component_domains
@@ -6250,7 +6250,7 @@ ALTER TABLE ONLY component_domains
 
 
 --
--- Name: component_sequences_accession_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_sequences_accession_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY component_sequences
@@ -6258,7 +6258,7 @@ ALTER TABLE ONLY component_sequences
 
 
 --
--- Name: component_sequences_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_sequences_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY component_sequences
@@ -6266,7 +6266,7 @@ ALTER TABLE ONLY component_sequences
 
 
 --
--- Name: component_synonyms_component_id_component_synonym_syn_type_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_synonyms_component_id_component_synonym_syn_type_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY component_synonyms
@@ -6274,7 +6274,7 @@ ALTER TABLE ONLY component_synonyms
 
 
 --
--- Name: component_synonyms_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_synonyms_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY component_synonyms
@@ -6282,7 +6282,7 @@ ALTER TABLE ONLY component_synonyms
 
 
 --
--- Name: compound_images_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_images_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY compound_images
@@ -6290,7 +6290,7 @@ ALTER TABLE ONLY compound_images
 
 
 --
--- Name: compound_mols_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_mols_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY compound_mols
@@ -6298,7 +6298,7 @@ ALTER TABLE ONLY compound_mols
 
 
 --
--- Name: compound_properties_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY compound_properties
@@ -6306,7 +6306,7 @@ ALTER TABLE ONLY compound_properties
 
 
 --
--- Name: compound_records_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY compound_records
@@ -6314,7 +6314,7 @@ ALTER TABLE ONLY compound_records
 
 
 --
--- Name: compound_structures_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_structures_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY compound_structures
@@ -6322,7 +6322,7 @@ ALTER TABLE ONLY compound_structures
 
 
 --
--- Name: compund_structural_alerts_molregno_60c99194344cb310_uniq; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compund_structural_alerts_molregno_60c99194344cb310_uniq; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY compund_structural_alerts
@@ -6330,7 +6330,7 @@ ALTER TABLE ONLY compund_structural_alerts
 
 
 --
--- Name: compund_structural_alerts_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compund_structural_alerts_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY compund_structural_alerts
@@ -6338,7 +6338,7 @@ ALTER TABLE ONLY compund_structural_alerts
 
 
 --
--- Name: confidence_score_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: confidence_score_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY confidence_score_lookup
@@ -6346,7 +6346,7 @@ ALTER TABLE ONLY confidence_score_lookup
 
 
 --
--- Name: corsheaders_corsmodel_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: corsheaders_corsmodel_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY corsheaders_corsmodel
@@ -6354,7 +6354,7 @@ ALTER TABLE ONLY corsheaders_corsmodel
 
 
 --
--- Name: curation_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: curation_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY curation_lookup
@@ -6362,7 +6362,7 @@ ALTER TABLE ONLY curation_lookup
 
 
 --
--- Name: data_validity_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: data_validity_lookup_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY data_validity_lookup
@@ -6370,7 +6370,7 @@ ALTER TABLE ONLY data_validity_lookup
 
 
 --
--- Name: defined_daily_dose_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: defined_daily_dose_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY defined_daily_dose
@@ -6378,7 +6378,7 @@ ALTER TABLE ONLY defined_daily_dose
 
 
 --
--- Name: django_admin_log_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_admin_log_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY django_admin_log
@@ -6386,7 +6386,7 @@ ALTER TABLE ONLY django_admin_log
 
 
 --
--- Name: django_content_type_app_label_model_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_content_type_app_label_model_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY django_content_type
@@ -6394,7 +6394,7 @@ ALTER TABLE ONLY django_content_type
 
 
 --
--- Name: django_content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY django_content_type
@@ -6402,7 +6402,7 @@ ALTER TABLE ONLY django_content_type
 
 
 --
--- Name: django_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY django_migrations
@@ -6410,7 +6410,7 @@ ALTER TABLE ONLY django_migrations
 
 
 --
--- Name: django_session_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_session_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY django_session
@@ -6418,7 +6418,7 @@ ALTER TABLE ONLY django_session
 
 
 --
--- Name: django_site_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_site_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY django_site
@@ -6426,7 +6426,7 @@ ALTER TABLE ONLY django_site
 
 
 --
--- Name: docs_chembl_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_chembl_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY docs
@@ -6434,7 +6434,7 @@ ALTER TABLE ONLY docs
 
 
 --
--- Name: docs_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY docs
@@ -6442,7 +6442,7 @@ ALTER TABLE ONLY docs
 
 
 --
--- Name: docs_pubmed_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_pubmed_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY docs
@@ -6450,7 +6450,7 @@ ALTER TABLE ONLY docs
 
 
 --
--- Name: domains_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: domains_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY domains
@@ -6458,7 +6458,7 @@ ALTER TABLE ONLY domains
 
 
 --
--- Name: drug_mechanism_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: drug_mechanism_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY drug_mechanism
@@ -6466,7 +6466,7 @@ ALTER TABLE ONLY drug_mechanism
 
 
 --
--- Name: flowjs_flowfile_identifier_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: flowjs_flowfile_identifier_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY flowjs_flowfile
@@ -6474,7 +6474,7 @@ ALTER TABLE ONLY flowjs_flowfile
 
 
 --
--- Name: flowjs_flowfile_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: flowjs_flowfile_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY flowjs_flowfile
@@ -6482,7 +6482,7 @@ ALTER TABLE ONLY flowjs_flowfile
 
 
 --
--- Name: flowjs_flowfilechunk_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: flowjs_flowfilechunk_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY flowjs_flowfilechunk
@@ -6490,7 +6490,7 @@ ALTER TABLE ONLY flowjs_flowfilechunk
 
 
 --
--- Name: formulations_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: formulations_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY formulations
@@ -6498,7 +6498,7 @@ ALTER TABLE ONLY formulations
 
 
 --
--- Name: formulations_record_id_product_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: formulations_record_id_product_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY formulations
@@ -6506,7 +6506,7 @@ ALTER TABLE ONLY formulations
 
 
 --
--- Name: frac_classification_level5_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: frac_classification_level5_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY frac_classification
@@ -6514,7 +6514,7 @@ ALTER TABLE ONLY frac_classification
 
 
 --
--- Name: frac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: frac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY frac_classification
@@ -6522,7 +6522,7 @@ ALTER TABLE ONLY frac_classification
 
 
 --
--- Name: hrac_classification_level3_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: hrac_classification_level3_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY hrac_classification
@@ -6530,7 +6530,7 @@ ALTER TABLE ONLY hrac_classification
 
 
 --
--- Name: hrac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: hrac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY hrac_classification
@@ -6538,7 +6538,7 @@ ALTER TABLE ONLY hrac_classification
 
 
 --
--- Name: irac_classification_level4_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: irac_classification_level4_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY irac_classification
@@ -6546,7 +6546,7 @@ ALTER TABLE ONLY irac_classification
 
 
 --
--- Name: irac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: irac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY irac_classification
@@ -6554,7 +6554,7 @@ ALTER TABLE ONLY irac_classification
 
 
 --
--- Name: journal_articles_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY journal_articles
@@ -6562,7 +6562,7 @@ ALTER TABLE ONLY journal_articles
 
 
 --
--- Name: journals_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journals_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY journals
@@ -6570,7 +6570,7 @@ ALTER TABLE ONLY journals
 
 
 --
--- Name: ligand_eff_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: ligand_eff_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY ligand_eff
@@ -6578,7 +6578,7 @@ ALTER TABLE ONLY ligand_eff
 
 
 --
--- Name: mechanism_refs_mec_id_ref_type_ref_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: mechanism_refs_mec_id_ref_type_ref_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY mechanism_refs
@@ -6586,7 +6586,7 @@ ALTER TABLE ONLY mechanism_refs
 
 
 --
--- Name: mechanism_refs_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: mechanism_refs_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY mechanism_refs
@@ -6594,7 +6594,7 @@ ALTER TABLE ONLY mechanism_refs
 
 
 --
--- Name: molecule_atc_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_atc_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_atc_classification
@@ -6602,7 +6602,7 @@ ALTER TABLE ONLY molecule_atc_classification
 
 
 --
--- Name: molecule_dictionary_chebi_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_chebi_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_dictionary
@@ -6610,7 +6610,7 @@ ALTER TABLE ONLY molecule_dictionary
 
 
 --
--- Name: molecule_dictionary_chembl_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_chembl_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_dictionary
@@ -6618,7 +6618,7 @@ ALTER TABLE ONLY molecule_dictionary
 
 
 --
--- Name: molecule_dictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_dictionary
@@ -6626,7 +6626,7 @@ ALTER TABLE ONLY molecule_dictionary
 
 
 --
--- Name: molecule_dictionary_structure_key_project_id_structure_type_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_structure_key_project_id_structure_type_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_dictionary
@@ -6634,7 +6634,7 @@ ALTER TABLE ONLY molecule_dictionary
 
 
 --
--- Name: molecule_frac_classificatio_frac_class_id_219bac5d180a464d_uniq; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_frac_classificatio_frac_class_id_219bac5d180a464d_uniq; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_frac_classification
@@ -6642,7 +6642,7 @@ ALTER TABLE ONLY molecule_frac_classification
 
 
 --
--- Name: molecule_frac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_frac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_frac_classification
@@ -6650,7 +6650,7 @@ ALTER TABLE ONLY molecule_frac_classification
 
 
 --
--- Name: molecule_hierarchy_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hierarchy_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_hierarchy
@@ -6658,7 +6658,7 @@ ALTER TABLE ONLY molecule_hierarchy
 
 
 --
--- Name: molecule_hrac_classificatio_hrac_class_id_3a11664b3e71541b_uniq; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hrac_classificatio_hrac_class_id_3a11664b3e71541b_uniq; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_hrac_classification
@@ -6666,7 +6666,7 @@ ALTER TABLE ONLY molecule_hrac_classification
 
 
 --
--- Name: molecule_hrac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hrac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_hrac_classification
@@ -6674,7 +6674,7 @@ ALTER TABLE ONLY molecule_hrac_classification
 
 
 --
--- Name: molecule_irac_classification_irac_class_id_7cc36d0899bc457_uniq; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_irac_classification_irac_class_id_7cc36d0899bc457_uniq; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_irac_classification
@@ -6682,7 +6682,7 @@ ALTER TABLE ONLY molecule_irac_classification
 
 
 --
--- Name: molecule_irac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_irac_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_irac_classification
@@ -6690,7 +6690,7 @@ ALTER TABLE ONLY molecule_irac_classification
 
 
 --
--- Name: molecule_synonyms_molregno_synonyms_syn_type_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_synonyms_molregno_synonyms_syn_type_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_synonyms
@@ -6698,7 +6698,7 @@ ALTER TABLE ONLY molecule_synonyms
 
 
 --
--- Name: molecule_synonyms_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_synonyms_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY molecule_synonyms
@@ -6706,7 +6706,7 @@ ALTER TABLE ONLY molecule_synonyms
 
 
 --
--- Name: mols_rdkit_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: mols_rdkit_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY mols_rdkit
@@ -6714,7 +6714,7 @@ ALTER TABLE ONLY mols_rdkit
 
 
 --
--- Name: organism_class_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: organism_class_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY organism_class
@@ -6722,7 +6722,7 @@ ALTER TABLE ONLY organism_class
 
 
 --
--- Name: organism_class_tax_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: organism_class_tax_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY organism_class
@@ -6730,7 +6730,7 @@ ALTER TABLE ONLY organism_class
 
 
 --
--- Name: parameter_type_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: parameter_type_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY parameter_type
@@ -6738,7 +6738,7 @@ ALTER TABLE ONLY parameter_type
 
 
 --
--- Name: patient_use_codes_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: patient_use_codes_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY patient_use_codes
@@ -6746,7 +6746,7 @@ ALTER TABLE ONLY patient_use_codes
 
 
 --
--- Name: predicted_binding_domains_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: predicted_binding_domains_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY predicted_binding_domains
@@ -6754,7 +6754,7 @@ ALTER TABLE ONLY predicted_binding_domains
 
 
 --
--- Name: product_patents_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: product_patents_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY product_patents
@@ -6762,7 +6762,7 @@ ALTER TABLE ONLY product_patents
 
 
 --
--- Name: product_patents_product_id_157fc78542006c0_uniq; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: product_patents_product_id_157fc78542006c0_uniq; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY product_patents
@@ -6770,7 +6770,7 @@ ALTER TABLE ONLY product_patents
 
 
 --
--- Name: products_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: products_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY products
@@ -6778,7 +6778,7 @@ ALTER TABLE ONLY products
 
 
 --
--- Name: protein_class_synonyms_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_class_synonyms_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY protein_class_synonyms
@@ -6786,7 +6786,7 @@ ALTER TABLE ONLY protein_class_synonyms
 
 
 --
--- Name: protein_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY protein_classification
@@ -6794,7 +6794,7 @@ ALTER TABLE ONLY protein_classification
 
 
 --
--- Name: protein_family_classification_l1_l2_l3_l4_l5_l6_l7_l8_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_family_classification_l1_l2_l3_l4_l5_l6_l7_l8_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY protein_family_classification
@@ -6802,7 +6802,7 @@ ALTER TABLE ONLY protein_family_classification
 
 
 --
--- Name: protein_family_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_family_classification_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY protein_family_classification
@@ -6810,7 +6810,7 @@ ALTER TABLE ONLY protein_family_classification
 
 
 --
--- Name: protein_family_classification_protein_class_desc_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_family_classification_protein_class_desc_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY protein_family_classification
@@ -6818,7 +6818,7 @@ ALTER TABLE ONLY protein_family_classification
 
 
 --
--- Name: relationship_type_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: relationship_type_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY relationship_type
@@ -6826,7 +6826,7 @@ ALTER TABLE ONLY relationship_type
 
 
 --
--- Name: research_companies_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: research_companies_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY research_companies
@@ -6834,7 +6834,7 @@ ALTER TABLE ONLY research_companies
 
 
 --
--- Name: research_companies_res_stem_id_company_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: research_companies_res_stem_id_company_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY research_companies
@@ -6842,7 +6842,7 @@ ALTER TABLE ONLY research_companies
 
 
 --
--- Name: research_stem_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: research_stem_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY research_stem
@@ -6850,7 +6850,7 @@ ALTER TABLE ONLY research_stem
 
 
 --
--- Name: research_stem_research_stem_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: research_stem_research_stem_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY research_stem
@@ -6858,7 +6858,7 @@ ALTER TABLE ONLY research_stem
 
 
 --
--- Name: site_components_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: site_components_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY site_components
@@ -6866,7 +6866,7 @@ ALTER TABLE ONLY site_components
 
 
 --
--- Name: site_components_site_id_component_id_domain_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: site_components_site_id_component_id_domain_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY site_components
@@ -6874,7 +6874,7 @@ ALTER TABLE ONLY site_components
 
 
 --
--- Name: source_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: source_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY source
@@ -6882,7 +6882,7 @@ ALTER TABLE ONLY source
 
 
 --
--- Name: south_migrationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: south_migrationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY south_migrationhistory
@@ -6890,7 +6890,7 @@ ALTER TABLE ONLY south_migrationhistory
 
 
 --
--- Name: structural_alert_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: structural_alert_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY structural_alert_sets
@@ -6898,7 +6898,7 @@ ALTER TABLE ONLY structural_alert_sets
 
 
 --
--- Name: structural_alert_sets_set_name_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: structural_alert_sets_set_name_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY structural_alert_sets
@@ -6906,7 +6906,7 @@ ALTER TABLE ONLY structural_alert_sets
 
 
 --
--- Name: structural_alerts_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: structural_alerts_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY structural_alerts
@@ -6914,7 +6914,7 @@ ALTER TABLE ONLY structural_alerts
 
 
 --
--- Name: target_components_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_components_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY target_components
@@ -6922,7 +6922,7 @@ ALTER TABLE ONLY target_components
 
 
 --
--- Name: target_dictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY target_dictionary
@@ -6930,7 +6930,7 @@ ALTER TABLE ONLY target_dictionary
 
 
 --
--- Name: target_relations_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_relations_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY target_relations
@@ -6938,7 +6938,7 @@ ALTER TABLE ONLY target_relations
 
 
 --
--- Name: target_type_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_type_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY target_type
@@ -6946,7 +6946,7 @@ ALTER TABLE ONLY target_type
 
 
 --
--- Name: tastypie_apiaccess_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: tastypie_apiaccess_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY tastypie_apiaccess
@@ -6954,7 +6954,7 @@ ALTER TABLE ONLY tastypie_apiaccess
 
 
 --
--- Name: tastypie_apikey_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: tastypie_apikey_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY tastypie_apikey
@@ -6962,7 +6962,7 @@ ALTER TABLE ONLY tastypie_apikey
 
 
 --
--- Name: tastypie_apikey_user_id_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: tastypie_apikey_user_id_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY tastypie_apikey
@@ -6970,7 +6970,7 @@ ALTER TABLE ONLY tastypie_apikey
 
 
 --
--- Name: usan_stems_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: usan_stems_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY usan_stems
@@ -6978,7 +6978,7 @@ ALTER TABLE ONLY usan_stems
 
 
 --
--- Name: usan_stems_stem_subgroup_key; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: usan_stems_stem_subgroup_key; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY usan_stems
@@ -6986,7 +6986,7 @@ ALTER TABLE ONLY usan_stems
 
 
 --
--- Name: version_pkey; Type: CONSTRAINT; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: version_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
 --
 
 ALTER TABLE ONLY version
@@ -6994,1638 +6994,1638 @@ ALTER TABLE ONLY version
 
 
 --
--- Name: action_type_action_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: action_type_action_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX action_type_action_type_like ON action_type USING btree (action_type varchar_pattern_ops);
 
 
 --
--- Name: activities_assay_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_assay_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_assay_id ON activities USING btree (assay_id);
 
 
 --
--- Name: activities_data_validity_comment; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_data_validity_comment; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_data_validity_comment ON activities USING btree (data_validity_comment);
 
 
 --
--- Name: activities_data_validity_comment_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_data_validity_comment_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_data_validity_comment_like ON activities USING btree (data_validity_comment varchar_pattern_ops);
 
 
 --
--- Name: activities_doc_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_doc_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_doc_id ON activities USING btree (doc_id);
 
 
 --
--- Name: activities_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_molregno ON activities USING btree (molregno);
 
 
 --
--- Name: activities_pchembl_value; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_pchembl_value; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_pchembl_value ON activities USING btree (pchembl_value);
 
 
 --
--- Name: activities_published_relation; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_published_relation; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_published_relation ON activities USING btree (published_relation);
 
 
 --
--- Name: activities_published_relation_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_published_relation_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_published_relation_like ON activities USING btree (published_relation varchar_pattern_ops);
 
 
 --
--- Name: activities_published_type; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_published_type; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_published_type ON activities USING btree (published_type);
 
 
 --
--- Name: activities_published_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_published_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_published_type_like ON activities USING btree (published_type varchar_pattern_ops);
 
 
 --
--- Name: activities_published_units; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_published_units; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_published_units ON activities USING btree (published_units);
 
 
 --
--- Name: activities_published_units_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_published_units_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_published_units_like ON activities USING btree (published_units varchar_pattern_ops);
 
 
 --
--- Name: activities_published_value; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_published_value; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_published_value ON activities USING btree (published_value);
 
 
 --
--- Name: activities_record_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_record_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_record_id ON activities USING btree (record_id);
 
 
 --
--- Name: activities_standard_relation; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_standard_relation; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_standard_relation ON activities USING btree (standard_relation);
 
 
 --
--- Name: activities_standard_relation_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_standard_relation_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_standard_relation_like ON activities USING btree (standard_relation varchar_pattern_ops);
 
 
 --
--- Name: activities_standard_type; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_standard_type; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_standard_type ON activities USING btree (standard_type);
 
 
 --
--- Name: activities_standard_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_standard_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_standard_type_like ON activities USING btree (standard_type varchar_pattern_ops);
 
 
 --
--- Name: activities_standard_units; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_standard_units; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_standard_units ON activities USING btree (standard_units);
 
 
 --
--- Name: activities_standard_units_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_standard_units_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_standard_units_like ON activities USING btree (standard_units varchar_pattern_ops);
 
 
 --
--- Name: activities_standard_value; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: activities_standard_value; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX activities_standard_value ON activities USING btree (standard_value);
 
 
 --
--- Name: assay_parameters_assay_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_parameters_assay_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assay_parameters_assay_id ON assay_parameters USING btree (assay_id);
 
 
 --
--- Name: assay_parameters_parameter_type; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_parameters_parameter_type; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assay_parameters_parameter_type ON assay_parameters USING btree (parameter_type);
 
 
 --
--- Name: assay_parameters_parameter_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_parameters_parameter_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assay_parameters_parameter_type_like ON assay_parameters USING btree (parameter_type varchar_pattern_ops);
 
 
 --
--- Name: assay_type_assay_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assay_type_assay_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assay_type_assay_type_like ON assay_type USING btree (assay_type varchar_pattern_ops);
 
 
 --
--- Name: assays_assay_source; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_assay_source; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_assay_source ON assays USING btree (assay_source);
 
 
 --
--- Name: assays_assay_source_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_assay_source_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_assay_source_like ON assays USING btree (assay_source varchar_pattern_ops);
 
 
 --
--- Name: assays_assay_type; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_assay_type; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_assay_type ON assays USING btree (assay_type);
 
 
 --
--- Name: assays_assay_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_assay_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_assay_type_like ON assays USING btree (assay_type varchar_pattern_ops);
 
 
 --
--- Name: assays_bao_format; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_bao_format; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_bao_format ON assays USING btree (bao_format);
 
 
 --
--- Name: assays_bao_format_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_bao_format_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_bao_format_like ON assays USING btree (bao_format varchar_pattern_ops);
 
 
 --
--- Name: assays_cell_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_cell_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_cell_id ON assays USING btree (cell_id);
 
 
 --
--- Name: assays_chembl_id_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_chembl_id_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_chembl_id_like ON assays USING btree (chembl_id varchar_pattern_ops);
 
 
 --
--- Name: assays_confidence_score; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_confidence_score; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_confidence_score ON assays USING btree (confidence_score);
 
 
 --
--- Name: assays_curated_by; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_curated_by; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_curated_by ON assays USING btree (curated_by);
 
 
 --
--- Name: assays_curated_by_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_curated_by_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_curated_by_like ON assays USING btree (curated_by varchar_pattern_ops);
 
 
 --
--- Name: assays_doc_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_doc_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_doc_id ON assays USING btree (doc_id);
 
 
 --
--- Name: assays_relationship_type; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_relationship_type; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_relationship_type ON assays USING btree (relationship_type);
 
 
 --
--- Name: assays_relationship_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_relationship_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_relationship_type_like ON assays USING btree (relationship_type varchar_pattern_ops);
 
 
 --
--- Name: assays_src_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_src_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_src_id ON assays USING btree (src_id);
 
 
 --
--- Name: assays_tid; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: assays_tid; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX assays_tid ON assays USING btree (tid);
 
 
 --
--- Name: atc_classification_level5_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: atc_classification_level5_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX atc_classification_level5_like ON atc_classification USING btree (level5 varchar_pattern_ops);
 
 
 --
--- Name: auth_group_name_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group_name_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_group_name_like ON auth_group USING btree (name varchar_pattern_ops);
 
 
 --
--- Name: auth_group_permissions_group_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group_permissions_group_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_group_permissions_group_id ON auth_group_permissions USING btree (group_id);
 
 
 --
--- Name: auth_group_permissions_permission_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_group_permissions_permission_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_group_permissions_permission_id ON auth_group_permissions USING btree (permission_id);
 
 
 --
--- Name: auth_permission_content_type_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_permission_content_type_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_permission_content_type_id ON auth_permission USING btree (content_type_id);
 
 
 --
--- Name: auth_user_groups_group_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_groups_group_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_user_groups_group_id ON auth_user_groups USING btree (group_id);
 
 
 --
--- Name: auth_user_groups_user_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_groups_user_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_user_groups_user_id ON auth_user_groups USING btree (user_id);
 
 
 --
--- Name: auth_user_user_permissions_permission_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_user_permissions_permission_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_user_user_permissions_permission_id ON auth_user_user_permissions USING btree (permission_id);
 
 
 --
--- Name: auth_user_user_permissions_user_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_user_permissions_user_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_user_user_permissions_user_id ON auth_user_user_permissions USING btree (user_id);
 
 
 --
--- Name: auth_user_username_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: auth_user_username_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX auth_user_username_like ON auth_user USING btree (username varchar_pattern_ops);
 
 
 --
--- Name: binding_sites_tid; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: binding_sites_tid; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX binding_sites_tid ON binding_sites USING btree (tid);
 
 
 --
--- Name: biotherapeutic_components_component_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: biotherapeutic_components_component_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX biotherapeutic_components_component_id ON biotherapeutic_components USING btree (component_id);
 
 
 --
--- Name: biotherapeutic_components_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: biotherapeutic_components_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX biotherapeutic_components_molregno ON biotherapeutic_components USING btree (molregno);
 
 
 --
--- Name: cbh_chembl_id_generator_cbh_structure_key_21074c3267049c69_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_id_generator_cbh_structure_key_21074c3267049c69_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_id_generator_cbh_structure_key_21074c3267049c69_like ON cbh_chembl_id_generator_cbhcompoundid USING btree (structure_key varchar_pattern_ops);
 
 
 --
--- Name: cbh_chembl_id_generator_cbhco_assigned_id_38767193abd521fa_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_id_generator_cbhco_assigned_id_38767193abd521fa_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_id_generator_cbhco_assigned_id_38767193abd521fa_like ON cbh_chembl_id_generator_cbhcompoundid USING btree (assigned_id varchar_pattern_ops);
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_created_by; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_created_by; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_cbhcompoundbatch_created_by ON cbh_chembl_model_extension_cbhcompoundbatch USING btree (created_by);
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_created_by_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_created_by_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_cbhcompoundbatch_created_by_like ON cbh_chembl_model_extension_cbhcompoundbatch USING btree (created_by varchar_pattern_ops);
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_project_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_project_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_cbhcompoundbatch_project_id ON cbh_chembl_model_extension_cbhcompoundbatch USING btree (project_id);
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_related_molregno_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_related_molregno_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_cbhcompoundbatch_related_molregno_id ON cbh_chembl_model_extension_cbhcompoundbatch USING btree (related_molregno_id);
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_b098ad43; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_b098ad43; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_cbhcompoundmultiplebatch_b098ad43 ON cbh_chembl_model_extension_cbhcompoundmultiplebatch USING btree (project_id);
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_created7592; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_created7592; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_cbhcompoundmultiplebatch_created7592 ON cbh_chembl_model_extension_cbhcompoundmultiplebatch USING btree (created_by varchar_pattern_ops);
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_created_by; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_cbhcompoundmultiplebatch_created_by; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_cbhcompoundmultiplebatch_created_by ON cbh_chembl_model_extension_cbhcompoundmultiplebatch USING btree (created_by);
 
 
 --
--- Name: cbh_chembl_model_extension_customfieldconfig_created_by_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_customfieldconfig_created_by_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_customfieldconfig_created_by_id ON cbh_core_model_customfieldconfig USING btree (created_by_id);
 
 
 --
--- Name: cbh_chembl_model_extension_customfieldconfig_name_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_customfieldconfig_name_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_customfieldconfig_name_like ON cbh_core_model_customfieldconfig USING btree (name varchar_pattern_ops);
 
 
 --
--- Name: cbh_chembl_model_extension_pinnedcustomfield_custom_field_c65b2; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_pinnedcustomfield_custom_field_c65b2; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_pinnedcustomfield_custom_field_c65b2 ON cbh_core_model_pinnedcustomfield USING btree (custom_field_config_id);
 
 
 --
--- Name: cbh_chembl_model_extension_project_9894c25e; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_project_9894c25e; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_project_9894c25e ON cbh_core_model_project USING btree (project_type_id);
 
 
 --
--- Name: cbh_chembl_model_extension_project_created_by_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_project_created_by_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_project_created_by_id ON cbh_core_model_project USING btree (created_by_id);
 
 
 --
--- Name: cbh_chembl_model_extension_project_f1803abb; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_project_f1803abb; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_project_f1803abb ON cbh_core_model_project USING btree (custom_field_config_id);
 
 
 --
--- Name: cbh_chembl_model_extension_project_name; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_project_name; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_project_name ON cbh_core_model_project USING btree (name);
 
 
 --
--- Name: cbh_chembl_model_extension_project_name_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_project_name_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_project_name_like ON cbh_core_model_project USING btree (name varchar_pattern_ops);
 
 
 --
--- Name: cbh_chembl_model_extension_project_project_key_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_project_project_key_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_project_project_key_like ON cbh_core_model_project USING btree (project_key varchar_pattern_ops);
 
 
 --
--- Name: cbh_chembl_model_extension_projecttyp_name_2d2c59eaa8bbe91_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_projecttyp_name_2d2c59eaa8bbe91_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_projecttyp_name_2d2c59eaa8bbe91_like ON cbh_core_model_projecttype USING btree (name varchar_pattern_ops);
 
 
 --
--- Name: cbh_chembl_model_extension_projecttype_b068931c; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_chembl_model_extension_projecttype_b068931c; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_chembl_model_extension_projecttype_b068931c ON cbh_core_model_projecttype USING btree (name);
 
 
 --
--- Name: cbh_core_model_customfieldconfig_7470d5e5; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_customfieldconfig_7470d5e5; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_customfieldconfig_7470d5e5 ON cbh_core_model_customfieldconfig USING btree (data_type_id);
 
 
 --
--- Name: cbh_core_model_dataformconfig_092d6e83; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig_092d6e83; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_dataformconfig_092d6e83 ON cbh_core_model_dataformconfig USING btree (l0_id);
 
 
 --
--- Name: cbh_core_model_dataformconfig_aa4011c1; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig_aa4011c1; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_dataformconfig_aa4011c1 ON cbh_core_model_dataformconfig USING btree (l1_id);
 
 
 --
--- Name: cbh_core_model_dataformconfig_dae35287; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig_dae35287; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_dataformconfig_dae35287 ON cbh_core_model_dataformconfig USING btree (l4_id);
 
 
 --
--- Name: cbh_core_model_dataformconfig_e8a86cd2; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig_e8a86cd2; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_dataformconfig_e8a86cd2 ON cbh_core_model_dataformconfig USING btree (l3_id);
 
 
 --
--- Name: cbh_core_model_dataformconfig_e93cb7eb; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig_e93cb7eb; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_dataformconfig_e93cb7eb ON cbh_core_model_dataformconfig USING btree (created_by_id);
 
 
 --
--- Name: cbh_core_model_dataformconfig_eb84092f; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_dataformconfig_eb84092f; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_dataformconfig_eb84092f ON cbh_core_model_dataformconfig USING btree (l2_id);
 
 
 --
--- Name: cbh_core_model_datatype_name_42cdcb1fec531e1f_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_datatype_name_42cdcb1fec531e1f_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_datatype_name_42cdcb1fec531e1f_like ON cbh_core_model_datatype USING btree (name varchar_pattern_ops);
 
 
 --
--- Name: cbh_core_model_project_enabled_forms_b098ad43; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_project_enabled_forms_b098ad43; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_project_enabled_forms_b098ad43 ON cbh_core_model_project_enabled_forms USING btree (project_id);
 
 
 --
--- Name: cbh_core_model_project_enabled_forms_e48bb7be; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_core_model_project_enabled_forms_e48bb7be; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_core_model_project_enabled_forms_e48bb7be ON cbh_core_model_project_enabled_forms USING btree (dataformconfig_id);
 
 
 --
--- Name: cbh_datastore_model_datapoint_e93cb7eb; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapoint_e93cb7eb; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapoint_e93cb7eb ON cbh_datastore_model_datapoint USING btree (created_by_id);
 
 
 --
--- Name: cbh_datastore_model_datapoint_f1803abb; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapoint_f1803abb; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapoint_f1803abb ON cbh_datastore_model_datapoint USING btree (custom_field_config_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_092d6e83; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification_092d6e83; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassification_092d6e83 ON cbh_datastore_model_datapointclassification USING btree (l0_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_69c6136a; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification_69c6136a; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassification_69c6136a ON cbh_datastore_model_datapointclassification USING btree (data_form_config_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_aa4011c1; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification_aa4011c1; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassification_aa4011c1 ON cbh_datastore_model_datapointclassification USING btree (l1_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_dae35287; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification_dae35287; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassification_dae35287 ON cbh_datastore_model_datapointclassification USING btree (l4_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_e8a86cd2; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification_e8a86cd2; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassification_e8a86cd2 ON cbh_datastore_model_datapointclassification USING btree (l3_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_e93cb7eb; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification_e93cb7eb; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassification_e93cb7eb ON cbh_datastore_model_datapointclassification USING btree (created_by_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassification_eb84092f; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassification_eb84092f; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassification_eb84092f ON cbh_datastore_model_datapointclassification USING btree (l2_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassificationpermission_5a7f35b1; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassificationpermission_5a7f35b1; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassificationpermission_5a7f35b1 ON cbh_datastore_model_datapointclassificationpermission USING btree (data_point_classification_id);
 
 
 --
--- Name: cbh_datastore_model_datapointclassificationpermission_b098ad43; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cbh_datastore_model_datapointclassificationpermission_b098ad43; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cbh_datastore_model_datapointclassificationpermission_b098ad43 ON cbh_datastore_model_datapointclassificationpermission USING btree (project_id);
 
 
 --
--- Name: cell_dictionary_2a7a6dd2; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: cell_dictionary_2a7a6dd2; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX cell_dictionary_2a7a6dd2 ON cell_dictionary USING btree (chembl_id);
 
 
 --
--- Name: chembl_business_model_djangocheatsheet_slugField; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_djangocheatsheet_slugField; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX "chembl_business_model_djangocheatsheet_slugField" ON chembl_business_model_djangocheatsheet USING btree ("slugField");
 
 
 --
--- Name: chembl_business_model_djangocheatsheet_slugField_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_djangocheatsheet_slugField_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX "chembl_business_model_djangocheatsheet_slugField_like" ON chembl_business_model_djangocheatsheet USING btree ("slugField" varchar_pattern_ops);
 
 
 --
--- Name: chembl_business_model_imageerrors_image_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_imageerrors_image_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX chembl_business_model_imageerrors_image_id ON chembl_business_model_imageerrors USING btree (image_id);
 
 
 --
--- Name: chembl_business_model_inchierrors_structure_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_inchierrors_structure_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX chembl_business_model_inchierrors_structure_id ON chembl_business_model_inchierrors USING btree (structure_id);
 
 
 --
--- Name: chembl_business_model_sdf_cleanHash_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_sdf_cleanHash_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX "chembl_business_model_sdf_cleanHash_like" ON chembl_business_model_sdf USING btree ("cleanHash" varchar_pattern_ops);
 
 
 --
--- Name: chembl_business_model_sdf_originalHash_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_business_model_sdf_originalHash_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX "chembl_business_model_sdf_originalHash_like" ON chembl_business_model_sdf USING btree ("originalHash" varchar_pattern_ops);
 
 
 --
--- Name: chembl_id_lookup_chembl_id_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: chembl_id_lookup_chembl_id_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX chembl_id_lookup_chembl_id_like ON chembl_id_lookup USING btree (chembl_id varchar_pattern_ops);
 
 
 --
--- Name: component_class_component_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_class_component_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX component_class_component_id ON component_class USING btree (component_id);
 
 
 --
--- Name: component_class_protein_class_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_class_protein_class_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX component_class_protein_class_id ON component_class USING btree (protein_class_id);
 
 
 --
--- Name: component_domains_component_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_domains_component_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX component_domains_component_id ON component_domains USING btree (component_id);
 
 
 --
--- Name: component_domains_domain_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_domains_domain_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX component_domains_domain_id ON component_domains USING btree (domain_id);
 
 
 --
--- Name: component_sequences_accession_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_sequences_accession_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX component_sequences_accession_like ON component_sequences USING btree (accession varchar_pattern_ops);
 
 
 --
--- Name: component_synonyms_component_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: component_synonyms_component_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX component_synonyms_component_id ON component_synonyms USING btree (component_id);
 
 
 --
--- Name: compound_properties_alogp; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties_alogp; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_properties_alogp ON compound_properties USING btree (alogp);
 
 
 --
--- Name: compound_properties_hba; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties_hba; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_properties_hba ON compound_properties USING btree (hba);
 
 
 --
--- Name: compound_properties_hbd; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties_hbd; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_properties_hbd ON compound_properties USING btree (hbd);
 
 
 --
--- Name: compound_properties_mw_freebase; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties_mw_freebase; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_properties_mw_freebase ON compound_properties USING btree (mw_freebase);
 
 
 --
--- Name: compound_properties_num_ro5_violations; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties_num_ro5_violations; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_properties_num_ro5_violations ON compound_properties USING btree (num_ro5_violations);
 
 
 --
--- Name: compound_properties_psa; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties_psa; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_properties_psa ON compound_properties USING btree (psa);
 
 
 --
--- Name: compound_properties_rtb; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_properties_rtb; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_properties_rtb ON compound_properties USING btree (rtb);
 
 
 --
--- Name: compound_records_compound_key; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records_compound_key; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_records_compound_key ON compound_records USING btree (compound_key);
 
 
 --
--- Name: compound_records_compound_key_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records_compound_key_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_records_compound_key_like ON compound_records USING btree (compound_key varchar_pattern_ops);
 
 
 --
--- Name: compound_records_doc_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records_doc_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_records_doc_id ON compound_records USING btree (doc_id);
 
 
 --
--- Name: compound_records_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_records_molregno ON compound_records USING btree (molregno);
 
 
 --
--- Name: compound_records_src_compound_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records_src_compound_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_records_src_compound_id ON compound_records USING btree (src_compound_id);
 
 
 --
--- Name: compound_records_src_compound_id_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records_src_compound_id_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_records_src_compound_id_like ON compound_records USING btree (src_compound_id varchar_pattern_ops);
 
 
 --
--- Name: compound_records_src_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_records_src_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_records_src_id ON compound_records USING btree (src_id);
 
 
 --
--- Name: compound_structures_standard_inchi_key; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_structures_standard_inchi_key; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_structures_standard_inchi_key ON compound_structures USING btree (standard_inchi_key);
 
 
 --
--- Name: compound_structures_standard_inchi_key_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compound_structures_standard_inchi_key_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compound_structures_standard_inchi_key_like ON compound_structures USING btree (standard_inchi_key varchar_pattern_ops);
 
 
 --
--- Name: compund_structural_alerts_00d9daf3; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compund_structural_alerts_00d9daf3; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compund_structural_alerts_00d9daf3 ON compund_structural_alerts USING btree (molregno);
 
 
 --
--- Name: compund_structural_alerts_d58cc5c6; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: compund_structural_alerts_d58cc5c6; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX compund_structural_alerts_d58cc5c6 ON compund_structural_alerts USING btree (alert_id);
 
 
 --
--- Name: curation_lookup_curated_by_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: curation_lookup_curated_by_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX curation_lookup_curated_by_like ON curation_lookup USING btree (curated_by varchar_pattern_ops);
 
 
 --
--- Name: data_validity_lookup_data_validity_comment_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: data_validity_lookup_data_validity_comment_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX data_validity_lookup_data_validity_comment_like ON data_validity_lookup USING btree (data_validity_comment varchar_pattern_ops);
 
 
 --
--- Name: defined_daily_dose_atc_code; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: defined_daily_dose_atc_code; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX defined_daily_dose_atc_code ON defined_daily_dose USING btree (atc_code);
 
 
 --
--- Name: defined_daily_dose_atc_code_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: defined_daily_dose_atc_code_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX defined_daily_dose_atc_code_like ON defined_daily_dose USING btree (atc_code varchar_pattern_ops);
 
 
 --
--- Name: django_admin_log_content_type_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_admin_log_content_type_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX django_admin_log_content_type_id ON django_admin_log USING btree (content_type_id);
 
 
 --
--- Name: django_admin_log_user_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_admin_log_user_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX django_admin_log_user_id ON django_admin_log USING btree (user_id);
 
 
 --
--- Name: django_session_expire_date; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_session_expire_date; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX django_session_expire_date ON django_session USING btree (expire_date);
 
 
 --
--- Name: django_session_session_key_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: django_session_session_key_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX django_session_session_key_like ON django_session USING btree (session_key varchar_pattern_ops);
 
 
 --
--- Name: docs_chembl_id_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_chembl_id_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_chembl_id_like ON docs USING btree (chembl_id varchar_pattern_ops);
 
 
 --
--- Name: docs_issue; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_issue; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_issue ON docs USING btree (issue);
 
 
 --
--- Name: docs_issue_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_issue_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_issue_like ON docs USING btree (issue varchar_pattern_ops);
 
 
 --
--- Name: docs_journal; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_journal; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_journal ON docs USING btree (journal);
 
 
 --
--- Name: docs_journal_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_journal_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_journal_id ON docs USING btree (journal_id);
 
 
 --
--- Name: docs_journal_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_journal_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_journal_like ON docs USING btree (journal varchar_pattern_ops);
 
 
 --
--- Name: docs_volume; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_volume; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_volume ON docs USING btree (volume);
 
 
 --
--- Name: docs_volume_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_volume_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_volume_like ON docs USING btree (volume varchar_pattern_ops);
 
 
 --
--- Name: docs_year; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: docs_year; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX docs_year ON docs USING btree (year);
 
 
 --
--- Name: drug_mechanism_action_type; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: drug_mechanism_action_type; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX drug_mechanism_action_type ON drug_mechanism USING btree (action_type);
 
 
 --
--- Name: drug_mechanism_action_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: drug_mechanism_action_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX drug_mechanism_action_type_like ON drug_mechanism USING btree (action_type varchar_pattern_ops);
 
 
 --
--- Name: drug_mechanism_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: drug_mechanism_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX drug_mechanism_molregno ON drug_mechanism USING btree (molregno);
 
 
 --
--- Name: drug_mechanism_record_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: drug_mechanism_record_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX drug_mechanism_record_id ON drug_mechanism USING btree (record_id);
 
 
 --
--- Name: drug_mechanism_site_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: drug_mechanism_site_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX drug_mechanism_site_id ON drug_mechanism USING btree (site_id);
 
 
 --
--- Name: drug_mechanism_tid; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: drug_mechanism_tid; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX drug_mechanism_tid ON drug_mechanism USING btree (tid);
 
 
 --
--- Name: flowjs_flowfile_identifier_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: flowjs_flowfile_identifier_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX flowjs_flowfile_identifier_like ON flowjs_flowfile USING btree (identifier varchar_pattern_ops);
 
 
 --
--- Name: flowjs_flowfilechunk_parent_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: flowjs_flowfilechunk_parent_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX flowjs_flowfilechunk_parent_id ON flowjs_flowfilechunk USING btree (parent_id);
 
 
 --
--- Name: formulations_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: formulations_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX formulations_molregno ON formulations USING btree (molregno);
 
 
 --
--- Name: formulations_product_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: formulations_product_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX formulations_product_id ON formulations USING btree (product_id);
 
 
 --
--- Name: formulations_product_id_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: formulations_product_id_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX formulations_product_id_like ON formulations USING btree (product_id varchar_pattern_ops);
 
 
 --
--- Name: formulations_record_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: formulations_record_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX formulations_record_id ON formulations USING btree (record_id);
 
 
 --
--- Name: frac_classification_level5_27b24744c9a2ac6c_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: frac_classification_level5_27b24744c9a2ac6c_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX frac_classification_level5_27b24744c9a2ac6c_like ON frac_classification USING btree (level5 varchar_pattern_ops);
 
 
 --
--- Name: hrac_classification_level3_78a90b98e8c894b0_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: hrac_classification_level3_78a90b98e8c894b0_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX hrac_classification_level3_78a90b98e8c894b0_like ON hrac_classification USING btree (level3 varchar_pattern_ops);
 
 
 --
--- Name: irac_classification_level4_1ca143c060060f24_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: irac_classification_level4_1ca143c060060f24_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX irac_classification_level4_1ca143c060060f24_like ON irac_classification USING btree (level4 varchar_pattern_ops);
 
 
 --
--- Name: journal_articles_day; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_day; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_day ON journal_articles USING btree (day);
 
 
 --
--- Name: journal_articles_first_page; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_first_page; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_first_page ON journal_articles USING btree (first_page);
 
 
 --
--- Name: journal_articles_first_page_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_first_page_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_first_page_like ON journal_articles USING btree (first_page varchar_pattern_ops);
 
 
 --
--- Name: journal_articles_issue; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_issue; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_issue ON journal_articles USING btree (issue);
 
 
 --
--- Name: journal_articles_journal_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_journal_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_journal_id ON journal_articles USING btree (journal_id);
 
 
 --
--- Name: journal_articles_last_page; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_last_page; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_last_page ON journal_articles USING btree (last_page);
 
 
 --
--- Name: journal_articles_last_page_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_last_page_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_last_page_like ON journal_articles USING btree (last_page varchar_pattern_ops);
 
 
 --
--- Name: journal_articles_month; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_month; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_month ON journal_articles USING btree (month);
 
 
 --
--- Name: journal_articles_pagination; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_pagination; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_pagination ON journal_articles USING btree (pagination);
 
 
 --
--- Name: journal_articles_pagination_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_pagination_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_pagination_like ON journal_articles USING btree (pagination varchar_pattern_ops);
 
 
 --
--- Name: journal_articles_pubmed_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_pubmed_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_pubmed_id ON journal_articles USING btree (pubmed_id);
 
 
 --
--- Name: journal_articles_volume; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_volume; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_volume ON journal_articles USING btree (volume);
 
 
 --
--- Name: journal_articles_year; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: journal_articles_year; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX journal_articles_year ON journal_articles USING btree (year);
 
 
 --
--- Name: mechanism_refs_mec_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: mechanism_refs_mec_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX mechanism_refs_mec_id ON mechanism_refs USING btree (mec_id);
 
 
 --
--- Name: molecule_atc_classification_level5; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_atc_classification_level5; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_atc_classification_level5 ON molecule_atc_classification USING btree (level5);
 
 
 --
--- Name: molecule_atc_classification_level5_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_atc_classification_level5_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_atc_classification_level5_like ON molecule_atc_classification USING btree (level5 varchar_pattern_ops);
 
 
 --
--- Name: molecule_atc_classification_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_atc_classification_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_atc_classification_molregno ON molecule_atc_classification USING btree (molregno);
 
 
 --
--- Name: molecule_dictionary_chembl_id_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_chembl_id_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_chembl_id_like ON molecule_dictionary USING btree (chembl_id varchar_pattern_ops);
 
 
 --
--- Name: molecule_dictionary_created_by_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_created_by_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_created_by_id ON molecule_dictionary USING btree (created_by_id);
 
 
 --
--- Name: molecule_dictionary_forced_reg_index; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_forced_reg_index; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_forced_reg_index ON molecule_dictionary USING btree (forced_reg_index);
 
 
 --
--- Name: molecule_dictionary_max_phase; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_max_phase; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_max_phase ON molecule_dictionary USING btree (max_phase);
 
 
 --
--- Name: molecule_dictionary_pref_name; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_pref_name; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_pref_name ON molecule_dictionary USING btree (pref_name);
 
 
 --
--- Name: molecule_dictionary_pref_name_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_pref_name_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_pref_name_like ON molecule_dictionary USING btree (pref_name varchar_pattern_ops);
 
 
 --
--- Name: molecule_dictionary_project_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_project_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_project_id ON molecule_dictionary USING btree (project_id);
 
 
 --
--- Name: molecule_dictionary_structure_key; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_structure_key; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_structure_key ON molecule_dictionary USING btree (structure_key);
 
 
 --
--- Name: molecule_dictionary_structure_key_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_structure_key_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_structure_key_like ON molecule_dictionary USING btree (structure_key varchar_pattern_ops);
 
 
 --
--- Name: molecule_dictionary_therapeutic_flag; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_dictionary_therapeutic_flag; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_dictionary_therapeutic_flag ON molecule_dictionary USING btree (therapeutic_flag);
 
 
 --
--- Name: molecule_frac_classification_00d9daf3; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_frac_classification_00d9daf3; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_frac_classification_00d9daf3 ON molecule_frac_classification USING btree (molregno);
 
 
 --
--- Name: molecule_frac_classification_e27e5fca; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_frac_classification_e27e5fca; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_frac_classification_e27e5fca ON molecule_frac_classification USING btree (frac_class_id);
 
 
 --
--- Name: molecule_hierarchy_active_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hierarchy_active_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_hierarchy_active_molregno ON molecule_hierarchy USING btree (active_molregno);
 
 
 --
--- Name: molecule_hierarchy_parent_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hierarchy_parent_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_hierarchy_parent_molregno ON molecule_hierarchy USING btree (parent_molregno);
 
 
 --
--- Name: molecule_hrac_classification_00d9daf3; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hrac_classification_00d9daf3; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_hrac_classification_00d9daf3 ON molecule_hrac_classification USING btree (molregno);
 
 
 --
--- Name: molecule_hrac_classification_2c2181d0; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_hrac_classification_2c2181d0; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_hrac_classification_2c2181d0 ON molecule_hrac_classification USING btree (hrac_class_id);
 
 
 --
--- Name: molecule_irac_classification_00d9daf3; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_irac_classification_00d9daf3; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_irac_classification_00d9daf3 ON molecule_irac_classification USING btree (molregno);
 
 
 --
--- Name: molecule_irac_classification_395e6479; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_irac_classification_395e6479; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_irac_classification_395e6479 ON molecule_irac_classification USING btree (irac_class_id);
 
 
 --
--- Name: molecule_synonyms_molregno; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_synonyms_molregno; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_synonyms_molregno ON molecule_synonyms USING btree (molregno);
 
 
 --
--- Name: molecule_synonyms_res_stem_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: molecule_synonyms_res_stem_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX molecule_synonyms_res_stem_id ON molecule_synonyms USING btree (res_stem_id);
 
 
 --
--- Name: parameter_type_parameter_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: parameter_type_parameter_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX parameter_type_parameter_type_like ON parameter_type USING btree (parameter_type varchar_pattern_ops);
 
 
 --
--- Name: patient_use_codes_patent_use_code_20e28d2aee0440eb_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: patient_use_codes_patent_use_code_20e28d2aee0440eb_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX patient_use_codes_patent_use_code_20e28d2aee0440eb_like ON patient_use_codes USING btree (patent_use_code varchar_pattern_ops);
 
 
 --
--- Name: predicted_binding_domains_activity_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: predicted_binding_domains_activity_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX predicted_binding_domains_activity_id ON predicted_binding_domains USING btree (activity_id);
 
 
 --
--- Name: predicted_binding_domains_site_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: predicted_binding_domains_site_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX predicted_binding_domains_site_id ON predicted_binding_domains USING btree (site_id);
 
 
 --
--- Name: product_patents_1d9aed70; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: product_patents_1d9aed70; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX product_patents_1d9aed70 ON product_patents USING btree (patent_use_code);
 
 
 --
--- Name: product_patents_9bea82de; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: product_patents_9bea82de; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX product_patents_9bea82de ON product_patents USING btree (product_id);
 
 
 --
--- Name: product_patents_patent_use_code_6c64608df73e677e_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: product_patents_patent_use_code_6c64608df73e677e_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX product_patents_patent_use_code_6c64608df73e677e_like ON product_patents USING btree (patent_use_code varchar_pattern_ops);
 
 
 --
--- Name: products_product_id_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: products_product_id_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX products_product_id_like ON products USING btree (product_id varchar_pattern_ops);
 
 
 --
--- Name: protein_class_synonyms_protein_class_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_class_synonyms_protein_class_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX protein_class_synonyms_protein_class_id ON protein_class_synonyms USING btree (protein_class_id);
 
 
 --
--- Name: protein_family_classification_protein_class_desc_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: protein_family_classification_protein_class_desc_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX protein_family_classification_protein_class_desc_like ON protein_family_classification USING btree (protein_class_desc varchar_pattern_ops);
 
 
 --
--- Name: rdkit_mol_idx; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: rdkit_mol_idx; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX rdkit_mol_idx ON compound_mols USING gist (ctab);
 
 
 --
--- Name: relationship_type_relationship_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: relationship_type_relationship_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX relationship_type_relationship_type_like ON relationship_type USING btree (relationship_type varchar_pattern_ops);
 
 
 --
--- Name: research_companies_res_stem_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: research_companies_res_stem_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX research_companies_res_stem_id ON research_companies USING btree (res_stem_id);
 
 
 --
--- Name: research_stem_research_stem_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: research_stem_research_stem_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX research_stem_research_stem_like ON research_stem USING btree (research_stem varchar_pattern_ops);
 
 
 --
--- Name: site_components_component_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: site_components_component_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX site_components_component_id ON site_components USING btree (component_id);
 
 
 --
--- Name: site_components_domain_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: site_components_domain_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX site_components_domain_id ON site_components USING btree (domain_id);
 
 
 --
--- Name: site_components_site_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: site_components_site_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX site_components_site_id ON site_components USING btree (site_id);
 
 
 --
--- Name: structural_alert_sets_set_name_57160719021904be_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: structural_alert_sets_set_name_57160719021904be_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX structural_alert_sets_set_name_57160719021904be_like ON structural_alert_sets USING btree (set_name varchar_pattern_ops);
 
 
 --
--- Name: structural_alerts_c9d598a4; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: structural_alerts_c9d598a4; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX structural_alerts_c9d598a4 ON structural_alerts USING btree (alert_set_id);
 
 
 --
--- Name: target_components_component_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_components_component_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_components_component_id ON target_components USING btree (component_id);
 
 
 --
--- Name: target_components_tid; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_components_tid; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_components_tid ON target_components USING btree (tid);
 
 
 --
--- Name: target_dictionary_chembl_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_chembl_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_chembl_id ON target_dictionary USING btree (chembl_id);
 
 
 --
--- Name: target_dictionary_chembl_id_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_chembl_id_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_chembl_id_like ON target_dictionary USING btree (chembl_id varchar_pattern_ops);
 
 
 --
--- Name: target_dictionary_organism; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_organism; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_organism ON target_dictionary USING btree (organism);
 
 
 --
--- Name: target_dictionary_organism_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_organism_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_organism_like ON target_dictionary USING btree (organism varchar_pattern_ops);
 
 
 --
--- Name: target_dictionary_pref_name; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_pref_name; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_pref_name ON target_dictionary USING btree (pref_name);
 
 
 --
--- Name: target_dictionary_pref_name_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_pref_name_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_pref_name_like ON target_dictionary USING btree (pref_name varchar_pattern_ops);
 
 
 --
--- Name: target_dictionary_target_type; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_target_type; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_target_type ON target_dictionary USING btree (target_type);
 
 
 --
--- Name: target_dictionary_target_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_target_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_target_type_like ON target_dictionary USING btree (target_type varchar_pattern_ops);
 
 
 --
--- Name: target_dictionary_tax_id; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_dictionary_tax_id; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_dictionary_tax_id ON target_dictionary USING btree (tax_id);
 
 
 --
--- Name: target_relations_related_tid; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_relations_related_tid; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_relations_related_tid ON target_relations USING btree (related_tid);
 
 
 --
--- Name: target_relations_tid; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_relations_tid; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_relations_tid ON target_relations USING btree (tid);
 
 
 --
--- Name: target_type_target_type_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: target_type_target_type_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX target_type_target_type_like ON target_type USING btree (target_type varchar_pattern_ops);
 
 
 --
--- Name: tastypie_apikey_key; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: tastypie_apikey_key; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX tastypie_apikey_key ON tastypie_apikey USING btree (key);
 
 
 --
--- Name: tastypie_apikey_key_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: tastypie_apikey_key_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX tastypie_apikey_key_like ON tastypie_apikey USING btree (key varchar_pattern_ops);
 
 
 --
--- Name: version_name_like; Type: INDEX; Schema: public; Owner: test_reg_user; Tablespace: 
+-- Name: version_name_like; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
 CREATE INDEX version_name_like ON version USING btree (name varchar_pattern_ops);
 
 
 --
--- Name: D0bf4d1eef52a0d3981ab1f032d3369e; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D0bf4d1eef52a0d3981ab1f032d3369e; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_hrac_classification
@@ -8633,7 +8633,7 @@ ALTER TABLE ONLY molecule_hrac_classification
 
 
 --
--- Name: D0fbda1e4437adea39750f4107d82cf9; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D0fbda1e4437adea39750f4107d82cf9; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch
@@ -8641,7 +8641,7 @@ ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch
 
 
 --
--- Name: D13119c9e09ab5c4c77a74d08edcd8e6; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D13119c9e09ab5c4c77a74d08edcd8e6; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_pinnedcustomfield
@@ -8649,7 +8649,7 @@ ALTER TABLE ONLY cbh_core_model_pinnedcustomfield
 
 
 --
--- Name: D144bba82215bbb7da8ae6efe88af710; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D144bba82215bbb7da8ae6efe88af710; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY product_patents
@@ -8657,7 +8657,7 @@ ALTER TABLE ONLY product_patents
 
 
 --
--- Name: D1a57e90c33b2140b097dcad37cf46cc; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D1a57e90c33b2140b097dcad37cf46cc; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_project
@@ -8665,7 +8665,7 @@ ALTER TABLE ONLY cbh_core_model_project
 
 
 --
--- Name: D27e0906fcf12ecc0122a0fedb63af55; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D27e0906fcf12ecc0122a0fedb63af55; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassificationpermission
@@ -8673,7 +8673,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassificationpermission
 
 
 --
--- Name: D3041e1b0d97d5bfe2538cca9a738a6b; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D3041e1b0d97d5bfe2538cca9a738a6b; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_project
@@ -8681,7 +8681,7 @@ ALTER TABLE ONLY cbh_core_model_project
 
 
 --
--- Name: D30921c6fca224e0ab2dbfc0a697bd44; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D30921c6fca224e0ab2dbfc0a697bd44; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_project_enabled_forms
@@ -8689,7 +8689,7 @@ ALTER TABLE ONLY cbh_core_model_project_enabled_forms
 
 
 --
--- Name: D77fb5ccfb46364f7a82e2420c7a6d11; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D77fb5ccfb46364f7a82e2420c7a6d11; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY structural_alerts
@@ -8697,7 +8697,7 @@ ALTER TABLE ONLY structural_alerts
 
 
 --
--- Name: D8fccbb1f79cad9dd90291da828a7afd; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: D8fccbb1f79cad9dd90291da828a7afd; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_irac_classification
@@ -8705,7 +8705,7 @@ ALTER TABLE ONLY molecule_irac_classification
 
 
 --
--- Name: aa8e2e8ebce3ff8d79ba9da1220fe501; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: aa8e2e8ebce3ff8d79ba9da1220fe501; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_frac_classification
@@ -8713,7 +8713,7 @@ ALTER TABLE ONLY molecule_frac_classification
 
 
 --
--- Name: activities_assay_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: activities_assay_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY activities
@@ -8721,7 +8721,7 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: activities_data_validity_comment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: activities_data_validity_comment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY activities
@@ -8729,7 +8729,7 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: activities_doc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: activities_doc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY activities
@@ -8737,7 +8737,7 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: activities_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: activities_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY activities
@@ -8745,7 +8745,7 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: activities_record_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: activities_record_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY activities
@@ -8753,7 +8753,7 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: assay_parameters_assay_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assay_parameters_assay_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assay_parameters
@@ -8761,7 +8761,7 @@ ALTER TABLE ONLY assay_parameters
 
 
 --
--- Name: assay_parameters_parameter_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assay_parameters_parameter_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assay_parameters
@@ -8769,7 +8769,7 @@ ALTER TABLE ONLY assay_parameters
 
 
 --
--- Name: assays_assay_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_assay_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8777,7 +8777,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_cell_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_cell_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8785,7 +8785,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_chembl_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_chembl_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8793,7 +8793,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_confidence_score_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_confidence_score_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8801,7 +8801,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_curated_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_curated_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8809,7 +8809,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_doc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_doc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8817,7 +8817,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_relationship_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_relationship_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8825,7 +8825,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_src_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_src_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8833,7 +8833,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: assays_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: assays_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY assays
@@ -8841,7 +8841,7 @@ ALTER TABLE ONLY assays
 
 
 --
--- Name: auth_group_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: auth_group_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_group_permissions
@@ -8849,7 +8849,7 @@ ALTER TABLE ONLY auth_group_permissions
 
 
 --
--- Name: auth_user_groups_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: auth_user_groups_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_user_groups
@@ -8857,7 +8857,7 @@ ALTER TABLE ONLY auth_user_groups
 
 
 --
--- Name: auth_user_user_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: auth_user_user_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_user_user_permissions
@@ -8865,7 +8865,7 @@ ALTER TABLE ONLY auth_user_user_permissions
 
 
 --
--- Name: b52e93cdb10c494b17e3059f326fceb1; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: b52e93cdb10c494b17e3059f326fceb1; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapoint
@@ -8873,7 +8873,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapoint
 
 
 --
--- Name: binding_sites_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: binding_sites_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY binding_sites
@@ -8881,7 +8881,7 @@ ALTER TABLE ONLY binding_sites
 
 
 --
--- Name: biotherapeutic_components_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: biotherapeutic_components_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY biotherapeutic_components
@@ -8889,7 +8889,7 @@ ALTER TABLE ONLY biotherapeutic_components
 
 
 --
--- Name: biotherapeutic_components_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: biotherapeutic_components_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY biotherapeutic_components
@@ -8897,7 +8897,7 @@ ALTER TABLE ONLY biotherapeutic_components
 
 
 --
--- Name: biotherapeutics_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: biotherapeutics_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY biotherapeutics
@@ -8905,7 +8905,7 @@ ALTER TABLE ONLY biotherapeutics
 
 
 --
--- Name: c_l0_id_10b49cfa05bfd1c3_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: c_l0_id_10b49cfa05bfd1c3_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig
@@ -8913,7 +8913,7 @@ ALTER TABLE ONLY cbh_core_model_dataformconfig
 
 
 --
--- Name: c_l1_id_56240325e751a1be_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: c_l1_id_56240325e751a1be_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig
@@ -8921,7 +8921,7 @@ ALTER TABLE ONLY cbh_core_model_dataformconfig
 
 
 --
--- Name: c_l2_id_7c592455a79a26bb_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: c_l2_id_7c592455a79a26bb_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig
@@ -8929,7 +8929,7 @@ ALTER TABLE ONLY cbh_core_model_dataformconfig
 
 
 --
--- Name: c_l4_id_511ac037e8fc5d6f_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: c_l4_id_511ac037e8fc5d6f_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig
@@ -8937,7 +8937,7 @@ ALTER TABLE ONLY cbh_core_model_dataformconfig
 
 
 --
--- Name: cb_l3_id_3474b704f917784_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cb_l3_id_3474b704f917784_fk_cbh_core_model_customfieldconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig
@@ -8945,7 +8945,7 @@ ALTER TABLE ONLY cbh_core_model_dataformconfig
 
 
 --
--- Name: cbh__l0_id_1fe25be67698586b_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh__l0_id_1fe25be67698586b_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -8953,7 +8953,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: cbh__l1_id_53cbe578b9a8da90_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh__l1_id_53cbe578b9a8da90_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -8961,7 +8961,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: cbh__l2_id_7eb89ae23bcea073_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh__l2_id_7eb89ae23bcea073_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -8969,7 +8969,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: cbh__l3_id_7aae6aebf19a3056_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh__l3_id_7aae6aebf19a3056_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -8977,7 +8977,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: cbh__l4_id_7ea27dce6e8a48ef_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh__l4_id_7ea27dce6e8a48ef_fk_cbh_datastore_model_datapoint_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -8985,7 +8985,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompound_related_molregno_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompound_related_molregno_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundbatch
@@ -8993,7 +8993,7 @@ ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundbatch
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundbatch_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompoundbatch_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundbatch
@@ -9001,7 +9001,7 @@ ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundbatch
 
 
 --
--- Name: cbh_chembl_model_extension_cbhcompoundmul_uploaded_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_cbhcompoundmul_uploaded_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch
@@ -9009,7 +9009,7 @@ ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundmultiplebatch
 
 
 --
--- Name: cbh_chembl_model_extension_customfieldconfig_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_customfieldconfig_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_customfieldconfig
@@ -9017,7 +9017,7 @@ ALTER TABLE ONLY cbh_core_model_customfieldconfig
 
 
 --
--- Name: cbh_chembl_model_extension_project_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_chembl_model_extension_project_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_project
@@ -9025,7 +9025,7 @@ ALTER TABLE ONLY cbh_core_model_project
 
 
 --
--- Name: cbh_co_project_id_7b174848d24f3d5f_fk_cbh_core_model_project_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_co_project_id_7b174848d24f3d5f_fk_cbh_core_model_project_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_project_enabled_forms
@@ -9033,7 +9033,7 @@ ALTER TABLE ONLY cbh_core_model_project_enabled_forms
 
 
 --
--- Name: cbh_core_model_d_created_by_id_7a5a6bbf405f76cb_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_core_model_d_created_by_id_7a5a6bbf405f76cb_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_dataformconfig
@@ -9041,7 +9041,7 @@ ALTER TABLE ONLY cbh_core_model_dataformconfig
 
 
 --
--- Name: cbh_da_project_id_2373f087eebe98e8_fk_cbh_core_model_project_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_da_project_id_2373f087eebe98e8_fk_cbh_core_model_project_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassificationpermission
@@ -9049,7 +9049,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassificationpermission
 
 
 --
--- Name: cbh_data_type_id_2d208b487011d067_fk_cbh_core_model_datatype_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_data_type_id_2d208b487011d067_fk_cbh_core_model_datatype_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_core_model_customfieldconfig
@@ -9057,7 +9057,7 @@ ALTER TABLE ONLY cbh_core_model_customfieldconfig
 
 
 --
--- Name: cbh_datastore_mo_created_by_id_30811767f457819d_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_mo_created_by_id_30811767f457819d_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapoint
@@ -9065,7 +9065,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapoint
 
 
 --
--- Name: cbh_datastore_mod_created_by_id_171ae5a1241af93_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cbh_datastore_mod_created_by_id_171ae5a1241af93_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -9073,7 +9073,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: cell_d_chembl_id_411ff762808eea37_fk_chembl_id_lookup_chembl_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: cell_d_chembl_id_411ff762808eea37_fk_chembl_id_lookup_chembl_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cell_dictionary
@@ -9081,7 +9081,7 @@ ALTER TABLE ONLY cell_dictionary
 
 
 --
--- Name: chembl_business_model_imageerrors_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_imageerrors_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY chembl_business_model_imageerrors
@@ -9089,7 +9089,7 @@ ALTER TABLE ONLY chembl_business_model_imageerrors
 
 
 --
--- Name: chembl_business_model_inchierrors_structure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: chembl_business_model_inchierrors_structure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY chembl_business_model_inchierrors
@@ -9097,7 +9097,7 @@ ALTER TABLE ONLY chembl_business_model_inchierrors
 
 
 --
--- Name: component_class_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: component_class_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY component_class
@@ -9105,7 +9105,7 @@ ALTER TABLE ONLY component_class
 
 
 --
--- Name: component_class_protein_class_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: component_class_protein_class_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY component_class
@@ -9113,7 +9113,7 @@ ALTER TABLE ONLY component_class
 
 
 --
--- Name: component_domains_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: component_domains_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY component_domains
@@ -9121,7 +9121,7 @@ ALTER TABLE ONLY component_domains
 
 
 --
--- Name: component_domains_domain_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: component_domains_domain_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY component_domains
@@ -9129,7 +9129,7 @@ ALTER TABLE ONLY component_domains
 
 
 --
--- Name: component_synonyms_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: component_synonyms_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY component_synonyms
@@ -9137,7 +9137,7 @@ ALTER TABLE ONLY component_synonyms
 
 
 --
--- Name: compound_images_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: compound_images_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY compound_images
@@ -9145,7 +9145,7 @@ ALTER TABLE ONLY compound_images
 
 
 --
--- Name: compound_properties_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: compound_properties_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY compound_properties
@@ -9153,7 +9153,7 @@ ALTER TABLE ONLY compound_properties
 
 
 --
--- Name: compound_records_doc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: compound_records_doc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY compound_records
@@ -9161,7 +9161,7 @@ ALTER TABLE ONLY compound_records
 
 
 --
--- Name: compound_records_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: compound_records_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY compound_records
@@ -9169,7 +9169,7 @@ ALTER TABLE ONLY compound_records
 
 
 --
--- Name: compound_records_src_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: compound_records_src_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY compound_records
@@ -9177,7 +9177,7 @@ ALTER TABLE ONLY compound_records
 
 
 --
--- Name: compound_structures_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: compound_structures_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY compound_structures
@@ -9185,7 +9185,7 @@ ALTER TABLE ONLY compound_structures
 
 
 --
--- Name: compu_molregno_6e00c616c2e53853_fk_molecule_dictionary_molregno; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: compu_molregno_6e00c616c2e53853_fk_molecule_dictionary_molregno; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY compund_structural_alerts
@@ -9193,7 +9193,7 @@ ALTER TABLE ONLY compund_structural_alerts
 
 
 --
--- Name: compund_alert_id_2d9f148a5818f2fc_fk_structural_alerts_alert_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: compund_alert_id_2d9f148a5818f2fc_fk_structural_alerts_alert_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY compund_structural_alerts
@@ -9201,7 +9201,7 @@ ALTER TABLE ONLY compund_structural_alerts
 
 
 --
--- Name: content_type_id_refs_id_d043b34a; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: content_type_id_refs_id_d043b34a; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_permission
@@ -9209,7 +9209,7 @@ ALTER TABLE ONLY auth_permission
 
 
 --
--- Name: dd7cb7e16b2ec28577c870c3d59f1c0d; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: dd7cb7e16b2ec28577c870c3d59f1c0d; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY cbh_datastore_model_datapointclassification
@@ -9217,7 +9217,7 @@ ALTER TABLE ONLY cbh_datastore_model_datapointclassification
 
 
 --
--- Name: defined_daily_dose_atc_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: defined_daily_dose_atc_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY defined_daily_dose
@@ -9225,7 +9225,7 @@ ALTER TABLE ONLY defined_daily_dose
 
 
 --
--- Name: django_admin_log_content_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: django_admin_log_content_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY django_admin_log
@@ -9233,7 +9233,7 @@ ALTER TABLE ONLY django_admin_log
 
 
 --
--- Name: django_admin_log_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: django_admin_log_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY django_admin_log
@@ -9241,7 +9241,7 @@ ALTER TABLE ONLY django_admin_log
 
 
 --
--- Name: docs_chembl_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: docs_chembl_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY docs
@@ -9249,7 +9249,7 @@ ALTER TABLE ONLY docs
 
 
 --
--- Name: docs_journal_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: docs_journal_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY docs
@@ -9257,7 +9257,7 @@ ALTER TABLE ONLY docs
 
 
 --
--- Name: drug_mechanism_action_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: drug_mechanism_action_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY drug_mechanism
@@ -9265,7 +9265,7 @@ ALTER TABLE ONLY drug_mechanism
 
 
 --
--- Name: drug_mechanism_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: drug_mechanism_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY drug_mechanism
@@ -9273,7 +9273,7 @@ ALTER TABLE ONLY drug_mechanism
 
 
 --
--- Name: drug_mechanism_record_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: drug_mechanism_record_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY drug_mechanism
@@ -9281,7 +9281,7 @@ ALTER TABLE ONLY drug_mechanism
 
 
 --
--- Name: drug_mechanism_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: drug_mechanism_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY drug_mechanism
@@ -9289,7 +9289,7 @@ ALTER TABLE ONLY drug_mechanism
 
 
 --
--- Name: drug_mechanism_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: drug_mechanism_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY drug_mechanism
@@ -9297,7 +9297,7 @@ ALTER TABLE ONLY drug_mechanism
 
 
 --
--- Name: flowjs_flowfilechunk_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: flowjs_flowfilechunk_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY flowjs_flowfilechunk
@@ -9305,7 +9305,7 @@ ALTER TABLE ONLY flowjs_flowfilechunk
 
 
 --
--- Name: formulations_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: formulations_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY formulations
@@ -9313,7 +9313,7 @@ ALTER TABLE ONLY formulations
 
 
 --
--- Name: formulations_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: formulations_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY formulations
@@ -9321,7 +9321,7 @@ ALTER TABLE ONLY formulations
 
 
 --
--- Name: formulations_record_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: formulations_record_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY formulations
@@ -9329,7 +9329,7 @@ ALTER TABLE ONLY formulations
 
 
 --
--- Name: group_id_refs_id_f4b32aac; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: group_id_refs_id_f4b32aac; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_group_permissions
@@ -9337,7 +9337,7 @@ ALTER TABLE ONLY auth_group_permissions
 
 
 --
--- Name: journal_articles_journal_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: journal_articles_journal_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY journal_articles
@@ -9345,7 +9345,7 @@ ALTER TABLE ONLY journal_articles
 
 
 --
--- Name: ligand_eff_activity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: ligand_eff_activity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY ligand_eff
@@ -9353,7 +9353,7 @@ ALTER TABLE ONLY ligand_eff
 
 
 --
--- Name: mechanism_refs_mec_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: mechanism_refs_mec_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY mechanism_refs
@@ -9361,7 +9361,7 @@ ALTER TABLE ONLY mechanism_refs
 
 
 --
--- Name: molec_molregno_51d8ac6eb3668887_fk_molecule_dictionary_molregno; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molec_molregno_51d8ac6eb3668887_fk_molecule_dictionary_molregno; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_irac_classification
@@ -9369,7 +9369,7 @@ ALTER TABLE ONLY molecule_irac_classification
 
 
 --
--- Name: molec_molregno_5844b36804f90988_fk_molecule_dictionary_molregno; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molec_molregno_5844b36804f90988_fk_molecule_dictionary_molregno; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_frac_classification
@@ -9377,7 +9377,7 @@ ALTER TABLE ONLY molecule_frac_classification
 
 
 --
--- Name: molecu_chembl_id_1bcfc9c893233925_fk_chembl_id_lookup_chembl_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecu_chembl_id_1bcfc9c893233925_fk_chembl_id_lookup_chembl_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_dictionary
@@ -9385,7 +9385,7 @@ ALTER TABLE ONLY molecule_dictionary
 
 
 --
--- Name: molecu_molregno_d388f3d5aa1418e_fk_molecule_dictionary_molregno; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecu_molregno_d388f3d5aa1418e_fk_molecule_dictionary_molregno; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_hrac_classification
@@ -9393,7 +9393,7 @@ ALTER TABLE ONLY molecule_hrac_classification
 
 
 --
--- Name: molecule_atc_classification_level5_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecule_atc_classification_level5_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_atc_classification
@@ -9401,7 +9401,7 @@ ALTER TABLE ONLY molecule_atc_classification
 
 
 --
--- Name: molecule_atc_classification_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecule_atc_classification_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_atc_classification
@@ -9409,7 +9409,7 @@ ALTER TABLE ONLY molecule_atc_classification
 
 
 --
--- Name: molecule_dictionary_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecule_dictionary_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_dictionary
@@ -9417,7 +9417,7 @@ ALTER TABLE ONLY molecule_dictionary
 
 
 --
--- Name: molecule_hierarchy_active_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecule_hierarchy_active_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_hierarchy
@@ -9425,7 +9425,7 @@ ALTER TABLE ONLY molecule_hierarchy
 
 
 --
--- Name: molecule_hierarchy_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecule_hierarchy_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_hierarchy
@@ -9433,7 +9433,7 @@ ALTER TABLE ONLY molecule_hierarchy
 
 
 --
--- Name: molecule_hierarchy_parent_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecule_hierarchy_parent_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_hierarchy
@@ -9441,7 +9441,7 @@ ALTER TABLE ONLY molecule_hierarchy
 
 
 --
--- Name: molecule_synonyms_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecule_synonyms_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_synonyms
@@ -9449,7 +9449,7 @@ ALTER TABLE ONLY molecule_synonyms
 
 
 --
--- Name: molecule_synonyms_res_stem_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: molecule_synonyms_res_stem_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_synonyms
@@ -9457,7 +9457,7 @@ ALTER TABLE ONLY molecule_synonyms
 
 
 --
--- Name: mols_rdkit_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: mols_rdkit_molregno_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY mols_rdkit
@@ -9465,7 +9465,7 @@ ALTER TABLE ONLY mols_rdkit
 
 
 --
--- Name: predicted_binding_domains_activity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: predicted_binding_domains_activity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY predicted_binding_domains
@@ -9473,7 +9473,7 @@ ALTER TABLE ONLY predicted_binding_domains
 
 
 --
--- Name: predicted_binding_domains_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: predicted_binding_domains_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY predicted_binding_domains
@@ -9481,7 +9481,7 @@ ALTER TABLE ONLY predicted_binding_domains
 
 
 --
--- Name: product_pate_product_id_3186059d632f525e_fk_products_product_id; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: product_pate_product_id_3186059d632f525e_fk_products_product_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY product_patents
@@ -9489,7 +9489,7 @@ ALTER TABLE ONLY product_patents
 
 
 --
--- Name: project_id_refs_id_fe5cd7f4; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: project_id_refs_id_fe5cd7f4; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_dictionary
@@ -9497,7 +9497,7 @@ ALTER TABLE ONLY molecule_dictionary
 
 
 --
--- Name: protein_class_synonyms_protein_class_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: protein_class_synonyms_protein_class_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY protein_class_synonyms
@@ -9505,7 +9505,7 @@ ALTER TABLE ONLY protein_class_synonyms
 
 
 --
--- Name: research_companies_res_stem_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: research_companies_res_stem_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY research_companies
@@ -9513,7 +9513,7 @@ ALTER TABLE ONLY research_companies
 
 
 --
--- Name: site_components_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: site_components_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY site_components
@@ -9521,7 +9521,7 @@ ALTER TABLE ONLY site_components
 
 
 --
--- Name: site_components_domain_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: site_components_domain_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY site_components
@@ -9529,7 +9529,7 @@ ALTER TABLE ONLY site_components
 
 
 --
--- Name: site_components_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: site_components_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY site_components
@@ -9537,7 +9537,7 @@ ALTER TABLE ONLY site_components
 
 
 --
--- Name: target_components_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: target_components_component_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY target_components
@@ -9545,7 +9545,7 @@ ALTER TABLE ONLY target_components
 
 
 --
--- Name: target_components_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: target_components_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY target_components
@@ -9553,7 +9553,7 @@ ALTER TABLE ONLY target_components
 
 
 --
--- Name: target_dictionary_chembl_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: target_dictionary_chembl_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY target_dictionary
@@ -9561,7 +9561,7 @@ ALTER TABLE ONLY target_dictionary
 
 
 --
--- Name: target_dictionary_target_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: target_dictionary_target_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY target_dictionary
@@ -9569,7 +9569,7 @@ ALTER TABLE ONLY target_dictionary
 
 
 --
--- Name: target_re_related_tid_65f867593280324a_fk_target_dictionary_tid; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: target_re_related_tid_65f867593280324a_fk_target_dictionary_tid; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY target_relations
@@ -9577,7 +9577,7 @@ ALTER TABLE ONLY target_relations
 
 
 --
--- Name: target_relations_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: target_relations_tid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY target_relations
@@ -9585,7 +9585,7 @@ ALTER TABLE ONLY target_relations
 
 
 --
--- Name: tastypie_apikey_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: tastypie_apikey_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY tastypie_apikey
@@ -9593,7 +9593,7 @@ ALTER TABLE ONLY tastypie_apikey
 
 
 --
--- Name: user_id_refs_id_40c41112; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: user_id_refs_id_40c41112; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_user_groups
@@ -9601,7 +9601,7 @@ ALTER TABLE ONLY auth_user_groups
 
 
 --
--- Name: user_id_refs_id_4dc23c39; Type: FK CONSTRAINT; Schema: public; Owner: test_reg_user
+-- Name: user_id_refs_id_4dc23c39; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY auth_user_user_permissions

@@ -23,7 +23,7 @@ api_client = TestApiClient()
 from django.test.simple import DjangoTestSuiteRunner
 runner = DjangoTestSuiteRunner(interactive=False)
 runner.setup_test_environment()
-#runner.setup_databases()
+runner.setup_databases()
 
 
 
@@ -311,6 +311,7 @@ class Tester(unittest.TestCase):
         self.assertValidPlist(force_text(resp.content))
  
 def before_all(context):
+    pass
     # Even though DJANGO_SETTINGS_MODULE is set, this may still be
     # necessary. Or it may be simple CYA insurance.
 
@@ -321,29 +322,40 @@ def before_all(context):
     # from deployment.settings  import development as settings
     # setup_environ(settings)
     #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+    # context.runner.setup_databases()
+    # from django.core.management import call_command
+    # # from django.contrib.contenttypes.models import ContentType
+    # # ContentType.objects.all().delete()
+    # from cbh_core_model.models import Project, CustomFieldConfig
+    # # Project.objects.all().delete()
+    # call_command("loaddata", "/home/vagrant/chembiohub_ws/src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/newtestfixture.json")
+
+
+
+def before_scenario(context, scenario):
+    # Set up the scenario test environment
+    from subprocess import Popen, PIPE, call
+
+    call("echo 'drop database if exists tester_cbh_chembl;create database tester_cbh_chembl;'  | psql template1 >/dev/null", shell=True)
+    call("psql -Uchembl tester_cbh_chembl < features/fixtures/testreg.sql >/dev/null", shell=True)
+
     django.setup()
+
+
+    # django.setup()
 
     ### Take a TestRunner hostage.
     from django.test.simple import DjangoTestSuiteRunner
     context.runner = DjangoTestSuiteRunner(interactive=False)
-
+    
     ## If you use South for migrations, uncomment this to monkeypatch
     ## syncdb to get migrations to run.
     #from south.management.commands import patch_for_test_db_setup
     #patch_for_test_db_setup()
 
     
-    context.runner.setup_test_environment()
-    context.runner.setup_databases()
-    from django.core.management import call_command
-    call_command("loaddata", "/home/vagrant/chembiohub_ws/src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/newtestfixture.json")
-
-
-
-def before_scenario(context, scenario):
-    # Set up the scenario test environment
-    
-
+    # context.runner.setup_test_environment()
     ### Set up the WSGI intercept "port".
     context.api_client = TestApiClient()
     context.test_case =  Tester()
@@ -365,17 +377,16 @@ def after_scenario(context, scenario):
     # Tear down the scenario test environment.
     #context.runner.teardown_databases(context.old_db_config)
     context.api_client.client.logout()
- 
-    from cbh_chembl_model_extension.models import CBHCompoundBatch
-    from cbh_core_model.models import Project, CustomFieldConfig
-    from cbh_datastore_model.models import DataPoint, DataPointClassification
+    from django import db
+    db.close_connection()
+    from subprocess import call
+    call("echo 'drop database if exists tester_cbh_chembl;'  | psql template1 >/dev/null", shell=True)
 
-    from django.contrib.auth.models import User, Group
-    User.objects.all().exclude(id=-1).delete()
-    CustomFieldConfig.objects.exclude(id=-1).all().delete()
-    Group.objects.all().delete()
-    CBHCompoundBatch.objects.all().delete()
-    DataPointClassification.objects.all().delete()
-    DataPoint.objects.exclude(id=1).delete()
-    context.runner.teardown_test_environment()
+    # User.objects.all().exclude(id=-1).delete()
+    # CustomFieldConfig.objects.exclude(id=-1).all().delete()
+    # Group.objects.all().delete()
+    # CBHCompoundBatch.objects.all().delete()
+    # DataPointClassification.objects.all().delete()
+    # DataPoint.objects.exclude(id=1).delete()
+    # context.runner.teardown_test_environment()
     # Bob's your uncle.

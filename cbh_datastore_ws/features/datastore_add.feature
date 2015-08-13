@@ -1,22 +1,24 @@
-Feature: Datastore Add Records
+#Feature: Datastore Add Records#
 
-    Scenario: Project list
+#    Scenario: Project list#
 
-        Given a user
-        When I log in
-        Then I get a project list Given I am an admin JSON data is available The first form from the test fixtures has the given URI
+#        Given testuser
+#        When I log in
+#        Then I get a project list Given I am an admin JSON data is available The first form from the test fixtures has the given URI#
 
-    Scenario: Data point classification GET
+#    Scenario: Data point classification GET#
 
-        Given a user
-        When I log in
-        Then Given I have loaded one classification record into the database  Given I am an adminWhen I call get classifier I see no records
+#        Given testuser
+#        When I log in testuser
+#        Then Given I have loaded one classification record into the database  Given I am an adminWhen I call get classifier I see no records#
+#
 
+#    Scenario: Data point classification POST
+#        Given testuser
+#        When I log testuser
+#        Then I post and the response is valid JSON#
+#
 
-    Scenario: Data point classification POST
-        Given a user
-        When I log in
-        Then I post and the response is valid JSON
 
 
 

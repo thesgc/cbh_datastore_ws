@@ -10,7 +10,7 @@ def step(context):
 
 @when("I log in testuser")
 def step(context):
-    context.user.login(username="testuser", password="testuser")
+    context.api_client.client.login(username="testuser", password="testuser")
     
 
 
