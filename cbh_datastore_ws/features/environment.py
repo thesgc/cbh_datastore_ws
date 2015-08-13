@@ -334,7 +334,9 @@ def before_all(context):
 
     
     context.runner.setup_test_environment()
-    #context.runner.setup_databases()
+    context.runner.setup_databases()
+    from django.core.management import call_command
+    call_command("loaddata", "/home/vagrant/chembiohub_ws/src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/test_fixtures.json")
 
 
 
@@ -345,26 +347,17 @@ def before_scenario(context, scenario):
     ### Set up the WSGI intercept "port".
     context.api_client = TestApiClient()
     context.test_case =  Tester()
-    from django.core.management import call_command
-    call_command("loaddata", "/home/vagrant/chembiohub_ws/src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/test_fixtures.json")
+    
+    from cbh_chembl_model_extension.models import CBHCompoundBatch
+    from cbh_core_model.models import Project, CustomFieldConfig
+    from cbh_datastore_model.models import DataPoint, DataPointClassification
 
+    from django.contrib.auth.models import User, Group
 
-   
+    context.response = None
+    context.user = User.objects.get(username="testuser")
     context.runner.setup_test_environment()
 
-
-    # We must set up and tear down the entire database between
-    # scenarios. We can't just use db transactions, as Django's
-    # TestClient does, if we're doing full-stack tests with Mechanize,
-    # because Django closes the db connection after finishing the HTTP
-    # response.
-    ### Set up the Mechanize browser.
-    # from wsgi_intercept import mechanize_intercept
-    # # MAGIC: All requests made by this monkeypatched browser to the magic
-    # # host and port will be intercepted by wsgi_intercept via a
-    # # fake socket and routed to Django's WSGI interface.
-    # browser = context.browser = mechanize_intercept.Browser()
-    # browser.set_handle_robots(False)
 
 
 

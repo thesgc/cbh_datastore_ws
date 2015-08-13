@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 from tastypie.resources import ModelResource, Resource , ALL, ALL_WITH_RELATIONS
 
 from tastypie.serializers import Serializer
@@ -19,6 +22,17 @@ from tastypie.authorization import Authorization
 from django.db.models import Prefetch
 from tastypie.http import HttpConflict
 from tastypie.exceptions import ImmediateHttpResponse
+
+
+
+
+
+
+
+
+
+
+
 
 class DataPointProjectFieldResource(ModelResource):
     """Provides the schema information about a field that is required by front end apps"""
@@ -48,7 +62,66 @@ class DataPointProjectFieldResource(ModelResource):
         authentication = SessionAuthentication()
         authorization = Authorization()
         level = None
+        description = {'api_dispatch_detail' : '''
+Provides information about the data types present in the flexible schema of the datapoint table
+For each field a set of attributes are returned:
 
+hide_form/schema - an angular schema form element that can be used to hide this column from view
+edit_form /schema - an angular schema form element that can be used to edit this field 
+
+assuming it is edited as part of a larger data form classification object
+- To change the key of the json schema then change the get_namespace method
+
+filter_form/schema - an angular schema form element that can be used to hide this filter this field
+
+exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
+
+sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
+
+Things still to be implemented:
+
+actions form - would be used for mapping functions etc
+autocomplete urls
+        ''',
+
+        'api_dispatch_list' : '''
+Provides information about the data types present in the flexible schema of the datapoint table
+For each field a set of attributes are returned:
+
+hide_form/schema - an angular schema form element that can be used to hide this column from view
+edit_form /schema - an angular schema form element that can be used to edit this field 
+
+assuming it is edited as part of a larger data form classification object
+- To change the key of the json schema then change the get_namespace method
+
+filter_form/schema - an angular schema form element that can be used to hide this filter this field
+
+exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
+
+sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
+
+Things still to be implemented:
+
+actions form - would be used for mapping functions etc
+autocomplete urls
+        '''
+        }
+
+
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
 
 
     def get_parent_key(self, bundle):
@@ -272,8 +345,63 @@ class SimpleCustomFieldConfigResource(ModelResource):
         include_resource_uri = True
         default_format = 'application/json'
         serializer = Serializer()
-
+        filtering = {"id" : ALL}
         allowed_methods = ['get', 'post', 'put', 'patch']
+        description = {'api_dispatch_detail' : '''
+Provides data about a single level of a data form config
+
+data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
+project_data_fields:
+The fields that are in this particular custom field config:
+    Provides information about the data types present in the flexible schema of the datapoint table
+    For each field a set of attributes are returned:
+
+    hide_form/schema - an angular schema form element that can be used to hide this column from view
+    edit_form /schema - an angular schema form element that can be used to edit this field 
+
+    assuming it is edited as part of a larger data form classification object
+    - To change the key of the json schema then change the get_namespace method
+
+    filter_form/schema - an angular schema form element that can be used to hide this filter this field
+    
+    exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+    sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+   Things still to be implemented:
+
+    actions form - would be used for mapping functions etc
+    autocomplete urls
+        ''',
+
+        'api_dispatch_list' : '''
+Provides data about a single level of a data form config
+
+data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
+project_data_fields:
+The fields that are in this particular custom field config:
+    Provides information about the data types present in the flexible schema of the datapoint table
+    For each field a set of attributes are returned:
+
+    hide_form/schema - an angular schema form element that can be used to hide this column from view
+    edit_form /schema - an angular schema form element that can be used to edit this field 
+
+    assuming it is edited as part of a larger data form classification object
+    - To change the key of the json schema then change the get_namespace method
+
+    filter_form/schema - an angular schema form element that can be used to hide this filter this field
+    
+    exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+    sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+   Things still to be implemented:
+
+    actions form - would be used for mapping functions etc
+    autocomplete urls
+        '''
+        }
+
 
     def hydrate_created_by(self, bundle):
         user = get_user_model().objects.get(pk=bundle.request.user.pk)
@@ -282,27 +410,24 @@ class SimpleCustomFieldConfigResource(ModelResource):
         return bundle
 
 
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
 
 
 
-class FullCustomFieldConfigResource(CustomFieldConfigResource):
-    '''Return only the project type and custom field config full object '''
-    data_type = fields.ForeignKey("cbh_core_ws.resources.DataTypeResource", 'data_type')
-    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by')
 
-    class Meta:
-        queryset = CustomFieldConfig.objects.all()
-        include_resource_uri = True
-        resource_name = 'cbh_custom_field_config2'
-        authentication = SessionAuthentication()
-        authorization = Authorization()
-        default_format = 'application/json'
-        serializer = Serializer()
-
-        allowed_methods = ['get', 'post', 'put', 'patch']
-
-
-   
 
 
 
@@ -319,8 +444,41 @@ class L0DataPointProjectFieldResource(DataPointProjectFieldResource):
         level = "l0"
         resource_name="l0_cbh_custom_field_config"
 
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
+
+
 class L0FullCustomFieldResource(SimpleCustomFieldConfigResource):
     project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L0DataPointProjectFieldResource",'pinned_custom_field',full=True)
+
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 
 
@@ -330,8 +488,40 @@ class L1DataPointProjectFieldResource(DataPointProjectFieldResource):
         level = "l1"
         resource_name="l1_cbh_custom_field_config"
 
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
+
+
 class L1FullCustomFieldResource(SimpleCustomFieldConfigResource):
     project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L1DataPointProjectFieldResource",'pinned_custom_field',full=True)
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 
 class L2DataPointProjectFieldResource(DataPointProjectFieldResource):
@@ -339,32 +529,125 @@ class L2DataPointProjectFieldResource(DataPointProjectFieldResource):
         level = "l2"
         resource_name="l2_cbh_custom_field_config"
 
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
+
+
 class L2FullCustomFieldResource(SimpleCustomFieldConfigResource):
     project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L2DataPointProjectFieldResource",'pinned_custom_field',full=True)
+
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
 
 
 class L3DataPointProjectFieldResource(DataPointProjectFieldResource):
     class Meta:
         level = "l3"
         resource_name="l3_cbh_custom_field_config"
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 class L3FullCustomFieldResource(SimpleCustomFieldConfigResource):
     project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L3DataPointProjectFieldResource",'pinned_custom_field',full=True)
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 
 class L4DataPointProjectFieldResource(DataPointProjectFieldResource):
     class Meta:
         level = "l4"
         resource_name="l4_cbh_custom_field_config"
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 class L4FullCustomFieldResource(SimpleCustomFieldConfigResource):
     project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L4DataPointProjectFieldResource",'pinned_custom_field',full=True)
 
 
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 
 
 class DataFormConfigResource(ModelResource):
+    name = fields.CharField(null=True,blank=True)
     l0 = fields.ForeignKey("cbh_datastore_ws.resources.L0FullCustomFieldResource",'l0', null=True, blank=False, readonly=False, help_text=None, full=True)
     l1 = fields.ForeignKey("cbh_datastore_ws.resources.L1FullCustomFieldResource",'l1', null=True, blank=False, readonly=False, help_text=None, full=True)
     l2 = fields.ForeignKey("cbh_datastore_ws.resources.L2FullCustomFieldResource",'l2', null=True, blank=False, readonly=False, help_text=None, full=True)
@@ -372,6 +655,9 @@ class DataFormConfigResource(ModelResource):
     l4 = fields.ForeignKey("cbh_datastore_ws.resources.L4FullCustomFieldResource",'l4', null=True, blank=False, readonly=False, help_text=None, full=True)
 
     class Meta:
+        filtering = {
+           "id" : ALL
+        }
         always_return_data = True
         queryset = DataFormConfig.objects.all()
         resource_name = 'cbh_data_form_config'
@@ -381,7 +667,102 @@ class DataFormConfigResource(ModelResource):
         default_format = 'application/json'
         authentication = SessionAuthentication()
         authorization = Authorization()
+        description = {'api_dispatch_detail' : '''
+Provides data about a all levels of a data form config. 
+
+A data form config's name is built up from its different custom field configs by combining their names and data types in order
+  _____
+l0    |
+l1    |
+l2    |----- These fields all list the full 
+l3    |     information about a level of the data based 
+l4____|     upon its custom field configs - see below
+
+
+data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
+==================================================
+project_data_fields:
+==================================================
+The fields that are in this particular custom field config:
+    Provides information about the data types present in the flexible schema of the datapoint table
+    For each field a set of attributes are returned:
+
+    hide_form/schema - an angular schema form element that can be used to hide this column from view
+    edit_form /schema - an angular schema form element that can be used to edit this field 
+
+    assuming it is edited as part of a larger data form classification object
+    - To change the key of the json schema then change the get_namespace method
+
+    filter_form/schema - an angular schema form element that can be used to hide this filter this field
+    
+    exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+    sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+   Things still to be implemented:
+
+    actions form - would be used for mapping functions etc
+    autocomplete urls
+        ''',
+
+        'api_dispatch_list' : '''
+Provides data about a all levels of a data form config. 
+
+A data form config's name is built up from its different custom field configs by combining their names and data types in order
+  _____
+l0    |
+l1    |
+l2    |----- These fields all list the full 
+l3    |     information about a level of the data based 
+l4____|     upon its custom field configs - see below
+
+
+data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
+==============================================
+project_data_fields:
+===============================================
+The fields that are in this particular custom field config:
+    Provides information about the data types present in the flexible schema of the datapoint table
+    For each field a set of attributes are returned:
+
+    hide_form/schema - an angular schema form element that can be used to hide this column from view
+    edit_form /schema - an angular schema form element that can be used to edit this field 
+
+    assuming it is edited as part of a larger data form classification object
+    - To change the key of the json schema then change the get_namespace method
+
+    filter_form/schema - an angular schema form element that can be used to hide this filter this field
+    
+    exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+    sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+   Things still to be implemented:
+
+    actions form - would be used for mapping functions etc
+    autocomplete urls
+        '''
+        }
         level = None
+
+    def dehydrate_name(self, bundle):
+        bundle.data["name"] = bundle.obj.__unicode__()
+
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 
 
@@ -390,15 +771,123 @@ class ProjectWithDataFormResource(ModelResource):
     enabled_forms = fields.ToManyField("cbh_datastore_ws.resources.DataFormConfigResource", "enabled_forms", full=True)
 
     class Meta:
-        excludes  = ("schemaform")
+        filtering = {
+           "id" : ALL
+        }
+        excludes  = ("schemaform", "custom_field_config")
         queryset = Project.objects.all()
         authentication = SessionAuthentication()
-        allowed_methods = ['get']        
+        allowed_methods = ['get', 'post', 'put']        
         resource_name = 'cbh_projects_with_forms'
         authorization = Authorization()
         include_resource_uri = True
         default_format = 'application/json'
         serializer = Serializer()
+        filtering = {"id" : ALL}
+        description =       {'api_dispatch_detail' : '''
+A project is the top level item in the system:
+project_type : For assay registration project type is not very important - it is just the top level lable
+enabled_forms: Provides a list of the forms that are enabled for this project.
+NOTE just because a project has aa certain form enabled DOES not give it permission to access all data created with that forms
+This is done with the data form config permission objects
+
+==========================================================
+The project provides data about all levels of a data form configs that are attached to that project
+
+A data form config's name is built up from its different custom field configs by combining their names and data types in order
+  _____
+l0    |
+l1    |
+l2    |----- These fields all list the full 
+l3    |     information about a level of the data based 
+l4____|     upon its custom field configs - see below
+
+
+data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
+=================================================
+project_data_fields:
+==================================================
+The fields that are in this particular custom field config:
+    Provides information about the data types present in the flexible schema of the datapoint table
+    For each field a set of attributes are returned:
+
+    hide_form/schema - an angular schema form element that can be used to hide this column from view
+    edit_form /schema - an angular schema form element that can be used to edit this field 
+
+    assuming it is edited as part of a larger data form classification object
+    - To change the key of the json schema then change the get_namespace method
+
+    filter_form/schema - an angular schema form element that can be used to hide this filter this field
+    
+    exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+    sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+   Things still to be implemented:
+
+    actions form - would be used for mapping functions etc
+    autocomplete urls
+        ''',
+
+        'api_dispatch_list' : '''
+A project is the top level item in the system:
+project_type : For assay registration project type is not very important - it is just the top level lable
+enabled_forms: Provides a list of the forms that are enabled for this project.
+NOTE just because a project has aa certain form enabled DOES not give it permission to access all data created with that forms
+This is done with the data form config permission objects
+
+==========================================================
+The project provides data about all levels of a data form configs that are attached to that project
+
+A data form config's name is built up from its different custom field configs by combining their names and data types in order
+  _____
+l0    |
+l1    |
+l2    |----- These fields all list the full 
+l3    |     information about a level of the data based 
+l4____|     upon its custom field configs - see below
+
+
+data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
+=================================================
+project_data_fields:
+==================================================
+The fields that are in this particular custom field config:
+    Provides information about the data types present in the flexible schema of the datapoint table
+    For each field a set of attributes are returned:
+
+    hide_form/schema - an angular schema form element that can be used to hide this column from view
+    edit_form /schema - an angular schema form element that can be used to edit this field 
+
+    assuming it is edited as part of a larger data form classification object
+    - To change the key of the json schema then change the get_namespace method
+
+    filter_form/schema - an angular schema form element that can be used to hide this filter this field
+    
+    exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+    sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
+   
+   Things still to be implemented:
+
+    actions form - would be used for mapping functions etc
+    autocomplete urls
+        '''}
+
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
 
 
 
@@ -418,6 +907,24 @@ class DataPointResource(ModelResource):
         authentication = SessionAuthentication()
         default_format = 'application/json'
         serializer = Serializer()
+        description = {"api_dispatch_detail":"""
+Data point is the entitity through which all data is stored on the system but this resource is not used adding data because the data point classification must be known in order to add a datapoint.
+It has the following fields:
+    created_by: the user that added this data
+    custom_field_config: The URI of the custom field config that can be used to parse, display and edit this data
+    
+    project_data: The dictionary that contains the data - this should match the fields provided in the custom field schema but is NOT CURRENT VALIDATED on the backend
+    supplementary data: A space to store other things about this item
+""",
+"api_dispatch_list": """
+Data point is the entitity through which all data is stored on the system but this resource is not used adding data because the data point classification must be known in order to add a datapoint.
+It has the following fields:
+    created_by: the user that added this data
+    custom_field_config: The URI of the custom field config that can be used to parse, display and edit this data
+    
+    project_data: The dictionary that contains the data - this should match the fields provided in the custom field schema but is NOT CURRENT VALIDATED on the backend
+    supplementary data: A space to store other things about this item
+"""}
 
 
     def hydrate_created_by(self, bundle):
@@ -426,6 +933,21 @@ class DataPointResource(ModelResource):
         
         return bundle
 
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 
 class DataPointClassificationResource(ModelResource):
@@ -433,11 +955,11 @@ class DataPointClassificationResource(ModelResource):
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
     data_form_config = fields.ForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
     l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects")
-    l0 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l0', null=True, blank=False, default=None, full=True)
-    l1 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l1',null=True, blank=False, default=None, full=True)
-    l2 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l2',null=True, blank=False, default=None, full=True)
-    l3 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l3',null=True, blank=False, default=None, full=True)
-    l4 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l4',null=True, blank=False, default=None, full=True)
+    l0 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l0', null=True, blank=False, default=None, )
+    l1 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l1',null=True, blank=False, default=None, )
+    l2 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l2',null=True, blank=False, default=None, )
+    l3 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l3',null=True, blank=False, default=None, )
+    l4 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l4',null=True, blank=False, default=None, )
 
 
 
@@ -450,7 +972,13 @@ class DataPointClassificationResource(ModelResource):
 
     class Meta:
         filtering = {
-            "data_form_config_id": ALL_WITH_RELATIONS
+            "data_form_config": ALL_WITH_RELATIONS,
+            "l0_permitted_projects" : ALL_WITH_RELATIONS,
+            "l0" : ALL_WITH_RELATIONS,
+            "l1" : ALL_WITH_RELATIONS,
+            "l2" : ALL_WITH_RELATIONS,
+            "l3" : ALL_WITH_RELATIONS,
+            "l4" : ALL_WITH_RELATIONS,
         }
         always_return_data = True
         queryset = DataPointClassification.objects.all()
@@ -463,6 +991,178 @@ class DataPointClassificationResource(ModelResource):
         serializer = Serializer()
         authentication = SessionAuthentication()
         authorization = Authorization()
+        required_fields = {
+            "l0_permitted_projects" : "Must contain a list of URIs for the projects that the user wants to add this datapoint and all of its children to.",
+            "data_form_config" : "Must contain the URI of the data form config which was used to create this object and l0,1,2,3 and 4"
+        }
+        description = {"api_dispatch_detail":"""
+Data Point Classification:
+This is the index of all of the data points (nodes of data) on the system. Although the data is in the form of a tree, it is stored in a flat format
+Each form that is associated with a project will have its own tree of data within that project
+If the tree of data produced by a form looks like this then 
+
+        l0 project_X 
+        ├── l1 subproject_A
+        │   ├── l2 assay_A
+        │   │   ├── l3 bioactivity_V
+        │   │   ├── l3 bioactivity_W
+        │   │   └── l3 bioactivity_X
+        │   └── l2 assay_B
+        │       └── l4 bioactivity_Y
+        └── l1 subproject_B
+
+For each leaf node in the tree there will be one data point classification object
+
+        l0 project_X                        
+        ├── l1 subproject_A
+        │   ├── l2 assay_A
+        │   │   ├── l3 bioactivity_V
+        │   │   ├── l3 bioactivity_W
+        │   │   └── l3 bioactivity_X
+        │   └── l2 assay_B
+        │       └── l4 bioactivity_Y
+        └── l1 subproject_B
+
+{"l0" : "uri for project_X's data point"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" }
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" }
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_V"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_W"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_X"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_B" }
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_Y"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_B" }
+
+There is a lot of repetition in the output of this API hence the user requests the datapoints separately by calling the list ids endpoint
+
+In order to request data for one project and one form, the request will be:
+
+dev/data_point_classifications/?l0_permitted_projects__id=1&data_form_config__id=1
+
+But this will return ALL of the classification objects i.e. all levels of the tree
+
+If you just want level 0 - the top of the tree do:
+
+dev/data_point_classifications/?l0_permitted_projects__id=1&data_form_config__id=1?l1__id=1&l2__id=2l3__id=1&l4__id=4
+
+Now, if you want to filter for a specific l0__id then add that to the filter
+
+dev/data_point_classifications/?l0_permitted_projects__id=1&data_form_config__id=1?l0__id=12l1__id=1&l2__id=2l3__id=1&l4__id=4
+
+
+""",
+"api_dispatch_list": """
+
+This is the index of all of the data points (nodes of data) on the system. Although the data is in the form of a tree, it is stored in a flat format
+Each form that is associated with a project will have its own tree of data within that project
+If the tree of data produced by a form looks like this then 
+l0 project_X   
+├── l1 subproject_A
+│   ├── l2 assay_A
+│   │   ├── l3 bioactivity_V
+│   │   ├── l3 bioactivity_W
+│   │   └── l3 bioactivity_X
+│   └── l2 assay_B
+│       └── l4 bioactivity_Y
+└── l1 subproject_B
+
+For each leaf node in the tree there will be one data point classification object
+
+l0 project_X                        
+├── l1 subproject_A
+│   ├── l2 assay_A
+│   │   ├── l3 bioactivity_V
+│   │   ├── l3 bioactivity_W
+│   │   └── l3 bioactivity_X
+│   └── l2 assay_B
+│       └── l4 bioactivity_Y
+└── l1 subproject_B
+
+{"l0" : "uri for project_X's data point"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" }
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" }
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_V"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_W"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_X"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_B" }
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_A" , "l2": "uri for assay_A" , "l3": "bioactivity_Y"}
+{"l0" : "uri for project_X's data point", "l1": "uri for subproject_B" }
+
+There is a lot of repetition in the output of this API hence the user requests the datapoints separately by calling the list ids endpoint
+
+In order to request data for one project and one form, the request will be:
+
+dev/data_point_classifications/?l0_permitted_projects__id=1&data_form_config__id=1
+
+But this will return ALL of the classification objects i.e. all levels of the tree
+
+If you just want level 0 - the top of the tree do:
+
+dev/data_point_classifications/?l0_permitted_projects__id=1&data_form_config__id=1?l1__id=1&l2__id=2l3__id=1&l4__id=4
+
+Now, if you want to filter for a specific l0__id then add that to the filter
+
+dev/data_point_classifications/?l0_permitted_projects__id=1&data_form_config__id=1?l0__id=12l1__id=1&l2__id=2l3__id=1&l4__id=4
+
+
+
+""",
+
+        "api_post_list" : """
+Read the docs for the get API before attempting to post
+
+Create a set of custom field configs and a data form config and a project
+Get the URIs for each of these based on their
+
+By posting to this API you create a datapoint classification object.
+To add an entirely new l0 object format needs to look like this:
+{
+    "data_form_config":"/dev/datastore/cbh_data_form_config/5", 
+    "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/9"] }
+    "l0": {"project_data":{"fields": "based", "on": "the", "custom": "field","config": "go here"} , 
+    "custom_field_config" : "/dev/datastore/cbh_custom_field_config/744"}
+}
+
+OR is could look like this:
+
+{
+    "data_form_config":{"pk":5}, 
+    "l0_permitted_projects": [{"pk":5}] }
+    "l0": {"project_data":{"fields": "based", "on": "the", "custom": "field","config": "go here"} , 
+    "custom_field_config" : {"pk": 115}
+}
+
+
+
+To add an "l1" the format should look like this:
+
+{
+    "data_form_config":"/dev/datastore/cbh_data_form_config/4", 
+    "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
+    "l0": "cbh_datapoints/10" ,
+    "l1": {"project_data":{"fields": "based", "on": "the", "custom": "field","config": "go here"} , 
+    "custom_field_config" : ""/dev/datastore/cbh_custom_field_configs/45"}
+}
+
+Once that "l1" object has been added ensure it has an id in the UI
+
+Then, if the whole object is patched back in this case then only l1 will be updated
+If there is NO ID or URI or pk in the l1 object then a new leaf will be created
+
+{
+    "id": 453,
+    "data_form_config":"/dev/datastore/cbh_data_form_config/4", 
+    "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
+    "l0": "cbh_datapoints/10" ,
+    "l1": {"id":999, project_data":{"fields": "deifferent", "on": "values", "custom": "this time","config": "go here"} , 
+    "custom_field_config" : ""/dev/datastore/cbh_custom_field_configs/45"}
+}
+"""
+,
+
+
+
+}
     
 
     def save_related(self, bundle):
@@ -557,6 +1257,21 @@ class DataPointClassificationResource(ModelResource):
                 try: DataPointClassificationPermission.objects.get_or_create(**kwargs)
                 except IntegrityError: continue
 
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
 
 
 class DataPointClassificationPermissionResource(ModelResource):
@@ -583,4 +1298,19 @@ class DataPointClassificationPermissionResource(ModelResource):
         serializer = Serializer()
         authentication = SessionAuthentication()
         authorization = Authorization()
-    
+
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
