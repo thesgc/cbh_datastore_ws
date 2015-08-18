@@ -5,7 +5,7 @@ from tastypie.resources import ModelResource, Resource , ALL, ALL_WITH_RELATIONS
 
 from tastypie.serializers import Serializer
 from cbh_core_ws.resources import CoreProjectResource, CustomFieldConfigResource, DataTypeResource, UserResource, CoreProjectResource, ProjectTypeResource
-from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission
+from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission, Query
 from cbh_core_model.models import PinnedCustomField, ProjectType, DataFormConfig, Project, CustomFieldConfig
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
@@ -24,35 +24,39 @@ from tastypie.http import HttpConflict
 from tastypie.exceptions import ImmediateHttpResponse
 
 
+from cbh_datastore_ws.authorization import DataClassificationProjectAuthorization
+
+from cbh_core_ws.authorization import ProjectAuthorization, ProjectListAuthorization
+from django.http import HttpResponse, HttpResponseNotFound, Http404
 
 
+from django.db.models import Prefetch
 
+from tastypie.utils.mime import determine_format, build_content_type
 
+from tastypie import http
 
-
-
-
-
+from cbh_datastore_ws import elasticsearch_client
 
 class DataPointProjectFieldResource(ModelResource):
     """Provides the schema information about a field that is required by front end apps"""
     handsontable_column = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     edit_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     edit_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    filter_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    filter_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)   
-    exclude_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    exclude_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    sort_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    sort_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    hide_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    hide_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    actions_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    actions_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    elasticsearch_fieldname = fields.CharField(null=True, blank=False, readonly=False, help_text=None)
+    # filter_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    # filter_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)   
+    # exclude_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    # exclude_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    # sort_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    # sort_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    # hide_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    # hide_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    # actions_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
+    # actions_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
 
 
     class Meta:
-        always_return_data = True
         queryset = PinnedCustomField.objects.all()
         resource_name = 'cbh_datapoint_fields'
         #authorization = Authorization()
@@ -124,17 +128,14 @@ autocomplete urls
         return self.create_response(request, self.build_schema())
 
 
-    def get_parent_key(self, bundle):
-        return get_key_from_field_name(bundle.obj.custom_field_config.name)
-
-    def get_field_key(self, bundle):
-        return get_key_from_field_name(bundle.obj.custom_field_config.name)
-
 
 
     def get_namespace(self, bundle):
-        '''hook to return the dotted path to this field based on the level and the name of the field'''
-        return "%s.project_data.%s" % (self._meta.level, bundle.obj.get_space_replaced_name())
+        '''
+            Hook to return the dotted path to this field based on the level and the name of the field
+            The level name is formatted in the dehydrate method of the DataFormConfigResource
+        '''
+        return "{level}.project_data.%s" % ( bundle.obj.get_space_replaced_name())
 
     def get_namespace_for_action_key(self, bundle, action_type):
         return action_type
@@ -171,7 +172,7 @@ autocomplete urls
         data["placeholder"] = obj.description
         form = {}
         form["position"] = obj.position
-        form["key"] = self.get_namespace(bundle)
+        form["key"] = obj.get_space_replaced_name()
         form["title"] = obj.name
         form["placeholder"] = obj.description
         # form["allowed_values"] = obj.allowed_values
@@ -205,7 +206,8 @@ autocomplete urls
 
 
 
-
+    def dehydrate_elasticsearch_fieldname(self, bundle):
+        return self.get_namespace(bundle)
 
 
     def dehydrate_handsontable_column(self, bundle):
@@ -219,99 +221,98 @@ autocomplete urls
 
     def dehydrate_edit_form(self, bundle):
         '''          '''
-
         return {"form" : [self.get_field_values(bundle)[1]]}
 
     def dehydrate_edit_schema(self, bundle):
         '''          '''
-        return {"properties" :{self.get_namespace(bundle) : self.get_field_values(bundle)[0]}}
+        return {"properties" :{bundle.obj.get_space_replaced_name() : self.get_field_values(bundle)[0]}}
 
-    def dehydrate_filter_form(self, bundle):
-        '''          '''
-        filter_form = {
-                          "htmlClass": "",
-                          "key": self.get_namespace_for_action_key(bundle,"filter"),
-                          "disableSuccessState": True,
-                          "feedback": False,
-                          "options": {
-                          "refreshDelay": 0,
-                            "async": {
-                                "url": "tba",
-                                "call": "dependencyInjectedBasedOnThisString"
-                              }
-                          }
-                      },
-        return {"form" : filter_form }
+    # def dehydrate_filter_form(self, bundle):
+    #     '''          '''
+    #     filter_form = {
+    #                       "htmlClass": "",
+    #                       "key": self.get_namespace_for_action_key(bundle,"filter"),
+    #                       "disableSuccessState": True,
+    #                       "feedback": False,
+    #                       "options": {
+    #                       "refreshDelay": 0,
+    #                         "async": {
+    #                             "url": "tba",
+    #                             "call": "dependencyInjectedBasedOnThisString"
+    #                           }
+    #                       }
+    #                   },
+    #     return {"form" : filter_form }
 
-    def dehydrate_filter_schema(self, bundle):
-        '''          '''
-        schema = {
-                           self.get_namespace_for_action_key(bundle, "filter"): { 
-                              "type": "array", 
-                              "format" : "uiselect",
-                              "items" :[],
-                              "placeholder": "Choose...",
-                              "title": "Filter %s" % bundle.obj.name,                                                }
+    # def dehydrate_filter_schema(self, bundle):
+    #     '''          '''
+    #     schema = {
+    #                        self.get_namespace_for_action_key(bundle, "filter"): { 
+    #                           "type": "array", 
+    #                           "format" : "uiselect",
+    #                           "items" :[],
+    #                           "placeholder": "Choose...",
+    #                           "title": "Filter %s" % bundle.obj.name,                                                }
 
-                                }
-        return {"properties": schema }
-
-
-    def dehydrate_exclude_form(self, bundle):
-        '''          '''
-        exclude_form = {
-                          "htmlClass": "",
-                          "key": self.get_namespace_for_action_key(bundle, "exclude"),
-                          "disableSuccessState": True,
-                          "feedback": False,
-                          "options": {
-                          "refreshDelay": 0,
-                            "async": {
-                                "url": "tba",
-                                "call": "dependencyInjectedBasedOnThisString"
-                              }
-                          }
-                      },
-        return {"form" : exclude_form }
-
-    def dehydrate_exclude_schema(self, bundle):
-        '''          '''
-        schema = {
-                           self.get_namespace_for_action_key(bundle, "exclude"): { 
-                              "type": "array", 
-                              "format" : "uiselect",
-                              "items" :[],
-                              "placeholder": "Choose...",
-                              "title": "Exclude %s" % bundle.obj.name,                                                }
-
-                                }
-        return {"properties": schema }
+    #                             }
+    #     return {"properties": schema }
 
 
-    def dehydrate_sort_form(self, bundle):
-        hide_form = { 
-            "key" : self.get_namespace_for_action_key(bundle, "sort"),
-            "type": "radiobuttons",
-            "titleMap": [
-                { "value": "asc", "name": "A-Z" },
-                { "value": "desc", "name": "Z-A" }
-            ]
-        }
-        return {"form" : hide_form}
+    # def dehydrate_exclude_form(self, bundle):
+    #     '''          '''
+    #     exclude_form = {
+    #                       "htmlClass": "",
+    #                       "key": self.get_namespace_for_action_key(bundle, "exclude"),
+    #                       "disableSuccessState": True,
+    #                       "feedback": False,
+    #                       "options": {
+    #                       "refreshDelay": 0,
+    #                         "async": {
+    #                             "url": "tba",
+    #                             "call": "dependencyInjectedBasedOnThisString"
+    #                           }
+    #                       }
+    #                   },
+    #     return {"form" : exclude_form }
+
+    # def dehydrate_exclude_schema(self, bundle):
+    #     '''          '''
+    #     schema = {
+    #                        self.get_namespace_for_action_key(bundle, "exclude"): { 
+    #                           "type": "array", 
+    #                           "format" : "uiselect",
+    #                           "items" :[],
+    #                           "placeholder": "Choose...",
+    #                           "title": "Exclude %s" % bundle.obj.name,                                                }
+
+    #                             }
+    #     return {"properties": schema }
 
 
-    def dehydrate_sort_schema(self, bundle):
-        '''Note that the sort schema askes for a priority - this is to be used in applying the sorts'''
-        hide_schema = {
-           self.get_namespace_for_action_key(bundle, "sort"): {
-                "type": "string",
-                "enum": ["asc","desc"]
-              },
-              "sort_priority":{
-                    "type": "integer"
-              }
-        }
-        return {"properties" : hide_schema}
+    # def dehydrate_sort_form(self, bundle):
+    #     hide_form = { 
+    #         "key" : self.get_namespace_for_action_key(bundle, "sort"),
+    #         "type": "radiobuttons",
+    #         "titleMap": [
+    #             { "value": "asc", "name": "A-Z" },
+    #             { "value": "desc", "name": "Z-A" }
+    #         ]
+    #     }
+    #     return {"form" : hide_form}
+
+
+    # def dehydrate_sort_schema(self, bundle):
+    #     '''Note that the sort schema askes for a priority - this is to be used in applying the sorts'''
+    #     hide_schema = {
+    #        self.get_namespace_for_action_key(bundle, "sort"): {
+    #             "type": "string",
+    #             "enum": ["asc","desc"]
+    #           },
+    #           "sort_priority":{
+    #                 "type": "integer"
+    #           }
+    #     }
+    #     return {"properties" : hide_schema}
 
 
 
@@ -331,7 +332,7 @@ autocomplete urls
 class SimpleCustomFieldConfigResource(ModelResource):
     '''Return only the project type and custom field config name as returning the full field list would be '''
     data_type = fields.ForeignKey("cbh_core_ws.resources.DataTypeResource", 'data_type', null=True, blank=False, default=None, full=True)
-    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.DataPointProjectFieldResource", "pinned_custom_field", null=True, blank=False, default=None)
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.DataPointProjectFieldResource", "pinned_custom_field", null=True, blank=False, default=None, full=True)
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by')
 
     class Meta:
@@ -430,229 +431,13 @@ The fields that are in this particular custom field config:
 
 
 
-
-
-
-# def full_list(bundle):
-#     if bundle.regest.GET.get("show_form", False):
-#         return True
-#     return False
-
-
-class L0DataPointProjectFieldResource(DataPointProjectFieldResource):
-    class Meta:
-        level = "l0"
-        resource_name="l0_cbh_custom_field_config"
-
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-
-class L0FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L0DataPointProjectFieldResource",'pinned_custom_field',full=True)
-
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-
-
-
-class L1DataPointProjectFieldResource(DataPointProjectFieldResource):
-    class Meta:
-        level = "l1"
-        resource_name="l1_cbh_custom_field_config"
-
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-
-class L1FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L1DataPointProjectFieldResource",'pinned_custom_field',full=True)
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-
-class L2DataPointProjectFieldResource(DataPointProjectFieldResource):
-    class Meta:
-        level = "l2"
-        resource_name="l2_cbh_custom_field_config"
-
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-
-class L2FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L2DataPointProjectFieldResource",'pinned_custom_field',full=True)
-
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-class L3DataPointProjectFieldResource(DataPointProjectFieldResource):
-    class Meta:
-        level = "l3"
-        resource_name="l3_cbh_custom_field_config"
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-class L3FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L3DataPointProjectFieldResource",'pinned_custom_field',full=True)
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-
-class L4DataPointProjectFieldResource(DataPointProjectFieldResource):
-    class Meta:
-        level = "l4"
-        resource_name="l4_cbh_custom_field_config"
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-class L4FullCustomFieldResource(SimpleCustomFieldConfigResource):
-    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.L4DataPointProjectFieldResource",'pinned_custom_field',full=True)
-
-
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
-
-
-
-
 class DataFormConfigResource(ModelResource):
     name = fields.CharField(null=True,blank=True)
-    l0 = fields.ForeignKey("cbh_datastore_ws.resources.L0FullCustomFieldResource",'l0', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l1 = fields.ForeignKey("cbh_datastore_ws.resources.L1FullCustomFieldResource",'l1', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l2 = fields.ForeignKey("cbh_datastore_ws.resources.L2FullCustomFieldResource",'l2', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l3 = fields.ForeignKey("cbh_datastore_ws.resources.L3FullCustomFieldResource",'l3', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l4 = fields.ForeignKey("cbh_datastore_ws.resources.L4FullCustomFieldResource",'l4', null=True, blank=False, readonly=False, help_text=None, full=True)
+    l0 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l0', null=True, blank=False, readonly=False, help_text=None, full=True)
+    l1 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l1', null=True, blank=False, readonly=False, help_text=None,full=True )
+    l2 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l2', null=True, blank=False, readonly=False, help_text=None,full=True )
+    l3 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l3', null=True, blank=False, readonly=False, help_text=None,full=True )
+    l4 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l4', null=True, blank=False, readonly=False, help_text=None,full=True)
 
     class Meta:
         filtering = {
@@ -765,8 +550,17 @@ The fields that are in this particular custom field config:
         # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
         return self.create_response(request, self.build_schema())
 
-
-
+    def alter_list_data_to_serialize(self, request, data):
+        """Add the level name to each of the fields that need a level name in them"""
+        for level in ["l1", "l2", "l3", "l4", "l0"]:
+            for item in data["objects"]:
+                if item.data[level]:
+                    for field in item.data[level].data["project_data_fields"]:
+                        if field.data["handsontable_column"]["data"]:
+                            field.data["handsontable_column"]["data"] = field.data["handsontable_column"]["data"].format(**{"level": level})
+                        if field.data["elasticsearch_fieldname"]:
+                            field.data["elasticsearch_fieldname"] = field.data["elasticsearch_fieldname"].format(**{"level": level})
+        return data
 
 class ProjectWithDataFormResource(ModelResource):
     project_type = fields.ForeignKey("cbh_datastore_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
@@ -781,7 +575,7 @@ class ProjectWithDataFormResource(ModelResource):
         authentication = SessionAuthentication()
         allowed_methods = ['get', 'post', 'put']        
         resource_name = 'cbh_projects_with_forms'
-        authorization = Authorization()
+        authorization = ProjectListAuthorization()
         include_resource_uri = True
         default_format = 'application/json'
         serializer = Serializer()
@@ -899,6 +693,10 @@ The fields that are in this particular custom field config:
 
 
 
+
+
+
+
 class DataPointResource(ModelResource):
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
     custom_field_config = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'custom_field_config')
@@ -958,16 +756,35 @@ It has the following fields:
 
 
 
+
+class MyForeignKey(fields.ForeignKey):
+    def should_full_dehydrate(self, bundle, for_list):
+        
+        return bundle.request.GET.get("full", None)
+
+
 class DataPointClassificationResource(ModelResource):
     '''Returns individual rows in the object graph - note that the rows returned are denormalized data points '''
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
     data_form_config = fields.ForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
-    l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects")
-    l0 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l0', null=True, blank=False, default=None, )
-    l1 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l1',null=True, blank=False, default=None, )
-    l2 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l2',null=True, blank=False, default=None, )
-    l3 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l3',null=True, blank=False, default=None, )
-    l4 = fields.ForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l4',null=True, blank=False, default=None, )
+    l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects", full=False)
+    level_from = fields.CharField( null=True, blank=False, default=None)
+    l0 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l0', null=True, blank=False, default=None, )
+    l1 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l1',null=True, blank=False, default=None,)
+    l2 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l2',null=True, blank=False, default=None, )
+    l3 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l3',null=True, blank=False, default=None, )
+    l4 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l4',null=True, blank=False, default=None,)
+
+
+    def get_object_list(self, request):
+        return super(DataPointClassificationResource, self).get_object_list(request).prefetch_related(Prefetch("data_form_config")).prefetch_related(Prefetch("l0_permitted_projects"))
+
+
+    def apply_filters(self, request, applicable_filters):
+        pids = self._meta.authorization.project_ids(request)
+        dataset = self.get_object_list(request).filter(**applicable_filters).filter(l0_permitted_projects__id__in=set(pids))
+        return dataset.order_by("-created")
+
 
 
 
@@ -977,6 +794,61 @@ class DataPointClassificationResource(ModelResource):
         
         return bundle
 
+    def dehydrate_level_from(self, bundle):
+        level_from = ""
+        if  bundle.obj.l4_id != 1:
+            level_from = "l4"
+        if  bundle.obj.l3_id != 1:
+            level_from = "l3"
+        if  bundle.obj.l2_id != 1:
+            level_from = "l2"
+        if  bundle.obj.l1_id != 1:
+            level_from = "l1"
+        if  bundle.obj.l0_id != 1:
+            level_from = "l0"
+        return level_from
+
+    def save(self, bundle, skip_errors=False):
+        ''' Moved the hydrate_m2m call to earlier in the method to ensure that there is a consistent readout for the project authorization '''
+        self.is_valid(bundle)
+
+        if bundle.errors and not skip_errors:
+            raise ImmediateHttpResponse(response=self.error_response(bundle.request, bundle.errors))
+        
+        m2m_bundle = self.hydrate_m2m(bundle)
+
+        # Check if they're authorized.
+        if bundle.obj.pk:
+            self.authorized_update_detail(self.get_object_list(bundle.request), bundle)
+        else:
+            self.authorized_create_detail(self.get_object_list(bundle.request), bundle)
+
+        # Save FKs just in case.
+        self.save_related(bundle)
+
+        # Save the main object.
+        bundle.obj.save()
+        bundle.objects_saved.add(self.create_identifier(bundle.obj))
+        bundle.request.GET = bundle.request.GET.copy()
+        #Set the full parameter in the request GET object when saving stuff
+        bundle.request.GET["full"] = True
+        # Now pick up the M2M bits.
+        self.save_m2m(m2m_bundle)
+
+        return bundle
+
+
+    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+        Mostly a useful shortcut/hook.
+        """
+        desired_format = self.determine_format(request)
+        serialized = self.serialize(request, data, desired_format)
+        if response_class == http.HttpCreated:
+            #There has been a new object created - we must now index it
+            elasticsearch_client.index_datapoint_classification(serialized)
+        return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
     class Meta:
         filtering = {
@@ -988,17 +860,17 @@ class DataPointClassificationResource(ModelResource):
             "l3" : ALL_WITH_RELATIONS,
             "l4" : ALL_WITH_RELATIONS,
         }
-        always_return_data = True
+        always_return_data = True  #Must be true so that the hook for elasticsearch indexing works
         queryset = DataPointClassification.objects.all()
         resource_name = 'cbh_datapoint_classifications'
         #authorization = Authorization()
         default_format = 'application/json'
         include_resource_uri = True
-        allowed_methods = ['get', 'post', 'patch']
+        allowed_methods = ['get', 'post']
         default_format = 'application/json'
         serializer = Serializer()
         authentication = SessionAuthentication()
-        authorization = Authorization()
+        authorization = DataClassificationProjectAuthorization()
         required_fields = {
             "l0_permitted_projects" : "Must contain a list of URIs for the projects that the user wants to add this datapoint and all of its children to.",
             "data_form_config" : "Must contain the URI of the data form config which was used to create this object and l0,1,2,3 and 4"
@@ -1288,6 +1160,65 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         # bundle = self.build_bundle(request=request)
         # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
         return self.create_response(request, self.build_schema())
+
+
+
+class QueryResource(ModelResource):
+    """ A resource which saves a query for elasticsearch and then returns the result of the query"""
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
+    query = fields.DictField()
+    aggs = fields.DictField()
+
+    class Meta:
+        queryset = Query.objects.all()
+        always_return_data=True #required to add the elasticsearch data
+        resource_name = 'cbh_queries/_search'
+        #authorization = Authorization()
+        default_format = 'application/json'
+        include_resource_uri = True
+        allowed_methods = [ 'post','get',]
+        default_format = 'application/json'
+        serializer = Serializer()
+        authentication = SessionAuthentication()
+        authorization = Authorization()
+
+    def alter_detail_data_to_serialize(self, request, updated_bundle):
+        es = elasticsearch_client.get_client()
+
+        data = es.search(
+            elasticsearch_client.get_index_name(), 
+            body={"filter": updated_bundle.obj.query, "aggs": updated_bundle.obj.aggs},  
+            from_=request.GET.get("from"),  
+            size=request.GET.get("size")
+            )
+        updated_bundle.data.update(data)
+        return updated_bundle
+
+    def hydrate_created_by(self, bundle):
+        user = get_user_model().objects.get(pk=bundle.request.user.pk)
+        bundle.obj.created_by = user
+        return bundle
+
+
+    def get_schema(self, request, **kwargs):
+        """
+        Returns a serialized form of the schema of the resource.
+        Calls ``build_schema`` to generate the data. This method only responds
+        to HTTP GET.
+        Should return a HttpResponse (200 OK).
+        """
+        # self.method_check(request, allowed=['get'])
+        # self.is_authenticated(request)
+        # self.throttle_check(request)
+        # self.log_throttled_access(request)
+        # bundle = self.build_bundle(request=request)
+        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
+        return self.create_response(request, self.build_schema())
+
+
+
+
+
 
 
 

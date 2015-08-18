@@ -9608,6 +9608,67 @@ ALTER TABLE ONLY auth_user_user_permissions
     ADD CONSTRAINT user_id_refs_id_4dc23c39 FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
 
 
+
+CREATE TABLE cbh_datastore_model_query (
+    id integer NOT NULL,
+    created timestamp with time zone NOT NULL,
+    modified timestamp with time zone NOT NULL,
+    query hstore NOT NULL,
+    aggs hstore NOT NULL,
+    created_by_id integer NOT NULL
+);
+
+
+ALTER TABLE public.cbh_datastore_model_query OWNER TO chembl;
+
+--
+-- Name: cbh_datastore_model_query_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
+--
+
+CREATE SEQUENCE cbh_datastore_model_query_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cbh_datastore_model_query_id_seq OWNER TO chembl;
+
+--
+-- Name: cbh_datastore_model_query_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
+--
+
+ALTER SEQUENCE cbh_datastore_model_query_id_seq OWNED BY cbh_datastore_model_query.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_datastore_model_query ALTER COLUMN id SET DEFAULT nextval('cbh_datastore_model_query_id_seq'::regclass);
+
+
+--
+-- Name: cbh_datastore_model_query_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace:
+--
+
+ALTER TABLE ONLY cbh_datastore_model_query
+    ADD CONSTRAINT cbh_datastore_model_query_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cbh_datastore_model_query_e93cb7eb; Type: INDEX; Schema: public; Owner: chembl; Tablespace:
+--
+
+CREATE INDEX cbh_datastore_model_query_e93cb7eb ON cbh_datastore_model_query USING btree (created_by_id);
+
+
+ALTER TABLE ONLY cbh_datastore_model_query
+    ADD CONSTRAINT cbh_datastore_mo_created_by_id_1f57622084aada95_fk_auth_user_id FOREIGN KEY (created_by_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+
 --
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --

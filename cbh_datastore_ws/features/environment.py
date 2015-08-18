@@ -236,7 +236,8 @@ class Tester(unittest.TestCase):
         can be loaded properly.
         """
         # Just try the load. If it throws an exception, the test case will fail.
-        self.serializer.from_json(data)
+        import json
+        json.loads(data)
 
     def assertValidXML(self, data):
         """
@@ -310,6 +311,8 @@ class Tester(unittest.TestCase):
         self.assertTrue(resp['Content-Type'].startswith('application/x-plist'))
         self.assertValidPlist(force_text(resp.content))
  
+import os
+
 def before_all(context):
     pass
     # Even though DJANGO_SETTINGS_MODULE is set, this may still be
@@ -341,7 +344,8 @@ def before_scenario(context, scenario):
     call("psql -Uchembl tester_cbh_chembl < features/fixtures/testreg.sql >/dev/null", shell=True)
 
     django.setup()
-
+    from cbh_datastore_ws.elasticsearch_client import delete_main_index
+    delete_main_index()
 
     # django.setup()
 
@@ -380,7 +384,7 @@ def after_scenario(context, scenario):
     from django import db
     db.close_connection()
     from subprocess import call
-    call("echo 'drop database if exists tester_cbh_chembl;'  | psql template1 >/dev/null", shell=True)
+    # call("echo 'drop database if exists tester_cbh_chembl;'  | psql template1 >/dev/null", shell=True)
 
     # User.objects.all().exclude(id=-1).delete()
     # CustomFieldConfig.objects.exclude(id=-1).all().delete()
@@ -390,3 +394,5 @@ def after_scenario(context, scenario):
     # DataPoint.objects.exclude(id=1).delete()
     # context.runner.teardown_test_environment()
     # Bob's your uncle.
+
+

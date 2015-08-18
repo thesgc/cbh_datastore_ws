@@ -44,7 +44,8 @@ def step(context):
     context.test_case.assertEquals(classif["meta"]["total_count"], 0)
 
     post_data = {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
-                "l0": {"custom_field_config":{"pk":577},"project_data":{"some_test":"project_data"}},
+                "l0": {
+                "custom_field_config":{"pk":577},"project_data":{"some_test":"project_data"}},
                 "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
     created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
 format="json", 
