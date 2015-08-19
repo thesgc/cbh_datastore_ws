@@ -3,13 +3,13 @@ from django.conf import settings
 import elasticsearch
 from django.core.exceptions import ImproperlyConfigured
 
+
 import time
 try:
     ES_PREFIX = settings.ES_PREFIX
 except AttributeError:
     raise ImproperlyConfigured("You must set the index prefix for cbh datastore")
 import json
-
 ES_MAIN_INDEX_NAME = "cbh_datastore_index"
 
 def get_index_name():
@@ -28,7 +28,8 @@ def get_client():
 
 
 
-def index_datapoint_classification(data, index_name=get_index_name()):
+
+def index_datapoint_classification(data, index_name=get_index_name(), refresh=True):
     data = json.loads(data)
     batches = [data]
     if data.get("objects", False):
@@ -86,4 +87,7 @@ def index_datapoint_classification(data, index_name=get_index_name()):
                             })
         bulk_items.append(item)
     #Data is not refreshed!
-    es.bulk(body=bulk_items, refresh=True)
+    es.bulk(body=bulk_items, refresh=refresh)
+
+
+

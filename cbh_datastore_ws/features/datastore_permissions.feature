@@ -14,6 +14,8 @@ Feature: Datastore Add Records Permissions
         When I log in testuser
         Given a datapointclassification is linked to a project I do not have access to and another is in readonly
         Then I get classifications and I see only 1 record from my readonly project
+        Then I reindex Elasticsearch
+        Then I request all data from the elasticsearch index and see only 1 record from my readonly project
 
 
 
@@ -24,7 +26,6 @@ Feature: Datastore Add Records Permissions
         Then I POST a new classification to my viewer project and get 401
         Then I POST a new classification to the project I have no permissions on and get 401
         Then I POST a new classification without linked project and get 400
-        Then I request all data from the elasticsearch index and see only 1 record from my readonly project
 
 
 

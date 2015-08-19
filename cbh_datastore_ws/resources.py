@@ -38,6 +38,12 @@ from tastypie import http
 
 from cbh_datastore_ws import elasticsearch_client
 
+
+from django.db.models import Max, Min
+from django.http import HttpRequest
+
+
+
 class DataPointProjectFieldResource(ModelResource):
     """Provides the schema information about a field that is required by front end apps"""
     handsontable_column = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
@@ -775,81 +781,6 @@ class DataPointClassificationResource(ModelResource):
     l3 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l3',null=True, blank=False, default=None, )
     l4 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l4',null=True, blank=False, default=None,)
 
-
-    def get_object_list(self, request):
-        return super(DataPointClassificationResource, self).get_object_list(request).prefetch_related(Prefetch("data_form_config")).prefetch_related(Prefetch("l0_permitted_projects"))
-
-
-    def apply_filters(self, request, applicable_filters):
-        pids = self._meta.authorization.project_ids(request)
-        dataset = self.get_object_list(request).filter(**applicable_filters).filter(l0_permitted_projects__id__in=set(pids))
-        return dataset.order_by("-created")
-
-
-
-
-    def hydrate_created_by(self, bundle):
-        user = get_user_model().objects.get(pk=bundle.request.user.pk)
-        bundle.obj.created_by = user
-        
-        return bundle
-
-    def dehydrate_level_from(self, bundle):
-        level_from = ""
-        if  bundle.obj.l4_id != 1:
-            level_from = "l4"
-        if  bundle.obj.l3_id != 1:
-            level_from = "l3"
-        if  bundle.obj.l2_id != 1:
-            level_from = "l2"
-        if  bundle.obj.l1_id != 1:
-            level_from = "l1"
-        if  bundle.obj.l0_id != 1:
-            level_from = "l0"
-        return level_from
-
-    def save(self, bundle, skip_errors=False):
-        ''' Moved the hydrate_m2m call to earlier in the method to ensure that there is a consistent readout for the project authorization '''
-        self.is_valid(bundle)
-
-        if bundle.errors and not skip_errors:
-            raise ImmediateHttpResponse(response=self.error_response(bundle.request, bundle.errors))
-        
-        m2m_bundle = self.hydrate_m2m(bundle)
-
-        # Check if they're authorized.
-        if bundle.obj.pk:
-            self.authorized_update_detail(self.get_object_list(bundle.request), bundle)
-        else:
-            self.authorized_create_detail(self.get_object_list(bundle.request), bundle)
-
-        # Save FKs just in case.
-        self.save_related(bundle)
-
-        # Save the main object.
-        bundle.obj.save()
-        bundle.objects_saved.add(self.create_identifier(bundle.obj))
-        bundle.request.GET = bundle.request.GET.copy()
-        #Set the full parameter in the request GET object when saving stuff
-        bundle.request.GET["full"] = True
-        # Now pick up the M2M bits.
-        self.save_m2m(m2m_bundle)
-
-        return bundle
-
-
-    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
-        """
-        Extracts the common "which-format/serialize/return-response" cycle.
-        Mostly a useful shortcut/hook.
-        """
-        desired_format = self.determine_format(request)
-        serialized = self.serialize(request, data, desired_format)
-        if response_class == http.HttpCreated:
-            #There has been a new object created - we must now index it
-            elasticsearch_client.index_datapoint_classification(serialized)
-        return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
-
     class Meta:
         filtering = {
             "data_form_config": ALL_WITH_RELATIONS,
@@ -1054,6 +985,82 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
 }
     
 
+
+    def get_object_list(self, request):
+        return super(DataPointClassificationResource, self).get_object_list(request).prefetch_related(Prefetch("data_form_config")).prefetch_related(Prefetch("l0_permitted_projects"))
+
+
+    def apply_filters(self, request, applicable_filters):
+        pids = self._meta.authorization.project_ids(request)
+        dataset = self.get_object_list(request).filter(**applicable_filters).filter(l0_permitted_projects__id__in=set(pids))
+        return dataset.order_by("-created")
+
+
+
+
+    def hydrate_created_by(self, bundle):
+        user = get_user_model().objects.get(pk=bundle.request.user.pk)
+        bundle.obj.created_by = user
+        
+        return bundle
+
+    def dehydrate_level_from(self, bundle):
+        level_from = ""
+        if  bundle.obj.l4_id != 1:
+            level_from = "l4"
+        if  bundle.obj.l3_id != 1:
+            level_from = "l3"
+        if  bundle.obj.l2_id != 1:
+            level_from = "l2"
+        if  bundle.obj.l1_id != 1:
+            level_from = "l1"
+        if  bundle.obj.l0_id != 1:
+            level_from = "l0"
+        return level_from
+
+    def save(self, bundle, skip_errors=False):
+        ''' Moved the hydrate_m2m call to earlier in the method to ensure that there is a consistent readout for the project authorization '''
+        self.is_valid(bundle)
+
+        if bundle.errors and not skip_errors:
+            raise ImmediateHttpResponse(response=self.error_response(bundle.request, bundle.errors))
+        
+        m2m_bundle = self.hydrate_m2m(bundle)
+
+        # Check if they're authorized.
+        if bundle.obj.pk:
+            self.authorized_update_detail(self.get_object_list(bundle.request), bundle)
+        else:
+            self.authorized_create_detail(self.get_object_list(bundle.request), bundle)
+
+        # Save FKs just in case.
+        self.save_related(bundle)
+
+        # Save the main object.
+        bundle.obj.save()
+        bundle.objects_saved.add(self.create_identifier(bundle.obj))
+        bundle.request.GET = bundle.request.GET.copy()
+        #Set the full parameter in the request GET object when saving stuff
+        bundle.request.GET["full"] = True
+        # Now pick up the M2M bits.
+        self.save_m2m(m2m_bundle)
+
+        return bundle
+
+
+    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+        Mostly a useful shortcut/hook.
+        """
+        desired_format = self.determine_format(request)
+        serialized = self.serialize(request, data, desired_format)
+        if response_class == http.HttpCreated:
+            #There has been a new object created - we must now index it
+            elasticsearch_client.index_datapoint_classification(serialized)
+        return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
+
+
     def save_related(self, bundle):
         """
         Handles the saving of related non-M2M data.
@@ -1163,6 +1170,31 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
 
 
 
+
+
+def reindex_datapoint_classifications():
+    offset = 0
+    aggs = DataPointClassification.objects.aggregate(Max("id"), Min("id"))
+
+    res = DataPointClassificationResource()
+    req = HttpRequest()
+    req.GET = req.GET.copy()
+    req.GET["full"] = True
+    for myid in range(aggs["id__min"], aggs["id__max"]):
+        try:
+            obj = DataPointClassification.objects.get(id=myid)
+            bundle = res.build_bundle(obj=obj, request=req)
+            bundle = res.full_dehydrate(bundle)
+            bundle = res.alter_detail_data_to_serialize(req, bundle)
+            resp = res.create_response(req, bundle)
+            elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
+        except ObjectDoesNotExist:
+            pass
+    time.sleep(1)
+
+
+
+
 class QueryResource(ModelResource):
     """ A resource which saves a query for elasticsearch and then returns the result of the query"""
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
@@ -1182,12 +1214,29 @@ class QueryResource(ModelResource):
         authentication = SessionAuthentication()
         authorization = Authorization()
 
+    def authorization_filter(self, request, filter_json):
+        auth = DataClassificationProjectAuthorization()
+        project_ids = auth.project_ids(request)
+        pr = ProjectWithDataFormResource()
+        from cbh_datastore_ws.urls import api_name
+
+        puris = ["/%s/datastore/cbh_projects_with_forms/%d" % (api_name, pid) for pid in project_ids]
+        new_filter = {"bool" : {
+            "must" : [
+                filter_json,
+                {"terms" : {"l0_permitted_projects.raw" : puris }}
+            ]
+        }}
+        return new_filter
+
+
+
     def alter_detail_data_to_serialize(self, request, updated_bundle):
         es = elasticsearch_client.get_client()
 
         data = es.search(
             elasticsearch_client.get_index_name(), 
-            body={"filter": updated_bundle.obj.query, "aggs": updated_bundle.obj.aggs},  
+            body={"filter": self.authorization_filter(request, updated_bundle.obj.query), "aggs": updated_bundle.obj.aggs},  
             from_=request.GET.get("from"),  
             size=request.GET.get("size")
             )

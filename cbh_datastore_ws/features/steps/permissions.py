@@ -144,7 +144,13 @@ def step(context):
        format="json", data={"query": {"match_all":{}}, "aggs": {}})
 
     classif = json.loads(classif.content)
-    context.test_case.assertEquals(classif["hits"]["hits"][0]["resource_uri"], "/dev/datastore/cbh_datapoint_classifications/8")
+    print (classif)
+    context.test_case.assertEquals(classif["hits"]["hits"][0]["_source"]["resource_uri"], "/dev/datastore/cbh_datapoint_classifications/2")
+    context.test_case.assertEquals(classif["hits"]["total"], 1)
 
 
 
+@then("I reindex Elasticsearch")
+def step(context):
+    from cbh_datastore_ws.resources import reindex_datapoint_classifications
+    reindex_datapoint_classifications()
