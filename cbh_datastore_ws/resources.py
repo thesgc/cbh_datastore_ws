@@ -1198,8 +1198,9 @@ def reindex_datapoint_classifications():
 class QueryResource(ModelResource):
     """ A resource which saves a query for elasticsearch and then returns the result of the query"""
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
-    query = fields.DictField()
-    aggs = fields.DictField()
+    query = fields.DictField(attribute='query')
+    aggs = fields.DictField(attribute='aggs')
+    filter = fields.DictField(attribute='filter')
 
     class Meta:
         queryset = Query.objects.all()
