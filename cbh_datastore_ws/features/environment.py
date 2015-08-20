@@ -380,6 +380,8 @@ def before_scenario(context, scenario):
 def after_scenario(context, scenario):
     # Tear down the scenario test environment.
     #context.runner.teardown_databases(context.old_db_config)
+
+
     context.api_client.client.logout()
     from django import db
     db.close_connection()
@@ -395,4 +397,15 @@ def after_scenario(context, scenario):
     # context.runner.teardown_test_environment()
     # Bob's your uncle.
 
+def after_all(context):
+    from cbh_datastore_model.models import      DataPointClassificationPermission
+    from cbh_datastore_ws.resources import reindex_datapoint_classifications
+    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=3 )   
+    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=4 )
+    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=1 )
+    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=2 )
+    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=5 )
+    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=6 )
+    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=7 )
 
+    reindex_datapoint_classifications()

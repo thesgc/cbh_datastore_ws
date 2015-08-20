@@ -43,9 +43,9 @@ class DataClassificationProjectAuthorization(Authorization):
         self.login_checks(bundle.request, bundle.obj.__class__)
         pids = get_all_project_ids_for_user_perms(bundle.request.user.get_all_permissions(), ["editor","viewer"])
         allowed = False
-        if bundle.object.l0_permitted_projects.count() == 0:
+        if bundle.obj.l0_permitted_projects.count() == 0:
             raise BadRequest("You must specify at least one project")
-        for projbundle in bundle.object.l0_permitted_projects.all():
+        for projbundle in bundle.obj.l0_permitted_projects.all():
             #If any one project is not allowed to be edited then unauthorized
             if projbundle.id in pids:
                 allowed = True

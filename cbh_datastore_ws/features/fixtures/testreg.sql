@@ -4463,9 +4463,9 @@ COPY cbh_core_model_pinnedcustomfield (id, created, modified, name, custom_field
 COPY cbh_core_model_project (id, created, modified, name, project_key, created_by_id, custom_field_config_id, is_default, project_type_id) FROM stdin;
 2	2015-03-03 12:33:46.9785+00	2015-08-12 13:09:18.058661+01	KP Test Project	kp-test-project	1	4	f	1
 1	2015-02-27 14:14:25.361661+00	2015-08-12 13:09:31.875179+01	tester	tester	1	4	f	1
-3	2015-08-13 08:49:34.442315+01	2015-08-13 08:49:34.449757+01	AssaysWithPermission	assayswithpermission	1	\N	f	1
-4	2015-08-13 08:50:05.190439+01	2015-08-13 08:50:05.197917+01	AssaysWithoutPermission	assayswithoutpermission	1	\N	f	1
-5	2015-08-13 08:50:34.923861+01	2015-08-13 08:50:34.931156+01	Assaysreadonly	assaysreadonly	1	\N	f	1
+3	2015-08-13 08:49:34.442315+01	2015-08-13 08:49:34.449757+01	AssaysWithPermission	assayswithpermission	1	4	f	1
+4	2015-08-13 08:50:05.190439+01	2015-08-13 08:50:05.197917+01	AssaysWithoutPermission	assayswithoutpermission	1	4	f	1
+5	2015-08-13 08:50:34.923861+01	2015-08-13 08:50:34.931156+01	Assaysreadonly	assaysreadonly	1	4	f	1
 \.
 
 

@@ -445,6 +445,9 @@ class DataFormConfigResource(ModelResource):
     l3 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l3', null=True, blank=False, readonly=False, help_text=None,full=True )
     l4 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l4', null=True, blank=False, readonly=False, help_text=None,full=True)
 
+
+
+
     class Meta:
         filtering = {
            "id" : ALL
@@ -574,7 +577,8 @@ class ProjectWithDataFormResource(ModelResource):
 
     class Meta:
         filtering = {
-           "id" : ALL
+           "id" : ALL,
+           "project_key" : ALL,
         }
         excludes  = ("schemaform", "custom_field_config")
         queryset = Project.objects.all()
@@ -775,6 +779,7 @@ class DataPointClassificationResource(ModelResource):
     data_form_config = fields.ForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
     l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects", full=False)
     level_from = fields.CharField( null=True, blank=False, default=None)
+    is_leaf_node = fields.BooleanField(default="false")
     l0 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l0', null=True, blank=False, default=None, )
     l1 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l1',null=True, blank=False, default=None,)
     l2 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l2',null=True, blank=False, default=None, )
@@ -1007,16 +1012,39 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
     def dehydrate_level_from(self, bundle):
         level_from = ""
         if  bundle.obj.l4_id != 1:
-            level_from = "l4"
+            return "l4"
         if  bundle.obj.l3_id != 1:
-            level_from = "l3"
+            return "l3"
         if  bundle.obj.l2_id != 1:
-            level_from = "l2"
+            return  "l2"
         if  bundle.obj.l1_id != 1:
-            level_from = "l1"
+            return "l1"
         if  bundle.obj.l0_id != 1:
-            level_from = "l0"
+            return  "l0"
         return level_from
+
+
+    def dehydrate_is_leaf_node(self, bundle):
+        
+        if  bundle.obj.l4_id != 1:
+            return "true"
+        if  bundle.obj.l3_id != 1:
+            leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l3_id=bundle.obj.l3_id).exclude(l4_id=1).count()
+            if leaf_node_check_count == 0:
+                return "true"
+        if  bundle.obj.l2_id != 1:
+            leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l2_id=bundle.obj.l3_id).exclude(l3_id=1).count()
+            if leaf_node_check_count == 0:
+                return "true"
+        if  bundle.obj.l1_id != 1:
+            leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l1_id=bundle.obj.l3_id).exclude(l2_id=1).count()
+            if leaf_node_check_count == 0:
+                return "true"
+        if  bundle.obj.l0_id != 1:
+            leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l0_id=bundle.obj.l3_id).exclude(l1_id=1).count()
+            if leaf_node_check_count == 0:
+                return "true"
+        return "false"     
 
     def save(self, bundle, skip_errors=False):
         ''' Moved the hydrate_m2m call to earlier in the method to ensure that there is a consistent readout for the project authorization '''
@@ -1037,6 +1065,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         self.save_related(bundle)
 
         # Save the main object.
+        print bundle.obj.__dict__
         bundle.obj.save()
         bundle.objects_saved.add(self.create_identifier(bundle.obj))
         bundle.request.GET = bundle.request.GET.copy()
@@ -1237,7 +1266,11 @@ class QueryResource(ModelResource):
 
         data = es.search(
             elasticsearch_client.get_index_name(), 
-            body={"filter": self.authorization_filter(request, updated_bundle.obj.query), "aggs": updated_bundle.obj.aggs},  
+            body={
+                "filter": self.authorization_filter(request, updated_bundle.obj.filter), 
+                "aggs": updated_bundle.obj.aggs,
+                "query" : updated_bundle.obj.query
+            },  
             from_=request.GET.get("from"),  
             size=request.GET.get("size")
             )
