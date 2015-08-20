@@ -576,10 +576,7 @@ class ProjectWithDataFormResource(ModelResource):
     enabled_forms = fields.ToManyField("cbh_datastore_ws.resources.DataFormConfigResource", "enabled_forms", full=True)
 
     class Meta:
-        filtering = {
-           "id" : ALL,
-           "project_key" : ALL,
-        }
+
         excludes  = ("schemaform", "custom_field_config")
         queryset = Project.objects.all()
         authentication = SessionAuthentication()
@@ -589,7 +586,10 @@ class ProjectWithDataFormResource(ModelResource):
         include_resource_uri = True
         default_format = 'application/json'
         serializer = Serializer()
-        filtering = {"id" : ALL}
+        filtering = {
+           "id" : ALL,
+           "project_key" : ALL_WITH_RELATIONS,
+        }        
         description =       {'api_dispatch_detail' : '''
 A project is the top level item in the system:
 project_type : For assay registration project type is not very important - it is just the top level lable
