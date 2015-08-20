@@ -213,7 +213,7 @@ autocomplete urls
 
 
     def dehydrate_elasticsearch_fieldname(self, bundle):
-        return self.get_namespace(bundle)
+        return bundle.obj.get_space_replaced_name()
 
 
     def dehydrate_handsontable_column(self, bundle):
