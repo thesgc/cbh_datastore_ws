@@ -29,6 +29,25 @@ def step(context):
 
 
 
+@then("I add permissions for datapointclassification with id 1")
+def step(context):
+    DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=1 )
+
+
+@then("I GET data point classifications with nesting and see the new l1 datapoint as a child")
+def step(context):
+    '''Here we are checking that the children data is available via the nested call'''
+    result = context.api_client.get("/dev/datastore/cbh_datapoint_classifications_nested?full=true", format="json")
+    context.test_case.assertValidJSON(result.content)
+    data = json.loads(result.content)
+    found_new_object_as_child = False
+    print (data.keys())
+    for obj in data["objects"]:
+        for child in obj["children"]:
+            if child["l1"]["project_data"]["TEST KEY"] == "TEST VALUE":
+                found_new_object_as_child = True
+
+    context.test_case.assertTrue(found_new_object_as_child)
 
 
 @then("I get a project list and I can see the projects I do have viewer rights on")
@@ -123,7 +142,7 @@ def step(context):
 @given("a datapointclassification is linked to a project I do not have access to and another is in readonly")
 def step(context):
 
-    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=2 )   
+    DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=2 )   
     DataPointClassificationPermission.objects.create(project_id=4,data_point_classification_id=1 )
 
 
@@ -154,3 +173,20 @@ def step(context):
 def step(context):
     from cbh_datastore_ws.resources import reindex_datapoint_classifications
     reindex_datapoint_classifications()
+
+
+@then("I GET data point classifications with nesting and filter only for objects without a parent (l0)")
+def step(context):
+    '''Here we are checking that the children data is available via the nested call'''
+    result = context.api_client.get("/dev/datastore/cbh_datapoint_classifications_nested?full=true&parent_id=None", format="json")
+    context.test_case.assertValidJSON(result.content)
+    data = json.loads(result.content)
+    found_non_l0 = False
+    print (data)
+    for obj in data["objects"]:
+        if obj["level_from"] != "l0":
+            found_non_l0 = True
+
+    context.test_case.assertFalse(found_non_l0)
+    context.test_case.assertEquals(data["meta"]["total_count"], 1)
+

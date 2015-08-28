@@ -22,6 +22,7 @@ from tastypie.authorization import Authorization
 from django.db.models import Prefetch
 from tastypie.http import HttpConflict
 from tastypie.exceptions import ImmediateHttpResponse
+import inflect
 
 
 from cbh_datastore_ws.authorization import DataClassificationProjectAuthorization
@@ -1044,7 +1045,9 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
             leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l0_id=bundle.obj.l3_id).exclude(l1_id=1).count()
             if leaf_node_check_count == 0:
                 return "true"
-        return "false"     
+        return "false"    
+
+
 
     def save(self, bundle, skip_errors=False):
         ''' Moved the hydrate_m2m call to earlier in the method to ensure that there is a consistent readout for the project authorization '''
@@ -1063,9 +1066,28 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
 
         # Save FKs just in case.
         self.save_related(bundle)
+        level_from = self.dehydrate_level_from(bundle)
+        
+        if level_from != "l0":
+            parent_finder_dict = {"data_form_config_id" : bundle.obj.data_form_config_id}
+            look_for_default = False
+            for level in ["l0_id", "l1_id", "l2_id", "l3_id", "l4_id"]:
+                #For all 
+                if level == level_from + "_id":
+                    look_for_default = True
+                if look_for_default:
+                    parent_finder_dict[level] = 1
+                else:
+                    parent_finder_dict[level] = getattr(bundle.obj, level)
+                parent_finder_dict["data_form_config_id"] = bundle.obj.data_form_config_id
+            parents = self.apply_filters(bundle.request, parent_finder_dict)
+            count = parents.count()
+            if count == 1:
+                bundle.obj.parent = parents[0]
+            else:
+                raise BadRequest("Issue with parent ids, should be one to choose from found %d" % count) 
 
         # Save the main object.
-        print bundle.obj.__dict__
         bundle.obj.save()
         bundle.objects_saved.add(self.create_identifier(bundle.obj))
         bundle.request.GET = bundle.request.GET.copy()
@@ -1299,6 +1321,32 @@ class QueryResource(ModelResource):
         return self.create_response(request, self.build_schema())
 
 
+
+
+
+
+
+
+
+class NestedDataPointClassificationResource(DataPointClassificationResource):
+    children = fields.ToManyField("self", attribute="children", full=True,  )
+    parent_id = fields.IntegerField( attribute="parent_id", null=True)
+
+    class Meta(DataPointClassificationResource.Meta):
+        resource_name = 'cbh_datapoint_classifications_nested'
+        allowed_methods = ['get']
+        include_resource_uri = False
+        filtering = {
+            "parent_id": ALL_WITH_RELATIONS,
+            "data_form_config": ALL_WITH_RELATIONS,
+            "l0_permitted_projects" : ALL_WITH_RELATIONS,
+            "l0" : ALL_WITH_RELATIONS,
+            "l1" : ALL_WITH_RELATIONS,
+            "l2" : ALL_WITH_RELATIONS,
+            "l3" : ALL_WITH_RELATIONS,
+            "l4" : ALL_WITH_RELATIONS,
+            "parent" : ALL_WITH_RELATIONS
+        }
 
 
 

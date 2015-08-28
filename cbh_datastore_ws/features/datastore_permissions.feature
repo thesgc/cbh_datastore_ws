@@ -22,13 +22,19 @@ Feature: Datastore Add Records Permissions
     Scenario: Data point classification POST
         Given testuser
         When I log in testuser
+        Then I add permissions for datapointclassification with id 1
         Then I POST a new classification to my editor project and get 201
         Then I POST a new classification to my viewer project and get 401
         Then I POST a new classification to the project I have no permissions on and get 401
         Then I POST a new classification without linked project and get 400
 
 
-
-
+    Scenario: Child datapoints
+        Given testuser
+        When I log in testuser
+        Then I add permissions for datapointclassification with id 1
+        Then I POST a new classification to my editor project and get 201
+        Then I GET data point classifications with nesting and see the new l1 datapoint as a child
+        Then I GET data point classifications with nesting and filter only for objects without a parent (l0)
 
 

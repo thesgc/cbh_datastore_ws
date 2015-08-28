@@ -1086,7 +1086,8 @@ CREATE TABLE cbh_datastore_model_datapointclassification (
     l2_id integer NOT NULL,
     l3_id integer NOT NULL,
     l4_id integer NOT NULL,
-    data_form_config_id integer NOT NULL
+    data_form_config_id integer NOT NULL,
+    parent_id integer
 );
 
 
@@ -4543,14 +4544,14 @@ SELECT pg_catalog.setval('cbh_datastore_model_datapoint_id_seq', 8, true);
 -- Data for Name: cbh_datastore_model_datapointclassification; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
-COPY cbh_datastore_model_datapointclassification (id, created, modified, description, created_by_id, l0_id, l1_id, l2_id, l3_id, l4_id, data_form_config_id) FROM stdin;
-1	2015-08-13 15:47:54.724743+01	2015-08-13 15:47:54.725256+01	\N	1	2	1	1	1	1	5
-2	2015-08-13 15:48:07.947496+01	2015-08-13 15:48:07.947907+01	\N	1	2	3	1	1	1	5
-3	2015-08-13 15:48:17.879682+01	2015-08-13 15:48:17.880126+01	\N	1	2	3	4	1	1	5
-4	2015-08-13 15:48:29.712707+01	2015-08-13 15:48:29.713142+01	\N	1	2	3	4	5	1	5
-5	2015-08-13 15:49:33.318548+01	2015-08-13 15:49:33.318972+01	\N	1	2	3	4	6	1	5
-6	2015-08-13 15:50:16.25869+01	2015-08-13 15:50:16.259159+01	\N	1	2	3	4	8	1	5
-7	2015-08-13 15:52:07.730251+01	2015-08-13 15:52:07.731089+01	\N	1	2	3	4	7	1	5
+COPY cbh_datastore_model_datapointclassification (id, created, modified, description, created_by_id, l0_id, l1_id, l2_id, l3_id, l4_id, data_form_config_id, parent_id) FROM stdin;
+1	2015-08-13 15:47:54.724743+01	2015-08-13 15:47:54.725256+01	\N	1	2	1	1	1	1	5	\N
+2	2015-08-13 15:48:07.947496+01	2015-08-13 15:48:07.947907+01	\N	1	2	3	1	1	1	5	\N
+3	2015-08-13 15:48:17.879682+01	2015-08-13 15:48:17.880126+01	\N	1	2	3	4	1	1	5	\N
+4	2015-08-13 15:48:29.712707+01	2015-08-13 15:48:29.713142+01	\N	1	2	3	4	5	1	5	\N
+5	2015-08-13 15:49:33.318548+01	2015-08-13 15:49:33.318972+01	\N	1	2	3	4	6	1	5	\N
+6	2015-08-13 15:50:16.25869+01	2015-08-13 15:50:16.259159+01	\N	1	2	3	4	8	1	5	\N
+7	2015-08-13 15:52:07.730251+01	2015-08-13 15:52:07.731089+01	\N	1	2	3	4	7	1	5	\N
 \.
 
 
@@ -5262,6 +5263,7 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 66	cbh_datastore_model	0012_auto_20150810_1326	2015-08-12 12:23:51.027206+01
 67	cbh_datastore_model	0013_query	2015-08-19 21:30:05.369509+01
 68	cbh_datastore_model	0014_auto_20150819_1503	2015-08-19 21:30:13.114582+01
+69	cbh_datastore_model	0015_datapointclassification_parent	2015-08-26 15:10:46.880843+01
 \.
 
 
@@ -5269,7 +5271,7 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('django_migrations_id_seq', 68, true);
+SELECT pg_catalog.setval('django_migrations_id_seq', 69, true);
 
 
 --
@@ -7691,6 +7693,13 @@ CREATE INDEX cbh_datastore_model_datapointclassification_69c6136a ON cbh_datasto
 
 
 --
+-- Name: cbh_datastore_model_datapointclassification_6be37982; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE INDEX cbh_datastore_model_datapointclassification_6be37982 ON cbh_datastore_model_datapointclassification USING btree (parent_id);
+
+
+--
 -- Name: cbh_datastore_model_datapointclassification_aa4011c1; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
@@ -8767,6 +8776,14 @@ ALTER TABLE ONLY cbh_core_model_project
 
 ALTER TABLE ONLY cbh_core_model_project_enabled_forms
     ADD CONSTRAINT "D30921c6fca224e0ab2dbfc0a697bd44" FOREIGN KEY (dataformconfig_id) REFERENCES cbh_core_model_dataformconfig(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: D605186f64ee05ef8d6261becf4ec5d7; Type: FK CONSTRAINT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_datastore_model_datapointclassification
+    ADD CONSTRAINT "D605186f64ee05ef8d6261becf4ec5d7" FOREIGN KEY (parent_id) REFERENCES cbh_datastore_model_datapointclassification(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
