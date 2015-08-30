@@ -22,7 +22,7 @@ from tastypie.authorization import Authorization
 from django.db.models import Prefetch
 from tastypie.http import HttpConflict
 from tastypie.exceptions import ImmediateHttpResponse
-import inflect
+import inflection
 
 
 from cbh_datastore_ws.authorization import DataClassificationProjectAuthorization
@@ -440,6 +440,7 @@ The fields that are in this particular custom field config:
 
 class DataFormConfigResource(ModelResource):
     name = fields.CharField(null=True,blank=True)
+    last_level = fields.CharField(null=True,blank=True)
     l0 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l0', null=True, blank=False, readonly=False, help_text=None, full=True)
     l1 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l1', null=True, blank=False, readonly=False, help_text=None,full=True )
     l2 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l2', null=True, blank=False, readonly=False, help_text=None,full=True )
@@ -541,6 +542,24 @@ The fields that are in this particular custom field config:
         '''
         }
         level = None
+
+
+    def dehydrate_last_level(self, bundle):
+        """Returns the last not null custom field config - useful in checking what level the ui should go to"""
+        last_item = ""
+        if  bundle.obj.l4_id is not None:
+            return "l4"
+        if  bundle.obj.l3_id is not None:
+            return "l3"
+        if  bundle.obj.l2_id is not None:
+            return  "l2"
+        if  bundle.obj.l1_id is not None:
+            return "l1"
+        if  bundle.obj.l0_id is not None:
+            return  "l0"
+        return last_item
+
+
 
     def dehydrate_name(self, bundle):
         bundle.data["name"] = bundle.obj.__unicode__()
@@ -780,6 +799,7 @@ class DataPointClassificationResource(ModelResource):
     data_form_config = fields.ForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
     l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects", full=False)
     level_from = fields.CharField( null=True, blank=False, default=None)
+    next_level = fields.CharField( null=True, blank=False, default=None)
     is_leaf_node = fields.BooleanField(default="false")
     l0 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l0', null=True, blank=False, default=None, )
     l1 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l1',null=True, blank=False, default=None,)
@@ -1024,6 +1044,19 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
             return  "l0"
         return level_from
 
+    def dehydrate_next_level(self, bundle):
+        next_level = ""
+        if  bundle.obj.l4_id != 1:
+            return "l5"
+        if  bundle.obj.l3_id != 1:
+            return "l4"
+        if  bundle.obj.l2_id != 1:
+            return  "l3"
+        if  bundle.obj.l1_id != 1:
+            return "l2"
+        if  bundle.obj.l0_id != 1:
+            return  "l1"
+        return next_level
 
     def dehydrate_is_leaf_node(self, bundle):
         

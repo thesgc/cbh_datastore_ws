@@ -398,14 +398,25 @@ def after_scenario(context, scenario):
     # Bob's your uncle.
 
 def after_all(context):
-    from cbh_datastore_model.models import      DataPointClassificationPermission
+    from cbh_datastore_model.models import      DataPointClassificationPermission, DataPointClassification
     from cbh_datastore_ws.resources import reindex_datapoint_classifications
-    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=3 )   
-    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=4 )
-    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=1 )
-    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=2 )
-    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=5 )
-    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=6 )
-    DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=7 )
+    # DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=3 )   
+    # DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=4 )
+    DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=1 )
+    DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=2 )
+    DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=3 )
+    DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=4 )
+
+    dp=DataPointClassification.objects.get(id=2)
+    dp.parent_id=1
+    dp.save()
+    dp=DataPointClassification.objects.get(id=3)
+    dp.parent_id =2
+    dp.save()
+    dp=DataPointClassification.objects.get(id=4)
+    dp.parent_id =3
+    dp.save()
+
+
 
     reindex_datapoint_classifications()
