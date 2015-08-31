@@ -738,7 +738,7 @@ CREATE TABLE cbh_core_model_customfieldconfig (
     id integer NOT NULL,
     created timestamp with time zone NOT NULL,
     modified timestamp with time zone NOT NULL,
-    name character varying(50) NOT NULL,
+    name character varying(100) NOT NULL,
     created_by_id integer NOT NULL,
     schemaform text,
     data_type_id integer
@@ -776,7 +776,7 @@ CREATE TABLE cbh_core_model_pinnedcustomfield (
     id integer NOT NULL,
     created timestamp with time zone NOT NULL,
     modified timestamp with time zone NOT NULL,
-    name character varying(50) NOT NULL,
+    name character varying(100) NOT NULL,
     custom_field_config_id integer NOT NULL,
     required boolean NOT NULL,
     part_of_blinded_key boolean NOT NULL,

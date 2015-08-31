@@ -1,6 +1,8 @@
-#Feature: Datastore work with real assay data
+Feature: Datastore work with real assay data
 
-#    Scenario:
+    Scenario:
+         Given I create custom field configs based on the data given
+         Given I create a project and add the data
 #        Given I remove all non default forms and datapoints
 #        When I parse my Excel file there are valid data
 #        Given I create realdata custom field configs and data form configs and assign them to my editor project
