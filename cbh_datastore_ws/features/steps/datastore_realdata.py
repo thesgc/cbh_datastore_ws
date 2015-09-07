@@ -89,8 +89,10 @@ def step(context):
             activity_dpc = DataPointClassification.objects.create(
                 parent=assay_def_dpc, 
                 l0_id=l0_datapoint.id, 
-                l2_id=assay_def_dp.id ,
                 l1_id=first_l1_datapoint.id, 
+                l2_id=assay_def_dp.id ,
                 l3_id=activity_dp.id,
                 data_form_config=context.dfc, 
-                created_by=context.user )            
+                created_by=context.user )           
+            DataPointClassificationPermission.objects.create(project=project,data_point_classification=activity_dpc)
+ 

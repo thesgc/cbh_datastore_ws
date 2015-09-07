@@ -546,18 +546,8 @@ The fields that are in this particular custom field config:
 
     def dehydrate_last_level(self, bundle):
         """Returns the last not null custom field config - useful in checking what level the ui should go to"""
-        last_item = ""
-        if  bundle.obj.l4_id is not None:
-            return "l4"
-        if  bundle.obj.l3_id is not None:
-            return "l3"
-        if  bundle.obj.l2_id is not None:
-            return  "l2"
-        if  bundle.obj.l1_id is not None:
-            return "l1"
-        if  bundle.obj.l0_id is not None:
-            return  "l0"
-        return last_item
+        return bundle.obj.last_level()
+        
 
 
 
@@ -806,6 +796,7 @@ class DataPointClassificationResource(ModelResource):
     l2 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l2',null=True, blank=False, default=None, )
     l3 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l3',null=True, blank=False, default=None, )
     l4 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l4',null=True, blank=False, default=None,)
+    parent_id = fields.IntegerField( attribute="parent_id", null=True)
 
     class Meta:
         filtering = {
@@ -1031,18 +1022,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         return bundle
 
     def dehydrate_level_from(self, bundle):
-        level_from = ""
-        if  bundle.obj.l4_id != 1:
-            return "l4"
-        if  bundle.obj.l3_id != 1:
-            return "l3"
-        if  bundle.obj.l2_id != 1:
-            return  "l2"
-        if  bundle.obj.l1_id != 1:
-            return "l1"
-        if  bundle.obj.l0_id != 1:
-            return  "l0"
-        return level_from
+        return bundle.obj.level_from()
 
     def dehydrate_next_level(self, bundle):
         next_level = ""
@@ -1355,6 +1335,12 @@ class QueryResource(ModelResource):
 
 
 
+class MyToManyField(fields.ToManyField):
+    def should_full_dehydrate(self, bundle, for_list):   
+        """Here we are not fully dehydrating if this is the last level in the hierarchy. 
+        The reason for this is that there would be too much data. Therefore we page the bottom level
+        data point classifications from elasticsearch"""
+        return bundle.obj.level_from() != bundle.obj.data_form_config.last_level()
 
 
 
@@ -1362,8 +1348,7 @@ class QueryResource(ModelResource):
 
 
 class NestedDataPointClassificationResource(DataPointClassificationResource):
-    children = fields.ToManyField("self", attribute="children", full=True,  )
-    parent_id = fields.IntegerField( attribute="parent_id", null=True)
+    children = MyToManyField("self", attribute="children", full=True,  )
 
     class Meta(DataPointClassificationResource.Meta):
         resource_name = 'cbh_datapoint_classifications_nested'
