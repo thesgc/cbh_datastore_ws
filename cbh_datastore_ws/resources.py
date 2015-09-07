@@ -1010,7 +1010,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
     def apply_filters(self, request, applicable_filters):
         pids = self._meta.authorization.project_ids(request)
         dataset = self.get_object_list(request).filter(**applicable_filters).filter(l0_permitted_projects__id__in=set(pids))
-        return dataset.order_by("-created")
+        return dataset.order_by("-modified")
 
 
 
@@ -1265,6 +1265,7 @@ class QueryResource(ModelResource):
     query = fields.DictField(attribute='query')
     aggs = fields.DictField(attribute='aggs')
     filter = fields.DictField(attribute='filter')
+    
 
     class Meta:
         queryset = Query.objects.all()
@@ -1304,7 +1305,8 @@ class QueryResource(ModelResource):
             body={
                 "filter": self.authorization_filter(request, updated_bundle.obj.filter), 
                 "aggs": updated_bundle.obj.aggs,
-                "query" : updated_bundle.obj.query
+                "query" : updated_bundle.obj.query,
+                "sort": updated_bundle.data.get("sort", [])
             },  
             from_=request.GET.get("from"),  
             size=request.GET.get("size")
