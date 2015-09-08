@@ -189,6 +189,8 @@ autocomplete urls
             
             form["placeholder"] = "Choose..."
             form["help"] = obj.description
+            form['items'] = obj.get_items_simple()
+            form['default'] = obj.default
 
         
         if data.get("format", False) == obj.DATE:
@@ -814,7 +816,7 @@ class DataPointClassificationResource(ModelResource):
         #authorization = Authorization()
         default_format = 'application/json'
         include_resource_uri = True
-        allowed_methods = ['get', 'post']
+        allowed_methods = ['get', 'post', 'patch']
         default_format = 'application/json'
         serializer = Serializer()
         authentication = SessionAuthentication()
