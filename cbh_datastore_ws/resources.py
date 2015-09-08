@@ -181,18 +181,23 @@ autocomplete urls
         form["position"] = obj.position
         form["key"] = obj.get_space_replaced_name()
         form["title"] = obj.name
-        form["placeholder"] = obj.description
+        form["description"] = obj.description
+        form["disableSuccessState"] = True
+        form["feedback"] = False
         # form["allowed_values"] = obj.allowed_values
         # form["part_of_blinded_key"] = obj.part_of_blinded_key
         searchitems = []
+        data['default'] = obj.default
+        if data["type"] == "array":
+            data['default'] = obj.default.split(",")
         if obj.UISELECT in data.get("format", ""):
             
             form["placeholder"] = "Choose..."
             form["help"] = obj.description
-            form['items'] = obj.get_items_simple()
-            form['default'] = obj.default
+            data['items'] = obj.get_items_simple()
+            
 
-        
+
         if data.get("format", False) == obj.DATE:
             maxdate = time.strftime("%Y-%m-%d")
             form.update( {
