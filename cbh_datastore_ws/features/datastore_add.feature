@@ -3,8 +3,8 @@
 #    Scenario: Project list#
 
 #        Given testuser
-#        When I log in
-#        Then I get a project list Given I am an admin JSON data is available The first form from the test fixtures has the given URI#
+#        When I log in testuser
+#        Then I get a project list Given I am an admin JSON data is available The first form from the test fixtures has the given URI
 
 #    Scenario: Data point classification GET#
 

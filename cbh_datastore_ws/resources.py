@@ -454,8 +454,11 @@ class DataFormConfigResource(ModelResource):
     l3 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l3', null=True, blank=False, readonly=False, help_text=None,full=True )
     l4 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l4', null=True, blank=False, readonly=False, help_text=None,full=True)
 
-
-
+    l0_key = fields.CharField( null=True, blank=False, readonly=False)
+    l1_key = fields.CharField( null=True, blank=False, readonly=False)
+    l2_key = fields.CharField( null=True, blank=False, readonly=False)
+    l3_key = fields.CharField( null=True, blank=False, readonly=False)
+    l4_key = fields.CharField( null=True, blank=False, readonly=False)
 
     class Meta:
         filtering = {
@@ -588,6 +591,21 @@ The fields that are in this particular custom field config:
                             field.data["elasticsearch_fieldname"] = field.data["elasticsearch_fieldname"].format(**{"level": level})
         return data
 
+    def dehydrate(self, bundle):
+        levels = ["l0", "l1", "l2", "l3", "l4"]
+        for i in range(1,len(levels)+1):
+            level_name = levels[i-1]
+            if bundle.data[level_name]:
+                level_keys = [str(bundle.data[lev].data["id"]) for lev in levels[:i]]
+                
+                bundle.data["%s_key" % level_name] = "_".join(level_keys)
+            else:
+                bundle.data["%s_key" % level_name] = None
+        return bundle
+
+
+
+
 class ProjectWithDataFormResource(ModelResource):
     project_type = fields.ForeignKey("cbh_datastore_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
     enabled_forms = fields.ToManyField("cbh_datastore_ws.resources.DataFormConfigResource", "enabled_forms", full=True)
@@ -717,9 +735,6 @@ The fields that are in this particular custom field config:
         # bundle = self.build_bundle(request=request)
         # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
         return self.create_response(request, self.build_schema())
-
-
-
 
 
 

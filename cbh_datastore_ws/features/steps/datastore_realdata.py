@@ -81,7 +81,7 @@ def step(context):
         assay_def_dpc = DataPointClassification.objects.create(parent=parent, l0_id=l0_datapoint.id, l2_id=assay_def_dp.id ,l1_id=first_l1_datapoint.id, data_form_config=context.dfc, created_by=context.user )
         DataPointClassificationPermission.objects.create(project=project,data_point_classification=assay_def_dpc)
 
-        for point in parser.get_sheet("features/fixtures/sample_data.xlsx", "%s raw data" % assay)[0:10]:
+        for point in parser.get_sheet("features/fixtures/sample_data.xlsx", "%s raw data" % assay):
             activity_dp = DataPoint.objects.create(
                 custom_field_config=context.dfc.l3, 
                 project_data=point, 
