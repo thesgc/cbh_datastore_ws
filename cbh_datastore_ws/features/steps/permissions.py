@@ -9,7 +9,7 @@ def step(context):
     pass
 
 @when("I log in testuser")
-def step(context):
+def logintestuser(context):
     context.api_client.client.login(username="testuser", password="testuser")
     
 

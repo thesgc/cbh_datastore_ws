@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 
 @given("I create custom field configs based on the data given")
-def step(context):
+def create_realdata(context):
 
 
     setup = OrderedDict(
@@ -41,7 +41,7 @@ def step(context):
 
 
 @given("I create a project and add the data")
-def step(context):
+def project(context):
     ptype= ProjectType.objects.get_or_create(name="Assay")
     project = Project.objects.create(name="Adam Hendry PhD (2010-2014)", 
         created_by=context.user, 

@@ -640,6 +640,42 @@ ALTER SEQUENCE cbh_chembl_id_generator_cbhcompoundid_id_seq OWNED BY cbh_chembl_
 
 
 --
+-- Name: cbh_chembl_id_generator_cbhplugin; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE TABLE cbh_chembl_id_generator_cbhplugin (
+    id integer NOT NULL,
+    full_function_name character varying(100) NOT NULL,
+    plugin_type character varying(20) NOT NULL,
+    input_json_path character varying(200) NOT NULL,
+    name character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.cbh_chembl_id_generator_cbhplugin OWNER TO chembl;
+
+--
+-- Name: cbh_chembl_id_generator_cbhplugin_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
+--
+
+CREATE SEQUENCE cbh_chembl_id_generator_cbhplugin_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cbh_chembl_id_generator_cbhplugin_id_seq OWNER TO chembl;
+
+--
+-- Name: cbh_chembl_id_generator_cbhplugin_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
+--
+
+ALTER SEQUENCE cbh_chembl_id_generator_cbhplugin_id_seq OWNED BY cbh_chembl_id_generator_cbhplugin.id;
+
+
+--
 -- Name: cbh_chembl_model_extension_cbhcompoundbatch; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
 --
 
@@ -821,7 +857,7 @@ CREATE TABLE cbh_core_model_project (
     id integer NOT NULL,
     created timestamp with time zone NOT NULL,
     modified timestamp with time zone NOT NULL,
-    name character varying(50),
+    name character varying(100),
     project_key character varying(50),
     created_by_id integer NOT NULL,
     custom_field_config_id integer,
@@ -937,7 +973,9 @@ CREATE TABLE cbh_core_model_dataformconfig (
     l1_id integer,
     l2_id integer,
     l3_id integer,
-    l4_id integer
+    l4_id integer,
+    human_added boolean,
+    parent_id integer
 );
 
 
@@ -2895,6 +2933,13 @@ ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid ALTER COLUMN id SET DEFAU
 -- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
+ALTER TABLE ONLY cbh_chembl_id_generator_cbhplugin ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_id_generator_cbhplugin_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
+--
+
 ALTER TABLE ONLY cbh_chembl_model_extension_cbhcompoundbatch ALTER COLUMN id SET DEFAULT nextval('cbh_chembl_model_extension_cbhcompoundbatch_id_seq'::regclass);
 
 
@@ -3506,6 +3551,9 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 328	Can add query	167	add_query
 329	Can change query	167	change_query
 330	Can delete query	167	delete_query
+331	Can add cbh plugin	168	add_cbhplugin
+332	Can change cbh plugin	168	change_cbhplugin
+333	Can delete cbh plugin	168	delete_cbhplugin
 \.
 
 
@@ -3513,7 +3561,7 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('auth_permission_id_seq', 330, true);
+SELECT pg_catalog.setval('auth_permission_id_seq', 333, true);
 
 
 --
@@ -3636,6 +3684,21 @@ COPY cbh_chembl_id_generator_cbhcompoundid (id, structure_key, assigned_id, orig
 --
 
 SELECT pg_catalog.setval('cbh_chembl_id_generator_cbhcompoundid_id_seq', 1, false);
+
+
+--
+-- Data for Name: cbh_chembl_id_generator_cbhplugin; Type: TABLE DATA; Schema: public; Owner: chembl
+--
+
+COPY cbh_chembl_id_generator_cbhplugin (id, full_function_name, plugin_type, input_json_path, name) FROM stdin;
+\.
+
+
+--
+-- Name: cbh_chembl_id_generator_cbhplugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
+--
+
+SELECT pg_catalog.setval('cbh_chembl_id_generator_cbhplugin_id_seq', 1, false);
 
 
 --
@@ -3950,12 +4013,12 @@ COPY cbh_core_model_customfieldconfig (id, created, modified, name, created_by_i
 -- Data for Name: cbh_core_model_dataformconfig; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
-COPY cbh_core_model_dataformconfig (id, created, modified, created_by_id, l0_id, l1_id, l2_id, l3_id, l4_id) FROM stdin;
-1	2015-08-12 13:09:15.358144+01	2015-08-12 13:09:15.364319+01	1	-1	\N	\N	\N	\N
-2	2015-08-12 18:04:54.632221+01	2015-08-12 18:05:23.891699+01	5	106	107	114	115	\N
-3	2015-08-12 18:05:41.244449+01	2015-08-12 18:05:41.256432+01	5	106	107	112	113	\N
-4	2015-08-12 18:05:59.410517+01	2015-08-12 18:05:59.422678+01	5	106	107	110	111	\N
-5	2015-08-12 18:06:18.570281+01	2015-08-12 18:06:46.017479+01	5	106	107	108	109	\N
+COPY cbh_core_model_dataformconfig (id, created, modified, created_by_id, l0_id, l1_id, l2_id, l3_id, l4_id, human_added, parent_id) FROM stdin;
+1	2015-08-12 13:09:15.358144+01	2015-08-12 13:09:15.364319+01	1	-1	\N	\N	\N	\N	t	\N
+2	2015-08-12 18:04:54.632221+01	2015-08-12 18:05:23.891699+01	5	106	107	114	115	\N	t	\N
+3	2015-08-12 18:05:41.244449+01	2015-08-12 18:05:41.256432+01	5	106	107	112	113	\N	t	\N
+4	2015-08-12 18:05:59.410517+01	2015-08-12 18:05:59.422678+01	5	106	107	110	111	\N	t	\N
+5	2015-08-12 18:06:18.570281+01	2015-08-12 18:06:46.017479+01	5	106	107	108	109	\N	t	\N
 \.
 
 
@@ -5180,6 +5243,7 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 165	AssaysWithoutPermission	4	AssaysWithoutPermission
 166	Assaysreadonly	5	Assaysreadonly
 167	query	cbh_datastore_model	query
+168	cbh plugin	cbh_chembl_id_generator	cbhplugin
 \.
 
 
@@ -5187,7 +5251,7 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('django_content_type_id_seq', 167, true);
+SELECT pg_catalog.setval('django_content_type_id_seq', 168, true);
 
 
 --
@@ -5264,6 +5328,13 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 67	cbh_datastore_model	0013_query	2015-08-19 21:30:05.369509+01
 68	cbh_datastore_model	0014_auto_20150819_1503	2015-08-19 21:30:13.114582+01
 69	cbh_datastore_model	0015_datapointclassification_parent	2015-08-26 15:10:46.880843+01
+70	cbh_chembl_id_generator	0005_cbhplugin	2015-09-11 18:29:23.969962+01
+71	cbh_chembl_id_generator	0006_cbhplugin_name	2015-09-11 18:29:24.004943+01
+72	cbh_chembl_id_generator	0007_remove_cbhplugin_output_json_path	2015-09-11 18:29:24.026281+01
+73	cbh_core_model	0011_auto_20150831_0618	2015-09-11 18:29:24.268665+01
+74	cbh_core_model	0012_auto_20150911_0825	2015-09-11 18:29:24.446424+01
+75	cbh_core_model	0013_dataformconfig_human_added	2015-09-11 18:29:24.686848+01
+76	cbh_core_model	0014_dataformconfig_parent	2015-09-11 18:29:24.935547+01
 \.
 
 
@@ -5271,7 +5342,7 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('django_migrations_id_seq', 69, true);
+SELECT pg_catalog.setval('django_migrations_id_seq', 76, true);
 
 
 --
@@ -6051,6 +6122,14 @@ ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid
 
 ALTER TABLE ONLY cbh_chembl_id_generator_cbhcompoundid
     ADD CONSTRAINT cbh_chembl_id_generator_cbhcompoundid_structure_key_key UNIQUE (structure_key);
+
+
+--
+-- Name: cbh_chembl_id_generator_cbhplugin_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
+--
+
+ALTER TABLE ONLY cbh_chembl_id_generator_cbhplugin
+    ADD CONSTRAINT cbh_chembl_id_generator_cbhplugin_pkey PRIMARY KEY (id);
 
 
 --
@@ -7606,6 +7685,13 @@ CREATE INDEX cbh_core_model_customfieldconfig_7470d5e5 ON cbh_core_model_customf
 --
 
 CREATE INDEX cbh_core_model_dataformconfig_092d6e83 ON cbh_core_model_dataformconfig USING btree (l0_id);
+
+
+--
+-- Name: cbh_core_model_dataformconfig_6be37982; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE INDEX cbh_core_model_dataformconfig_6be37982 ON cbh_core_model_dataformconfig USING btree (parent_id);
 
 
 --
@@ -9568,6 +9654,14 @@ ALTER TABLE ONLY molecule_synonyms
 
 ALTER TABLE ONLY mols_rdkit
     ADD CONSTRAINT mols_rdkit_molregno_fkey FOREIGN KEY (molregno) REFERENCES molecule_dictionary(molregno) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: parent_id_4d157f5503cdb68d_fk_cbh_core_model_dataformconfig_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_core_model_dataformconfig
+    ADD CONSTRAINT parent_id_4d157f5503cdb68d_fk_cbh_core_model_dataformconfig_id FOREIGN KEY (parent_id) REFERENCES cbh_core_model_dataformconfig(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --

@@ -3,4 +3,4 @@ Feature: Data form configs allow configuration of a specific possible route that
     Scenario: Keys to allow different possible routes to be presented to the user 
         Given testuser
         When I log in testuser
-        Then The data form configs in the enabled forms list of a project have keys to allow routes through the system to be presented to the user
+        Then The data_form_configs in the project output have permitted children and there is a single root object

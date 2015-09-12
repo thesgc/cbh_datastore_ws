@@ -343,12 +343,6 @@ The fields that are in this particular custom field config:
         to HTTP GET.
         Should return a HttpResponse (200 OK).
         """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
         return self.create_response(request, self.build_schema())
 
 
@@ -392,6 +386,10 @@ l3    |     information about a level of the data based
 l4____|     upon its custom field configs - see below
 
 </pre>
+
+Only the level that is of importance is shown in full, other levels are left out of the response
+
+
 data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
 ==================================================
 project_data_fields:
@@ -423,7 +421,7 @@ Provides data about a all levels of a data form config.
 
 A data form config's name is built up from its different custom field configs by combining their names and data types in order
 <pre>
-  ____
+  _____
 l0    |
 l1    |
 l2    |----- These fields all list the full 
@@ -431,10 +429,14 @@ l3    |     information about a level of the data based
 l4____|     upon its custom field configs - see below
 
 </pre>
+
+Only the level that is of importance is shown in full, other levels are left out of the response
+
+
 data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
-==============================================
+==================================================
 project_data_fields:
-===============================================
+==================================================
 The fields that are in this particular custom field config:
     Provides information about the data types present in the flexible schema of the datapoint table
     For each field a set of attributes are returned:
@@ -464,15 +466,6 @@ The fields that are in this particular custom field config:
         """Returns the last not null custom field config - useful in checking what level the ui should go to"""
         return bundle.obj.last_level()
         
-    def dehydrate(self, bundle):
-        for level in ["l1", "l2", "l3", "l4", "l0"]:
-            levdata = bundle.data.pop(level)
-            if level == bundle.data["last_level"]:
-                bundle.data["main_cfc"] = levdata
-        return bundle
-
-
-
 
     def get_schema(self, request, **kwargs):
         """
@@ -512,7 +505,7 @@ The fields that are in this particular custom field config:
 
 class ProjectWithDataFormResource(ModelResource):
     project_type = fields.ForeignKey("cbh_datastore_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
-    form_uris = fields.DictField(null=True)
+    data_form_configs = fields.ListField(null=True)
     class Meta:
 
         excludes  = ("schemaform", "custom_field_config")
@@ -531,119 +524,79 @@ class ProjectWithDataFormResource(ModelResource):
         description =       {'api_dispatch_detail' : '''
 A project is the top level item in the system:
 project_type : For assay registration project type is not very important - it is just the top level lable
-enabled_forms: Provides a list of the forms that are enabled for this project.
-NOTE just because a project has aa certain form enabled DOES not give it permission to access all data created with that forms
-This is done with the data form config permission objects
+data_form_configs: This dictionary provides the necessary information to build forms from this project.
 
-==========================================================
-The project provides data about all levels of a data form configs that are attached to that project
+The enabled forms of the project provide a way of registering routes that the user can take through the system 
+but they need to be merged and presented in a way that it is easy to know what options for form data you have.
 
-A data form config's name is built up from its different custom field configs by combining their names and data types in order
+Parents, grandparents and great grandparents are generated for these objects so that there is an id for every combination
+of custom field configs for which data is going to be entered.
 
-<pre>
-  _____
-l0    |
-l1    |
-l2    |----- These fields all list the full 
-l3    |     information about a level of the data based 
-l4____|     upon its custom field configs - see below
+The data_form_configs section contains 3 different attributes:
 
-</pre>
-data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
-=================================================
-project_data_fields:
-==================================================
-The fields that are in this particular custom field config:
-    Provides information about the data types present in the flexible schema of the datapoint table
-    For each field a set of attributes are returned:
+root_data_form_config_uri:
+============================
 
-    hide_form/schema - an angular schema form element that can be used to hide this column from view
-    edit_form /schema - an angular schema form element that can be used to edit this field 
+Provides the starting point for this project - this should be a single URI which in turn points to the custom field config used to enter data about the project.
 
-    assuming it is edited as part of a larger data form classification object
-    - To change the key of the json schema then change the get_namespace method
+form_lookup
+============================
+Provides a lookup dictionary from which all of the data form configs needed for a particular project can be looked up by their URIs (here to avoid excess traffic)
 
-    filter_form/schema - an angular schema form element that can be used to hide this filter this field
-    
-    exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
-   
-    sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
-   
-   Things still to be implemented:
-
-    actions form - would be used for mapping functions etc
-    autocomplete urls
+permitted_routes_tree
+============================
+For each data form config URI there are a set of possible data types that can be added as children
         ''',
 
         'api_dispatch_list' : '''
 A project is the top level item in the system:
 project_type : For assay registration project type is not very important - it is just the top level lable
-enabled_forms: Provides a list of the forms that are enabled for this project.
-NOTE just because a project has aa certain form enabled DOES not give it permission to access all data created with that forms
-This is done with the data form config permission objects
 
-==========================================================
-The project provides data about all levels of a data form configs that are attached to that project
 
-A data form config's name is built up from its different custom field configs by combining their names and data types in order
-
-<pre>
-
-  _____
-l0    |
-l1    |
-l2    |----- These fields all list the full 
-l3    |     information about a level of the data based 
-l4____|     upon its custom field configs - see below
-
-</pre>
-
-data_type: A string to describe what "sort" of data this is (fields will generally be the same as other objects of this data type but that is up to the curator)
-=================================================
-project_data_fields:
-==================================================
-The fields that are in this particular custom field config:
-    Provides information about the data types present in the flexible schema of the datapoint table
-    For each field a set of attributes are returned:
-
-    hide_form/schema - an angular schema form element that can be used to hide this column from view
-    edit_form /schema - an angular schema form element that can be used to edit this field 
-
-    assuming it is edited as part of a larger data form classification object
-    - To change the key of the json schema then change the get_namespace method
-
-    filter_form/schema - an angular schema form element that can be used to hide this filter this field
-    
-    exclude_form /schema an angular schema form element that can be used to hide this exclude values from this field
-   
-    sort_form /schema an angular schema form element that can be used to hide this exclude values from this field
-   
-   Things still to be implemented:
-
-    actions form - would be used for mapping functions etc
-    autocomplete urls
         '''}
 
 
-    def dehydrate_form_uris(self, bundle):
-        full_dataset = {"enabled_forms" : {}}
+    def dehydrate_data_form_configs(self, bundle):
+        """ Return a RESTful, DRY list of the data form configs that are allowed for this project"""
+        full_dataset = {"form_lookup" : {}}
         tree_builder = {}
         root_object = None
+        dfcres = DataFormConfigResource()
+        resource_uri = dfcres.get_resource_uri()
         for dfc in bundle.obj.enabled_forms.all():
-            root_object = dfc.get_all_ancestor_objects(bundle.request, tree_builder=tree_builder)
+            root_object = dfc.get_all_ancestor_objects(bundle.request, tree_builder=tree_builder, uri_stub=resource_uri)
         for key, obj_list in tree_builder.iteritems():
             for i, obj in enumerate(obj_list):
-                dfcres = DataFormConfigResource()
+                
                 bun = dfcres.build_bundle(obj=obj, request=bundle.request)
                 bun = dfcres.full_dehydrate(bun)
-                tree_builder[key][i] = bun.data["id"]
-                full_dataset["enabled_forms"][bun.data["id"]] = bun.data
+                
+                
+                bun.data["permitted_children"] = []
+                tree_builder[key][i] = bun.data["resource_uri"]
+                full_dataset["form_lookup"][bun.data["resource_uri"]] = bun.data
+                
 
-        root_obj = tree_builder.pop("root")
-        full_dataset["root_data_form_config_id"] = root_obj[0]
+        root_obj = tree_builder.pop("root", None)
         full_dataset["permitted_routes_tree"] = tree_builder
 
-        return full_dataset
+        for key, obj_list in tree_builder.iteritems():
+            full_dataset["form_lookup"][key]["permitted_children"] = obj_list
+            if full_dataset["form_lookup"][key]["last_level"] == "l0":
+                full_dataset["form_lookup"][key]["template_data_point_classification"] = {
+                        "data_form_config": key,
+                        "l0" : {
+                                "project_data" :  {"Title" : bundle.obj.name}, 
+                                "custom_field_config" : full_dataset["form_lookup"][key]["l0"].data["resource_uri"]
+                        },
+                        "l0_permitted_projects" : [self.get_resource_uri(bundle.obj)]
+                    }
+
+                
+        real_forms_list = [value for key, value in full_dataset["form_lookup"].iteritems()]
+        return real_forms_list
+
+
 
 
 

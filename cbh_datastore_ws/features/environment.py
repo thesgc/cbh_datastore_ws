@@ -314,6 +314,8 @@ class Tester(unittest.TestCase):
 import os
 
 def before_all(context):
+    from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
+
     pass
     # Even though DJANGO_SETTINGS_MODULE is set, this may still be
     # necessary. Or it may be simple CYA insurance.
@@ -400,23 +402,15 @@ def after_scenario(context, scenario):
 def after_all(context):
     from cbh_datastore_model.models import      DataPointClassificationPermission, DataPointClassification
     from cbh_datastore_ws.resources import reindex_datapoint_classifications
-    # DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=3 )   
-    # DataPointClassificationPermission.objects.create(project_id=5,data_point_classification_id=4 )
-    # DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=1 )
-    # DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=2 )
-    # DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=3 )
-    # DataPointClassificationPermission.objects.create(project_id=3,data_point_classification_id=4 )
-
-    # dp=DataPointClassification.objects.get(id=2)
-    # dp.parent_id=1
-    # dp.save()
-    # dp=DataPointClassification.objects.get(id=3)
-    # dp.parent_id =2
-    # dp.save()
-    # dp=DataPointClassification.objects.get(id=4)
-    # dp.parent_id =3
-    # dp.save()
-
+    from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
+    from cbh_datastore_ws.features.steps.permissions import logintestuser
+    before_scenario(context, None)
+    logintestuser(context)
+    create_realdata(context)
+    project(context)
 
 
     reindex_datapoint_classifications()
+    context.api_client.client.logout()
+    from django import db
+    db.close_connection()
