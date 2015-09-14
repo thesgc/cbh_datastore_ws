@@ -496,12 +496,16 @@ The fields that are in this particular custom field config:
 
 
 
-    # def dehydrate_natural_key(self, bundle):
-    #     return bundle.obj.natural_key()
-        
-
-
-
+    def dehydrate(self, bundle):
+        for level in ["l1", "l2", "l3", "l4", "l0"]:
+            if bundle.data[level]:
+                for field in bundle.data[level].data["project_data_fields"]:
+                    for field in bundle.data[level].data["project_data_fields"]:
+                        if field.data["handsontable_column"]["data"]:
+                            field.data["handsontable_column"]["data"] = field.data["handsontable_column"]["data"].format(**{"level": level})
+                        if field.data["elasticsearch_fieldname"]:
+                            field.data["elasticsearch_fieldname"] = field.data["elasticsearch_fieldname"].format(**{"level": level})
+        return bundle
 
 class ProjectWithDataFormResource(ModelResource):
     project_type = fields.ForeignKey("cbh_datastore_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
@@ -619,7 +623,7 @@ project_type : For assay registration project type is not very important - it is
 
 
 class DataPointResource(ModelResource):
-    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, default=None)
     custom_field_config = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'custom_field_config')
     project_data = fields.DictField(attribute='project_data', null=True, blank=False, readonly=False, help_text=None)
     supplementary_data = fields.DictField(attribute='supplementary_data', null=True, blank=False, readonly=False, help_text=None)
@@ -685,12 +689,11 @@ class MyForeignKey(fields.ForeignKey):
 
 class DataPointClassificationResource(ModelResource):
     '''Returns individual rows in the object graph - note that the rows returned are denormalized data points '''
-    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True,  default=None)
     data_form_config = fields.ForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
     l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects", full=False)
     level_from = fields.CharField( null=True, blank=False, default=None)
     next_level = fields.CharField( null=True, blank=False, default=None)
-    is_leaf_node = fields.BooleanField(default="false")
     l0 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l0', null=True, blank=False, default=None, )
     l1 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l1',null=True, blank=False, default=None,)
     l2 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l2',null=True, blank=False, default=None, )
@@ -938,27 +941,6 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
             return  "l1"
         return next_level
 
-    def dehydrate_is_leaf_node(self, bundle):
-        
-        if  bundle.obj.l4_id != 1:
-            return "true"
-        if  bundle.obj.l3_id != 1:
-            leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l3_id=bundle.obj.l3_id).exclude(l4_id=1).count()
-            if leaf_node_check_count == 0:
-                return "true"
-        if  bundle.obj.l2_id != 1:
-            leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l2_id=bundle.obj.l3_id).exclude(l3_id=1).count()
-            if leaf_node_check_count == 0:
-                return "true"
-        if  bundle.obj.l1_id != 1:
-            leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l1_id=bundle.obj.l3_id).exclude(l2_id=1).count()
-            if leaf_node_check_count == 0:
-                return "true"
-        if  bundle.obj.l0_id != 1:
-            leaf_node_check_count = self.get_object_list(bundle.request).filter(data_form_config_id=bundle.obj.data_form_config_id).filter(l0_id=bundle.obj.l3_id).exclude(l1_id=1).count()
-            if leaf_node_check_count == 0:
-                return "true"
-        return "false"    
 
 
 
@@ -981,24 +963,24 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         self.save_related(bundle)
         level_from = self.dehydrate_level_from(bundle)
         
-        if level_from != "l0":
-            parent_finder_dict = {"data_form_config_id" : bundle.obj.data_form_config_id}
-            look_for_default = False
-            for level in ["l0_id", "l1_id", "l2_id", "l3_id", "l4_id"]:
-                #For all 
-                if level == level_from + "_id":
-                    look_for_default = True
-                if look_for_default:
-                    parent_finder_dict[level] = 1
-                else:
-                    parent_finder_dict[level] = getattr(bundle.obj, level)
-                parent_finder_dict["data_form_config_id"] = bundle.obj.data_form_config_id
-            parents = self.apply_filters(bundle.request, parent_finder_dict)
-            count = parents.count()
-            if count == 1:
-                bundle.obj.parent = parents[0]
-            else:
-                raise BadRequest("Issue with parent ids, should be one to choose from found %d" % count) 
+        # if level_from != "l0":
+        #     parent_finder_dict = {"data_form_config_id" : bundle.obj.data_form_config_id}
+        #     look_for_default = False
+        #     for level in ["l0_id", "l1_id", "l2_id", "l3_id", "l4_id"]:
+        #         #For all 
+        #         if level == level_from + "_id":
+        #             look_for_default = True
+        #         if look_for_default:
+        #             parent_finder_dict[level] = 1
+        #         else:
+        #             parent_finder_dict[level] = getattr(bundle.obj, level)
+        #         parent_finder_dict["data_form_config_id"] = bundle.obj.data_form_config_id
+        #     parents = self.apply_filters(bundle.request, parent_finder_dict)
+        #     count = parents.count()
+        #     if count == 1:
+        #         bundle.obj.parent = parents[0]
+        #     else:
+        #         raise BadRequest("Issue with parent ids, should be one to choose from found %d" % count) 
 
         # Save the main object.
         bundle.obj.save()
@@ -1161,7 +1143,7 @@ def reindex_datapoint_classifications():
 
 class QueryResource(ModelResource):
     """ A resource which saves a query for elasticsearch and then returns the result of the query"""
-    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, full=True, default=None)
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True,  default=None)
     query = fields.DictField(attribute='query')
     aggs = fields.DictField(attribute='aggs')
     filter = fields.DictField(attribute='filter')
@@ -1242,7 +1224,7 @@ class MyToManyField(fields.ToManyField):
         """Here we are not fully dehydrating if this is the last level in the hierarchy. 
         The reason for this is that there would be too much data. Therefore we page the bottom level
         data point classifications from elasticsearch"""
-        return bundle.obj.level_from() != bundle.obj.data_form_config.last_level()
+        return not bundle.obj.data_form_config.human_added
 
 
 
