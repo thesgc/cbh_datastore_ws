@@ -2,7 +2,7 @@
 
 
 from tastypie.resources import ModelResource, Resource , ALL, ALL_WITH_RELATIONS
-
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from tastypie.serializers import Serializer
 from cbh_core_ws.resources import CoreProjectResource, CustomFieldConfigResource, DataTypeResource, UserResource, CoreProjectResource, ProjectTypeResource
 from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission, Query
@@ -51,6 +51,7 @@ class DataPointProjectFieldResource(ModelResource):
     edit_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     edit_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     elasticsearch_fieldname = fields.CharField(null=True, blank=False, readonly=False, help_text=None)
+    copy_to_keys = fields.ListField(null=True, blank=False, readonly=False, help_text=None)
     # filter_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     # filter_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)   
     # exclude_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
@@ -119,6 +120,9 @@ autocomplete urls
         }
 
 
+
+
+
     def get_schema(self, request, **kwargs):
         """
         Returns a serialized form of the schema of the resource.
@@ -146,6 +150,17 @@ autocomplete urls
 
     def get_namespace_for_action_key(self, bundle, action_type):
         return action_type
+
+
+
+    def dehydrate_copy_to_keys(self, bundle):
+        if bundle.obj.standardised_alias and bundle.obj.custom_field_config:
+            copy_to_key = "standardised.%s.%s" % (bundle.obj.standardised_alias.pinned_for_datatype.name  
+                ,bundle.obj.standardised_alias.field_key)
+            return [copy_to_key,]
+        return None
+
+
 
 
     def dehydrate_hide_form(self, bundle):
@@ -962,27 +977,6 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         # Save FKs just in case.
         self.save_related(bundle)
         level_from = self.dehydrate_level_from(bundle)
-        
-        # if level_from != "l0":
-        #     parent_finder_dict = {"data_form_config_id" : bundle.obj.data_form_config_id}
-        #     look_for_default = False
-        #     for level in ["l0_id", "l1_id", "l2_id", "l3_id", "l4_id"]:
-        #         #For all 
-        #         if level == level_from + "_id":
-        #             look_for_default = True
-        #         if look_for_default:
-        #             parent_finder_dict[level] = 1
-        #         else:
-        #             parent_finder_dict[level] = getattr(bundle.obj, level)
-        #         parent_finder_dict["data_form_config_id"] = bundle.obj.data_form_config_id
-        #     parents = self.apply_filters(bundle.request, parent_finder_dict)
-        #     count = parents.count()
-        #     if count == 1:
-        #         bundle.obj.parent = parents[0]
-        #     else:
-        #         raise BadRequest("Issue with parent ids, should be one to choose from found %d" % count) 
-
-        # Save the main object.
         bundle.obj.save()
         bundle.objects_saved.add(self.create_identifier(bundle.obj))
         bundle.request.GET = bundle.request.GET.copy()
@@ -1001,9 +995,11 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         """
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
-        if response_class == http.HttpCreated:
+        if response_class == http.HttpCreated or response_class == http.HttpAccepted:
             #There has been a new object created - we must now index it
             elasticsearch_client.index_datapoint_classification(serialized)
+            filters = data.obj.all_child_generations_filter_dict()
+            index_filter_dict(filters)
         return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
 
@@ -1137,6 +1133,24 @@ def reindex_datapoint_classifications():
         except ObjectDoesNotExist:
             pass
     time.sleep(1)
+
+
+
+def index_filter_dict(filter_dict):
+    """When a datapointclassification is updated we know that the front end only targets the 
+    level_from datapoint. The specific datapoint will be updated in realtime however 
+    we also need to update any references to that datapoint in its children. To find all children, we simply 
+    search for all of the level datapoint ids that are not default using this general queryset function
+    """
+    res = DataPointClassificationResource()
+    request = HttpRequest()
+    request.GET = request.GET.copy()
+    request.GET["full"] = True
+    bundle = res.build_bundle(request=request)
+    dpcs = DataPointClassification.objects.filter(**filter_dict)
+    bundle.data["objects"] = [res.full_dehydrate(res.build_bundle(obj=dpc, request=request)) for dpc in dpcs]
+    resp = res.create_response(request, bundle)
+    elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
 
 
 

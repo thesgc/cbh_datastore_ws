@@ -23,15 +23,10 @@ Feature: Datastore Update Records
         When I log in testuser
         Then When I create a single record If I patchb the same data back, updating the l0 datapoint then only the l0 data point changes
 
-
     Scenario: I cannot update DataPoints via a DataPointClassification if conflicting
         Given testuser
         When I log in testuser
         Then When I create a single record If I patch the same data back, updating one of the default datapoints then there is an error due to conflict
-
-
-
-
 
    Scenario: If I patch an l0 update which affects multiple datapoint classifications the index updates to reflect
         Given testuser

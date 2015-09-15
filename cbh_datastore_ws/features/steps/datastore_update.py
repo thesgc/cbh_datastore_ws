@@ -180,7 +180,7 @@ data= post_data)
     post_data.pop("created_by", None)
     post_data["l1"].pop("created_by", None)
     post_data["l0"].pop("created_by", None)
-    print(post_data)
+
     updated = context.api_client.patch("/dev/datastore/cbh_datapoint_classifications/%d" % data["id"],
 format="json", 
 data= post_data)
@@ -193,5 +193,45 @@ data= post_data)
 
 @then("If I patch an l0 update which affects multiple datapoint classifications the index updates to reflect")
 def step(context):
-    print("THIS TEST NEEDS ADDING")
-    context.test_case.assertEquals(False, True)
+    classif = context.api_client.get("/dev/datastore/cbh_datapoint_classifications")
+    classif = json.loads(classif.content)
+    context.test_case.assertEquals(classif["meta"]["total_count"], 0)
+
+    post_data1 = {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
+                "l0": {"custom_field_config":{"id":577},"project_data":{"some_test":"project_data"}},
+                "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/3"] }
+    created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+format="json", 
+data= post_data1)
+    data = json.loads(created.content)
+
+    post_data = {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
+                "l0": data["l0"]["resource_uri"],
+                "l1": {"custom_field_config":{"id":577},"project_data":{"another":"project_data"}},
+                "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/3"] }
+    created2 = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+format="json", 
+data= post_data)
+    child_data = json.loads(created2.content)
+    post_data1["l0"]["id"] = data["l0"]["id"]
+    post_data1["l0"]["project_data"] = {"some_test":"project_data", "newvalue":"value"}
+
+    updated = context.api_client.patch("/dev/datastore/cbh_datapoint_classifications/%d" % data["id"],
+format="json", 
+data= post_data1)
+
+    #Now request the document from elasticsearch
+
+    import elasticsearch
+
+    es = elasticsearch.Elasticsearch()
+    from cbh_datastore_ws.elasticsearch_client import get_index_name
+    data = es.get(index=get_index_name(),id=str(child_data["id"]))
+
+
+    context.test_case.assertEquals(data["_source"]["l0"]["project_data"].get("newvalue", "NOT CORRECT"), "value")
+
+
+
+
+    
