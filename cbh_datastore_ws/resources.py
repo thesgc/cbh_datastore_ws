@@ -1146,6 +1146,8 @@ def index_filter_dict(filter_dict):
     request = HttpRequest()
     request.GET = request.GET.copy()
     request.GET["full"] = True
+    request.GET["standardised"] = True
+
     bundle = res.build_bundle(request=request)
     dpcs = DataPointClassification.objects.filter(**filter_dict)
     bundle.data["objects"] = [res.full_dehydrate(res.build_bundle(obj=dpc, request=request)) for dpc in dpcs]
