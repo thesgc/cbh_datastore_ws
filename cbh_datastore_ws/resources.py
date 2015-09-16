@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from django_rq import job
 
-
+from random import randint
 from tastypie.resources import ModelResource, Resource , ALL, ALL_WITH_RELATIONS
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from tastypie.serializers import Serializer
@@ -38,10 +39,16 @@ from tastypie.utils.mime import determine_format, build_content_type
 from tastypie import http
 
 from cbh_datastore_ws import elasticsearch_client
-
+from cbh_datastore_ws.serializers import DataPointClassificationSerializer
 
 from django.db.models import Max, Min
 from django.http import HttpRequest
+
+
+
+class StandardisedForeignKey(fields.ForeignKey):
+    def should_full_dehydrate(self, bundle, for_list):     
+        return bundle.request.GET.get("standardised", None)
 
 
 
@@ -51,7 +58,7 @@ class DataPointProjectFieldResource(ModelResource):
     edit_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     edit_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     elasticsearch_fieldname = fields.CharField(null=True, blank=False, readonly=False, help_text=None)
-    copy_to_keys = fields.ListField(null=True, blank=False, readonly=False, help_text=None)
+    standardised_alias = StandardisedForeignKey("self", attribute="standardised_alias", null=True, blank=False, readonly=False, help_text=None)
     # filter_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     # filter_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)   
     # exclude_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
@@ -65,7 +72,7 @@ class DataPointProjectFieldResource(ModelResource):
 
 
     class Meta:
-        queryset = PinnedCustomField.objects.all()
+        queryset = PinnedCustomField.objects.all().select_related("standardised_alias")
         resource_name = 'cbh_datapoint_fields'
         #authorization = Authorization()
         include_resource_uri = True
@@ -150,15 +157,6 @@ autocomplete urls
 
     def get_namespace_for_action_key(self, bundle, action_type):
         return action_type
-
-
-
-    def dehydrate_copy_to_keys(self, bundle):
-        if bundle.obj.standardised_alias and bundle.obj.custom_field_config:
-            copy_to_key = "standardised.%s.%s" % (bundle.obj.standardised_alias.pinned_for_datatype.name  
-                ,bundle.obj.standardised_alias.field_key)
-            return [copy_to_key,]
-        return None
 
 
 
@@ -277,7 +275,7 @@ class SimpleCustomFieldConfigResource(ModelResource):
 
     class Meta:
         object_class = CustomFieldConfig
-        queryset = CustomFieldConfig.objects.all()
+        queryset = CustomFieldConfig.objects.prefetch_related("created_by", "data_type", "pinned_custom_field", "pinned_custom_field__standardised_alias")
         excludes  = ("schemaform")
         include_resource_uri = False
         resource_name = 'cbh_custom_field_config'
@@ -380,7 +378,25 @@ class DataFormConfigResource(ModelResource):
            "id" : ALL
         }
         always_return_data = True
-        queryset = DataFormConfig.objects.all()
+        queryset = DataFormConfig.objects.prefetch_related(
+            "l0__pinned_custom_field", 
+"l1__pinned_custom_field", 
+"l2__pinned_custom_field",
+ "l3__pinned_custom_field",
+"l4__pinned_custom_field",
+
+            ).select_related("l0__created_by", 
+"l1__created_by", 
+"l2__created_by",
+ "l3__created_by",
+"l4__created_by",
+
+"l0__data_type", 
+"l1__data_type", 
+"l2__data_type",
+ "l3__data_type",
+"l4__data_type",
+"created_by",)
         resource_name = 'cbh_data_form_config'
         #authorization = Authorization()
         include_resource_uri = True
@@ -525,10 +541,11 @@ The fields that are in this particular custom field config:
 class ProjectWithDataFormResource(ModelResource):
     project_type = fields.ForeignKey("cbh_datastore_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
     data_form_configs = fields.ListField(null=True)
+
     class Meta:
 
         excludes  = ("schemaform", "custom_field_config")
-        queryset = Project.objects.all()
+        queryset = Project.objects.prefetch_related("enabled_forms", "created_by", "project_type")
         authentication = SessionAuthentication()
         allowed_methods = ['get', 'post', 'put']        
         resource_name = 'cbh_projects_with_forms'
@@ -582,12 +599,20 @@ project_type : For assay registration project type is not very important - it is
         root_object = None
         dfcres = DataFormConfigResource()
         resource_uri = dfcres.get_resource_uri()
+        qs = DataFormConfigResource.Meta.queryset
+
         for dfc in bundle.obj.enabled_forms.all():
             root_object = dfc.get_all_ancestor_objects(bundle.request, tree_builder=tree_builder, uri_stub=resource_uri)
+        filters = set([])
         for key, obj_list in tree_builder.iteritems():
             for i, obj in enumerate(obj_list):
-                
-                bun = dfcres.build_bundle(obj=obj, request=bundle.request)
+                filters.add(obj.id)
+        qs = qs.filter(pk__in=filters)
+        by_id = {dpc.id: dpc for dpc in qs}
+        for key, obj_list in tree_builder.iteritems():
+            for i, obj in enumerate(obj_list):      
+                objy = by_id[obj.id]
+                bun = dfcres.build_bundle(obj=objy, request=bundle.request)
                 bun = dfcres.full_dehydrate(bun)
                 
                 
@@ -613,6 +638,8 @@ project_type : For assay registration project type is not very important - it is
 
                 
         real_forms_list = [value for key, value in full_dataset["form_lookup"].iteritems()]
+
+
         return real_forms_list
 
 
@@ -702,10 +729,12 @@ class MyForeignKey(fields.ForeignKey):
         return bundle.request.GET.get("full", None)
 
 
+
+
 class DataPointClassificationResource(ModelResource):
     '''Returns individual rows in the object graph - note that the rows returned are denormalized data points '''
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True,  default=None)
-    data_form_config = fields.ForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
+    data_form_config = StandardisedForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
     l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects", full=False)
     level_from = fields.CharField( null=True, blank=False, default=None)
     next_level = fields.CharField( null=True, blank=False, default=None)
@@ -727,14 +756,58 @@ class DataPointClassificationResource(ModelResource):
             "l4" : ALL_WITH_RELATIONS,
         }
         always_return_data = True  #Must be true so that the hook for elasticsearch indexing works
-        queryset = DataPointClassification.objects.all()
+        queryset = DataPointClassification.objects.prefetch_related("created_by", 
+"l0__created_by", 
+"l1__created_by", 
+"l2__created_by",
+ "l3__created_by",
+"l4__created_by",
+
+"l0__custom_field_config__pinned_custom_field", 
+"l1__custom_field_config__pinned_custom_field", 
+"l2__custom_field_config__pinned_custom_field",
+ "l3__custom_field_config__pinned_custom_field",
+"l4__custom_field_config__pinned_custom_field",
+
+"l0__custom_field_config__data_type", 
+"l1__custom_field_config__data_type", 
+"l2__custom_field_config__data_type",
+ "l3__custom_field_config__data_type",
+"l4__custom_field_config__data_type",
+
+
+
+"l0_permitted_projects", 
+"data_form_config__l0__pinned_custom_field", 
+"data_form_config__l1__pinned_custom_field", 
+"data_form_config__l2__pinned_custom_field",
+ "data_form_config__l3__pinned_custom_field",
+"data_form_config__l4__pinned_custom_field",
+"data_form_config__l0__created_by", 
+"data_form_config__l1__created_by", 
+"data_form_config__l2__created_by",
+ "data_form_config__l3__created_by",
+"data_form_config__l4__created_by",
+
+"data_form_config__l0__data_type", 
+"data_form_config__l1__data_type", 
+"data_form_config__l2__data_type",
+ "data_form_config__l3__data_type",
+"data_form_config__l4__data_type",
+
+"data_form_config__l0__pinned_custom_field__standardised_alias", 
+"data_form_config__l1__pinned_custom_field__standardised_alias", 
+"data_form_config__l2__pinned_custom_field__standardised_alias",
+ "data_form_config__l3__pinned_custom_field__standardised_alias",
+"data_form_config__l4__pinned_custom_field__standardised_alias",
+)
         resource_name = 'cbh_datapoint_classifications'
         #authorization = Authorization()
         default_format = 'application/json'
         include_resource_uri = True
         allowed_methods = ['get', 'post', 'patch']
         default_format = 'application/json'
-        serializer = Serializer()
+        serializer = DataPointClassificationSerializer()
         authentication = SessionAuthentication()
         authorization = DataClassificationProjectAuthorization()
         required_fields = {
@@ -994,12 +1067,16 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         Mostly a useful shortcut/hook.
         """
         desired_format = self.determine_format(request)
+        if request.GET.get("standardised",None):
+            data.data["standardised"] = True
         serialized = self.serialize(request, data, desired_format)
         if response_class == http.HttpCreated or response_class == http.HttpAccepted:
             #There has been a new object created - we must now index it
             elasticsearch_client.index_datapoint_classification(serialized)
             filters = data.obj.all_child_generations_filter_dict()
-            index_filter_dict(filters)
+            index_filter_dict.delay(filters)
+        # 
+        #     #Standardise the output data
         return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
 
@@ -1111,7 +1188,10 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         return self.create_response(request, self.build_schema())
 
 
-
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]
 
 
 def reindex_datapoint_classifications():
@@ -1122,20 +1202,16 @@ def reindex_datapoint_classifications():
     req = HttpRequest()
     req.GET = req.GET.copy()
     req.GET["full"] = True
-    for myid in range(aggs["id__min"], aggs["id__max"]):
-        try:
-            obj = DataPointClassification.objects.get(id=myid)
-            bundle = res.build_bundle(obj=obj, request=req)
-            bundle = res.full_dehydrate(bundle)
-            bundle = res.alter_detail_data_to_serialize(req, bundle)
-            resp = res.create_response(req, bundle)
-            elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
-        except ObjectDoesNotExist:
-            pass
+    chunked = chunks(range(aggs["id__min"], aggs["id__max"]), 100)
+    for chunk in chunked:
+
+        index_filter_dict({"id__in": chunk})
+           
+
     time.sleep(1)
 
 
-
+@job
 def index_filter_dict(filter_dict):
     """When a datapointclassification is updated we know that the front end only targets the 
     level_from datapoint. The specific datapoint will be updated in realtime however 
@@ -1149,7 +1225,7 @@ def index_filter_dict(filter_dict):
     request.GET["standardised"] = True
 
     bundle = res.build_bundle(request=request)
-    dpcs = DataPointClassification.objects.filter(**filter_dict)
+    dpcs = res.Meta.queryset.filter(**filter_dict)
     bundle.data["objects"] = [res.full_dehydrate(res.build_bundle(obj=dpc, request=request)) for dpc in dpcs]
     resp = res.create_response(request, bundle)
     elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
@@ -1204,7 +1280,8 @@ class QueryResource(ModelResource):
                 "filter": self.authorization_filter(request, updated_bundle.obj.filter), 
                 "aggs": updated_bundle.obj.aggs,
                 "query" : updated_bundle.obj.query,
-                "sort": updated_bundle.data.get("sort", [])
+                "sort": updated_bundle.data.get("sort", []),
+                "highlight": updated_bundle.data.get("highlight",{}),
             },  
             from_=request.GET.get("from"),  
             size=request.GET.get("size")
@@ -1215,6 +1292,27 @@ class QueryResource(ModelResource):
     def hydrate_created_by(self, bundle):
         user = get_user_model().objects.get(pk=bundle.request.user.pk)
         bundle.obj.created_by = user
+        return bundle
+
+
+    def save(self, bundle, skip_errors=False):
+        ''' Add a random ID for now as we dont need to save the object '''
+        self.is_valid(bundle)
+
+        if bundle.errors and not skip_errors:
+            raise ImmediateHttpResponse(response=self.error_response(bundle.request, bundle.errors))
+        
+       
+        
+        # Save FKs just in case.
+       
+        bundle.obj.id = randint(1,1000000000)
+        bundle.objects_saved.add(self.create_identifier(bundle.obj))
+        bundle.request.GET = bundle.request.GET.copy()
+        #Set the full parameter in the request GET object when saving stuff
+        bundle.request.GET["full"] = True
+        # Now pick up the M2M bits.
+
         return bundle
 
 

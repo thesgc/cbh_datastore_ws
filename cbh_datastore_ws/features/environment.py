@@ -409,7 +409,9 @@ def after_all(context):
     create_realdata(context)
     project(context)
 
+    from cbh_chembl_ws_extension.parser import ChemblAPIConverter
 
+    ChemblAPIConverter().write_schema()
     reindex_datapoint_classifications()
     context.api_client.client.logout()
     from django import db

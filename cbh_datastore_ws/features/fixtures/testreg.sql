@@ -820,7 +820,7 @@ CREATE TABLE cbh_core_model_pinnedcustomfield (
     allowed_values character varying(1024),
     "position" smallint NOT NULL,
     description character varying(1024),
-    field_key character varying(50) NOT NULL,
+    field_key character varying(500) NOT NULL,
     "default" character varying(500) NOT NULL,
     pinned_for_datatype_id integer,
     standardised_alias_id integer,
@@ -3883,7 +3883,7 @@ SELECT pg_catalog.setval('cbh_chembl_model_extension_project_id_seq', 5, true);
 -- Name: cbh_chembl_model_extension_projecttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('cbh_chembl_model_extension_projecttype_id_seq', 1, true);
+SELECT pg_catalog.setval('cbh_chembl_model_extension_projecttype_id_seq', 3, true);
 
 
 --
@@ -4041,6 +4041,8 @@ COPY cbh_core_model_datatype (id, created, modified, name, uri, version) FROM st
 1	2015-08-12 12:23:40.499342+01	2015-08-12 12:23:40.499594+01	Assay		
 2	2015-08-12 12:23:40.500853+01	2015-08-12 12:23:40.50104+01	Activity		
 3	2015-08-12 12:23:40.50152+01	2015-08-12 12:23:40.501694+01	Study		
+4	2015-09-16 12:31:24.694344+01	2015-09-16 12:31:24.69514+01	Project		
+5	2015-09-16 12:31:24.697503+01	2015-09-16 12:31:24.698068+01	Sub-Project		
 \.
 
 
@@ -4048,7 +4050,7 @@ COPY cbh_core_model_datatype (id, created, modified, name, uri, version) FROM st
 -- Name: cbh_core_model_datatype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('cbh_core_model_datatype_id_seq', 3, true);
+SELECT pg_catalog.setval('cbh_core_model_datatype_id_seq', 5, true);
 
 
 --
@@ -4572,6 +4574,8 @@ SELECT pg_catalog.setval('cbh_core_model_project_enabled_forms_id_seq', 14, true
 
 COPY cbh_core_model_projecttype (id, created, modified, name, show_compounds) FROM stdin;
 1	2015-08-12 13:08:54.178528+01	2015-08-12 13:08:54.179342+01	chemical	t
+2	2015-09-16 12:31:24.705678+01	2015-09-16 12:31:24.706282+01	assay	t
+3	2015-09-16 12:31:24.708726+01	2015-09-16 12:31:24.709327+01	inventory	t
 \.
 
 
@@ -5343,6 +5347,9 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 78	cbh_core_model	0015_auto_20150914_0954	2015-09-15 14:05:04.622624+01
 79	cbh_core_model	0016_auto_20150914_2301	2015-09-15 14:05:05.001466+01
 80	cbh_core_model	0017_auto_20150915_0022	2015-09-15 14:05:05.321823+01
+81	cbh_core_model	0018_auto_20150915_1238	2015-09-16 12:31:24.713539+01
+82	cbh_core_model	0019_auto_20150916_0629	2015-09-16 12:31:25.165952+01
+83	cbh_chembl_ws_extension	0001_initial	2015-09-16 12:31:34.96324+01
 \.
 
 
@@ -5350,7 +5357,7 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('django_migrations_id_seq', 80, true);
+SELECT pg_catalog.setval('django_migrations_id_seq', 83, true);
 
 
 --
