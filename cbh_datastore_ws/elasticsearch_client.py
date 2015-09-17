@@ -51,7 +51,7 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
                     "excludes": [
                       "*.project_data_all",
                     ]
-                  }
+                  },
                "dynamic_templates" : [ 
 
                 {
