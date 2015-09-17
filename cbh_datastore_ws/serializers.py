@@ -20,7 +20,7 @@ class DataPointClassificationSerializer(Serializer):
                                         #Set a jsonpath of the appropriate value
                                         dpath.util.new(dpc, path_to_copy, field_value)
                                         dpath.util.new(dpc, path_to_copy[1:], field_value)
-                                    dpc[level]["project_data_all"] = " ".join([str(value) for key, value in dpc[level]["project_data"].items()]) 
+                                dpc[level]["project_data_all"] = " ".join([str(value) for key, value in dpc[level]["project_data"].items()]) 
                     dpc["data_form_config"] = dfc_json["resource_uri"]
 
         return json.dumps(simple_data)
