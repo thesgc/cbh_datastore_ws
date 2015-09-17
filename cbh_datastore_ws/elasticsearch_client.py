@@ -47,11 +47,6 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
             "_default_" : {
                "_all" : {"enabled" : True},
                
-                "_source": {
-                    "excludes": [
-                      "*.project_data_all",
-                    ]
-                  },
                "dynamic_templates" : [ 
 
                 {
