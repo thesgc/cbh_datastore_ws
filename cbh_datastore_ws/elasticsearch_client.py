@@ -30,8 +30,9 @@ def get_client():
 
 
 @job
-def index_datapoint_classification(data, index_name=get_index_name(), refresh=True):
-    data = json.loads(data)
+def index_datapoint_classification(data, index_name=get_index_name(), refresh=True, decode_json=True):
+    if decode_json:
+        data = json.loads(data)
     batches = [data]
     if data.get("objects", False):
         batches = data["objects"]

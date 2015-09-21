@@ -26,12 +26,14 @@ class Command(BaseCommand):
         fact = RequestFactory()
         request = fact.post("/dev/cbh_attachments/?format=json", json.dumps({
                 "flowfile_id":ff.id,
-                "data_point_classification_id":  int(args[1]),
+                "data_point_classification":  "/dev/datastore/cbh_datapoint_classifications/" + args[1],
+                "chosen_data_form_config" : "/dev/datastore/cbh_data_form_config/2",
                 "sheet_name": sheetname
             }), content_type="application/json")
         request.user = User.objects.get(pk=1)
         ar = AttachmentResource()
-        ar.post_list(request)
+        resp = ar.post_list(request)
+        print resp.content
 
 # document
 # assay

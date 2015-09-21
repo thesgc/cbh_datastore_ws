@@ -59,7 +59,7 @@ class DataPointProjectFieldResource(ModelResource):
     edit_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     elasticsearch_fieldname = fields.CharField(null=True, blank=False, readonly=False, help_text=None)
     standardised_alias = StandardisedForeignKey("self", attribute="standardised_alias", null=True, blank=False, readonly=False, help_text=None)
-    attachment_field_mapped_to = ForeignKey("self", attribute="attachment_field_mapped_to", null=True, blank=False, readonly=False, help_text=None)
+    attachment_field_mapped_to = fields.ForeignKey("self", attribute="attachment_field_mapped_to", null=True, blank=False, readonly=False, help_text=None)
     # filter_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     # filter_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)   
     # exclude_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
@@ -1240,7 +1240,7 @@ def index_filter_dict(filter_dict):
 
 
 class AttachmentResource(ModelResource):
-    data_point_classification = fields.ForeignKey(DataPointClassification, attribute="data_point_classification", full=True)
+    data_point_classification = fields.ForeignKey(DataPointClassificationResource, attribute="data_point_classification", full=True)
     flowfile_id = fields.IntegerField(attribute="flowfile_id")
     attachment_custom_field_config = fields.ForeignKey(SimpleCustomFieldConfigResource, attribute="attachment_custom_field_config", full=True)
     chosen_data_form_config = fields.ForeignKey(DataFormConfigResource, attribute="chosen_data_form_config", full=True)
@@ -1284,25 +1284,43 @@ class AttachmentResource(ModelResource):
             custom_field_config.save()
             bundle.obj.attachment_custom_field_config = custom_field_config
             tempobjects = [{"id" : index, "attachment_data" :{ "project_data" : item}} for index, item in enumerate( data)]
-            index_datapoint_classification({"objects": temp_data[:9]}, index_name="temp_attachment_sheet__%d", refresh=True)
+            elasticsearch_client.index_datapoint_classification({"objects": tempobjects[:9]}, index_name="temp_attachment_sheet__%d", refresh=True, decode_json=False)
             if len(tempobjects) > 10:
-                index_datapoint_classification.delay({"objects": temp_data[9:]}, index_name="temp_attachment_sheet__%d", refresh=False)
+                elasticsearch_client.index_datapoint_classification.delay({"objects": tempobjects[9:]}, index_name="temp_attachment_sheet__%d", refresh=False, decode_json=False)
         return bundle
 
     def dehydrate(self, bundle):
         """Get the related fields and make them into a list of possibilities"""
         
         last_level = bundle.data["chosen_data_form_config"].data["last_level"]
-        fields_being_added_to = bundle.data["chosen_data_form_config"].data[last_level]["project_data_fields"]
+        fields_being_added_to = bundle.data["chosen_data_form_config"].data[last_level].data["project_data_fields"]
         bundle.data["chosen_data_form_config"] = bundle.data["chosen_data_form_config"].data["resource_uri"]
         #Here we add the choices and defaults for the matched fields
         for field in bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
 
-            field["mapped_to_schema"] = []
+            field.data["mapped_to_form"] = [
+               {
+                  "key": "attachment_field_mapped_to",
+                  "type": "checkboxes",
+                  "titleMap": [
+                    {
+                      "value": choice_of_field.data["resource_uri"],
+                      "name": choice_of_field.data["name"],
+                    }
+                    for choice_of_field in fields_being_added_to
+                  ]
+                }
+            ]
+        return bundle
 
 
     def post_save_temp_data(self, request, **kwargs):
-        
+        attachment_pk = kwargs.get("pk",None)
+        if attachment_pk:
+            attachment = self.Meta.queryset.get(pk=attachment_pk)
+
+        else:
+            raise BadRequest("No pk")
  
 
 class QueryResource(ModelResource):
