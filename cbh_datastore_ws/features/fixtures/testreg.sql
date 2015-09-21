@@ -824,6 +824,7 @@ CREATE TABLE cbh_core_model_pinnedcustomfield (
     "default" character varying(500) NOT NULL,
     pinned_for_datatype_id integer,
     standardised_alias_id integer,
+    attachment_field_mapped_to_id integer,
     CONSTRAINT cbh_chembl_model_extension_pinnedcustomfield_position_check CHECK (("position" >= 0))
 );
 
@@ -1073,6 +1074,46 @@ ALTER TABLE public.cbh_core_model_project_enabled_forms_id_seq OWNER TO chembl;
 --
 
 ALTER SEQUENCE cbh_core_model_project_enabled_forms_id_seq OWNED BY cbh_core_model_project_enabled_forms.id;
+
+
+--
+-- Name: cbh_datastore_model_attachment; Type: TABLE; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE TABLE cbh_datastore_model_attachment (
+    id integer NOT NULL,
+    created timestamp with time zone NOT NULL,
+    modified timestamp with time zone NOT NULL,
+    sheet_name character varying(100) NOT NULL,
+    attachment_custom_field_config_id integer NOT NULL,
+    chosen_data_form_config_id integer NOT NULL,
+    created_by_id integer NOT NULL,
+    data_point_classification_id integer NOT NULL,
+    flowfile_id integer
+);
+
+
+ALTER TABLE public.cbh_datastore_model_attachment OWNER TO chembl;
+
+--
+-- Name: cbh_datastore_model_attachment_id_seq; Type: SEQUENCE; Schema: public; Owner: chembl
+--
+
+CREATE SEQUENCE cbh_datastore_model_attachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cbh_datastore_model_attachment_id_seq OWNER TO chembl;
+
+--
+-- Name: cbh_datastore_model_attachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chembl
+--
+
+ALTER SEQUENCE cbh_datastore_model_attachment_id_seq OWNED BY cbh_datastore_model_attachment.id;
 
 
 --
@@ -3014,6 +3055,13 @@ ALTER TABLE ONLY cbh_core_model_skinningconfig ALTER COLUMN id SET DEFAULT nextv
 -- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
 --
 
+ALTER TABLE ONLY cbh_datastore_model_attachment ALTER COLUMN id SET DEFAULT nextval('cbh_datastore_model_attachment_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: chembl
+--
+
 ALTER TABLE ONLY cbh_datastore_model_datapoint ALTER COLUMN id SET DEFAULT nextval('cbh_datastore_model_datapoint_id_seq'::regclass);
 
 
@@ -3558,6 +3606,9 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 331	Can add cbh plugin	168	add_cbhplugin
 332	Can change cbh plugin	168	change_cbhplugin
 333	Can delete cbh plugin	168	delete_cbhplugin
+334	Can add attachment	169	add_attachment
+335	Can change attachment	169	change_attachment
+336	Can delete attachment	169	delete_attachment
 \.
 
 
@@ -3565,7 +3616,7 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('auth_permission_id_seq', 333, true);
+SELECT pg_catalog.setval('auth_permission_id_seq', 336, true);
 
 
 --
@@ -4057,472 +4108,472 @@ SELECT pg_catalog.setval('cbh_core_model_datatype_id_seq', 5, true);
 -- Data for Name: cbh_core_model_pinnedcustomfield; Type: TABLE DATA; Schema: public; Owner: chembl
 --
 
-COPY cbh_core_model_pinnedcustomfield (id, created, modified, name, custom_field_config_id, required, part_of_blinded_key, field_type, allowed_values, "position", description, field_key, "default", pinned_for_datatype_id, standardised_alias_id) FROM stdin;
-3	2015-05-08 12:40:39.264742+01	2015-05-08 12:40:39.299629+01	ttest	4	f	f	char		0				\N	\N
-4	2015-08-12 13:40:37.188198+01	2015-08-12 13:40:37.188482+01	Standard Activity Type	5	f	f	text		0	Concentration required for 50% activity	Standard Activity Type	AC50	\N	\N
-5	2015-08-12 13:40:37.236376+01	2015-08-12 13:40:37.236713+01	Standard Unit	5	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-6	2015-08-12 13:40:37.239346+01	2015-08-12 13:40:37.239628+01	Standard Activity Value	5	f	f	number		2		Standard Activity Value		\N	\N
-7	2015-08-12 13:40:37.244504+01	2015-08-12 13:40:37.244765+01	Standard Activity Type	6	f	f	text		0	A measurement of the albumin protein in a biological specimen.	Standard Activity Type	ALB	\N	\N
-8	2015-08-12 13:40:37.247075+01	2015-08-12 13:40:37.247325+01	Standard Unit	6	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-9	2015-08-12 13:40:37.249663+01	2015-08-12 13:40:37.249903+01	Standard Activity Value	6	f	f	number		2		Standard Activity Value		\N	\N
-10	2015-08-12 13:40:37.254765+01	2015-08-12 13:40:37.255049+01	Standard Activity Type	7	f	f	text		0	The ratio of albumin to globulin in a biological specimen.	Standard Activity Type	ALBGLOB	\N	\N
-11	2015-08-12 13:40:37.260173+01	2015-08-12 13:40:37.260422+01	Standard Unit	7	f	f	uiselect	-	1		Standard Unit	-	\N	\N
-12	2015-08-12 13:40:37.262733+01	2015-08-12 13:40:37.262974+01	Standard Activity Value	7	f	f	number		2		Standard Activity Value		\N	\N
-13	2015-08-12 13:40:37.267836+01	2015-08-12 13:40:37.268094+01	Standard Activity Type	8	f	f	text		0	A measurement of the alkaline phosphatase in a biological specimen.	Standard Activity Type	ALP	\N	\N
-14	2015-08-12 13:40:37.270385+01	2015-08-12 13:40:37.270626+01	Standard Unit	8	f	f	uiselect	U.L-1,IU.L-1	1		Standard Unit	U.L-1	\N	\N
-15	2015-08-12 13:40:37.27294+01	2015-08-12 13:40:37.27318+01	Standard Activity Value	8	f	f	number		2		Standard Activity Value		\N	\N
-16	2015-08-12 13:40:37.27799+01	2015-08-12 13:40:37.2783+01	Standard Activity Type	9	f	f	text		0	A measurement of the alanine aminotransferase in a biological specimen.	Standard Activity Type	ALT	\N	\N
-17	2015-08-12 13:40:37.280723+01	2015-08-12 13:40:37.280967+01	Standard Unit	9	f	f	uiselect	U.L-1,IU.L-1	1		Standard Unit	U.L-1	\N	\N
-18	2015-08-12 13:40:37.283234+01	2015-08-12 13:40:37.283475+01	Standard Activity Value	9	f	f	number		2		Standard Activity Value		\N	\N
-19	2015-08-12 13:40:37.288268+01	2015-08-12 13:40:37.288524+01	Standard Activity Type	10	f	f	text		0	A measurement of the length of time that it takes for clotting to occur when reagents are added to a plasma specimen. The test is partial due to the absence of tissue factor (Factor III) from the reaction mixture.	Standard Activity Type	APTT	\N	\N
-20	2015-08-12 13:40:37.290807+01	2015-08-12 13:40:37.29112+01	Standard Unit	10	f	f	uiselect	s	1		Standard Unit	s	\N	\N
-21	2015-08-12 13:40:37.293375+01	2015-08-12 13:40:37.293614+01	Standard Activity Value	10	f	f	number		2		Standard Activity Value		\N	\N
-22	2015-08-12 13:40:37.298281+01	2015-08-12 13:40:37.298536+01	Standard Activity Type	11	f	f	text		0	A measurement of the aspartate aminotransferase in a biological specimen.	Standard Activity Type	AST	\N	\N
-23	2015-08-12 13:40:37.300802+01	2015-08-12 13:40:37.301042+01	Standard Unit	11	f	f	uiselect	U.L-1,IU.L-1	1		Standard Unit	U.L-1	\N	\N
-24	2015-08-12 13:40:37.30345+01	2015-08-12 13:40:37.303692+01	Standard Activity Value	11	f	f	number		2		Standard Activity Value		\N	\N
-25	2015-08-12 13:40:37.308356+01	2015-08-12 13:40:37.308612+01	Standard Activity Type	12	f	f	text		0	Area under the drug concentration time curve	Standard Activity Type	AUC	\N	\N
-26	2015-08-12 13:40:37.310866+01	2015-08-12 13:40:37.311153+01	Standard Unit	12	f	f	uiselect	uM.hr,ng.hr.mL-1	1		Standard Unit	uM.hr	\N	\N
-27	2015-08-12 13:40:37.313395+01	2015-08-12 13:40:37.313634+01	Standard Activity Value	12	f	f	number		2		Standard Activity Value		\N	\N
-28	2015-08-12 13:40:37.318339+01	2015-08-12 13:40:37.318594+01	Standard Activity Type	13	f	f	text		0	A measurement of the basophils in a biological specimen.	Standard Activity Type	BASO	\N	\N
-29	2015-08-12 13:40:37.320876+01	2015-08-12 13:40:37.321114+01	Standard Unit	13	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N
-30	2015-08-12 13:40:37.323503+01	2015-08-12 13:40:37.323765+01	Standard Activity Value	13	f	f	number		2		Standard Activity Value		\N	\N
-31	2015-08-12 13:40:37.329698+01	2015-08-12 13:40:37.329957+01	Standard Activity Type	14	f	f	text		0	A relative measurement (ratio or percentage) of the basophils to leukocytes in a biological specimen.	Standard Activity Type	BASOLE	\N	\N
-32	2015-08-12 13:40:37.332236+01	2015-08-12 13:40:37.332475+01	Standard Unit	14	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-33	2015-08-12 13:40:37.334797+01	2015-08-12 13:40:37.335057+01	Standard Activity Value	14	f	f	number		2		Standard Activity Value		\N	\N
-34	2015-08-12 13:40:37.340477+01	2015-08-12 13:40:37.340837+01	Standard Activity Type	15	f	f	text		0	A measurement of the conjugated or water-soluble bilirubin in a biological specimen.	Standard Activity Type	BILDIR	\N	\N
-35	2015-08-12 13:40:37.343151+01	2015-08-12 13:40:37.343388+01	Standard Unit	15	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-36	2015-08-12 13:40:37.345608+01	2015-08-12 13:40:37.345845+01	Standard Activity Value	15	f	f	number		2		Standard Activity Value		\N	\N
-37	2015-08-12 13:40:37.350754+01	2015-08-12 13:40:37.351023+01	Standard Activity Type	16	f	f	text		0	A measurement of the total bilirubin in a biological specimen.	Standard Activity Type	BILI	\N	\N
-38	2015-08-12 13:40:37.353261+01	2015-08-12 13:40:37.353517+01	Standard Unit	16	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-39	2015-08-12 13:40:37.355804+01	2015-08-12 13:40:37.356051+01	Standard Activity Value	16	f	f	number		2		Standard Activity Value		\N	\N
-40	2015-08-12 13:40:37.360844+01	2015-08-12 13:40:37.361097+01	Standard Activity Type	17	f	f	text		0	A measurement of the urea nitrogen in a blood specimen.	Standard Activity Type	BUN	\N	\N
-41	2015-08-12 13:40:37.36339+01	2015-08-12 13:40:37.363627+01	Standard Unit	17	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-42	2015-08-12 13:40:37.365853+01	2015-08-12 13:40:37.36609+01	Standard Activity Value	17	f	f	number		2		Standard Activity Value		\N	\N
-43	2015-08-12 13:40:37.371081+01	2015-08-12 13:40:37.371399+01	Standard Activity Type	18	f	f	text		0	A measurement of the calcium in a biological specimen.	Standard Activity Type	CALCIUM	\N	\N
-44	2015-08-12 13:40:37.373958+01	2015-08-12 13:40:37.374237+01	Standard Unit	18	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-45	2015-08-12 13:40:37.376676+01	2015-08-12 13:40:37.376958+01	Standard Activity Value	18	f	f	number		2		Standard Activity Value		\N	\N
-46	2015-08-12 13:40:37.381742+01	2015-08-12 13:40:37.381997+01	Standard Activity Type	19	f	f	text		0	Concentration required for 50% cytotoxicity	Standard Activity Type	CC50	\N	\N
-47	2015-08-12 13:40:37.384286+01	2015-08-12 13:40:37.384522+01	Standard Unit	19	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-48	2015-08-12 13:40:37.386812+01	2015-08-12 13:40:37.387074+01	Standard Activity Value	19	f	f	number		2		Standard Activity Value		\N	\N
-49	2015-08-12 13:40:37.393955+01	2015-08-12 13:40:37.394248+01	Standard Activity Type	20	f	f	text		0	A measurement of the chloride in a biological specimen.	Standard Activity Type	CHLORIDE	\N	\N
-50	2015-08-12 13:40:37.396808+01	2015-08-12 13:40:37.397102+01	Standard Unit	20	f	f	uiselect	mEq.L-1	1		Standard Unit	mEq.L-1	\N	\N
-51	2015-08-12 13:40:37.399672+01	2015-08-12 13:40:37.39996+01	Standard Activity Value	20	f	f	number		2		Standard Activity Value		\N	\N
-52	2015-08-12 13:40:37.405087+01	2015-08-12 13:40:37.405362+01	Standard Activity Type	21	f	f	text		0	A measurement of the cholesterol in a biological specimen.	Standard Activity Type	CHOL	\N	\N
-53	2015-08-12 13:40:37.407649+01	2015-08-12 13:40:37.407892+01	Standard Unit	21	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-54	2015-08-12 13:40:37.411851+01	2015-08-12 13:40:37.412092+01	Standard Activity Value	21	f	f	number		2		Standard Activity Value		\N	\N
-55	2015-08-12 13:40:37.418841+01	2015-08-12 13:40:37.419129+01	Standard Activity Type	22	f	f	text		0	A measurement of the total creatine kinase in a biological specimen.	Standard Activity Type	CK	\N	\N
-56	2015-08-12 13:40:37.421858+01	2015-08-12 13:40:37.422096+01	Standard Unit	22	f	f	uiselect	U.L-1	1		Standard Unit	U.L-1	\N	\N
-57	2015-08-12 13:40:37.424328+01	2015-08-12 13:40:37.424564+01	Standard Activity Value	22	f	f	number		2		Standard Activity Value		\N	\N
-58	2015-08-12 13:40:37.429271+01	2015-08-12 13:40:37.429525+01	Standard Activity Type	23	f	f	text		0	Clearance	Standard Activity Type	CL	\N	\N
-59	2015-08-12 13:40:37.431749+01	2015-08-12 13:40:37.431985+01	Standard Unit	23	f	f	uiselect	mL.min-1.g-1,mL.min-1.kg-1,uL.min-1.(10^6cells)-1	1		Standard Unit	mL.min-1.g-1	\N	\N
-60	2015-08-12 13:40:37.434385+01	2015-08-12 13:40:37.434624+01	Standard Activity Value	23	f	f	number		2		Standard Activity Value		\N	\N
-61	2015-08-12 13:40:37.439495+01	2015-08-12 13:40:37.439753+01	Standard Activity Type	24	f	f	text		0	Renal clearance	Standard Activity Type	CL_renal	\N	\N
-62	2015-08-12 13:40:37.442172+01	2015-08-12 13:40:37.442412+01	Standard Unit	24	f	f	uiselect	mL.min-1.kg-1	1		Standard Unit	mL.min-1.kg-1	\N	\N
-63	2015-08-12 13:40:37.444686+01	2015-08-12 13:40:37.444922+01	Standard Activity Value	24	f	f	number		2		Standard Activity Value		\N	\N
-64	2015-08-12 13:40:37.449621+01	2015-08-12 13:40:37.449875+01	Standard Activity Type	25	f	f	text		0	Clearance/Bioavailability	Standard Activity Type	CL/F	\N	\N
-65	2015-08-12 13:40:37.452114+01	2015-08-12 13:40:37.45235+01	Standard Unit	25	f	f	uiselect	mL.min-1.kg-1	1		Standard Unit	mL.min-1.kg-1	\N	\N
-66	2015-08-12 13:40:37.454576+01	2015-08-12 13:40:37.454813+01	Standard Activity Value	25	f	f	number		2		Standard Activity Value		\N	\N
-67	2015-08-12 13:40:37.459859+01	2015-08-12 13:40:37.460142+01	Standard Activity Type	26	f	f	text		0	Calculated Log(Distribution Coefficient)	Standard Activity Type	CLogD	\N	\N
-68	2015-08-12 13:40:37.462434+01	2015-08-12 13:40:37.462683+01	Standard Unit	26	f	f	uiselect	-	1		Standard Unit	-	\N	\N
-69	2015-08-12 13:40:37.465047+01	2015-08-12 13:40:37.465285+01	Standard Activity Value	26	f	f	number		2		Standard Activity Value		\N	\N
-70	2015-08-12 13:40:37.469925+01	2015-08-12 13:40:37.470178+01	Standard Activity Type	27	f	f	text		0	Calculated Log(Distribution Coefficient) at pH7.4	Standard Activity Type	CLogD7.4	\N	\N
-71	2015-08-12 13:40:37.47244+01	2015-08-12 13:40:37.472688+01	Standard Unit	27	f	f	uiselect	-	1		Standard Unit	-	\N	\N
-72	2015-08-12 13:40:37.475115+01	2015-08-12 13:40:37.475357+01	Standard Activity Value	27	f	f	number		2		Standard Activity Value		\N	\N
-73	2015-08-12 13:40:37.480208+01	2015-08-12 13:40:37.480462+01	Standard Activity Type	28	f	f	text		0	Calculated Log(Partition Coefficient)	Standard Activity Type	CLogP	\N	\N
-74	2015-08-12 13:40:37.48311+01	2015-08-12 13:40:37.483346+01	Standard Unit	28	f	f	uiselect	-	1		Standard Unit	-	\N	\N
-75	2015-08-12 13:40:37.485576+01	2015-08-12 13:40:37.485812+01	Standard Activity Value	28	f	f	number		2		Standard Activity Value		\N	\N
-76	2015-08-12 13:40:37.490489+01	2015-08-12 13:40:37.490741+01	Standard Activity Type	29	f	f	text		0	Maximum concentration	Standard Activity Type	Cmax	\N	\N
-77	2015-08-12 13:40:37.493185+01	2015-08-12 13:40:37.493421+01	Standard Unit	29	f	f	uiselect	ug.mL-1,nM	1		Standard Unit	ug.mL-1	\N	\N
-78	2015-08-12 13:40:37.495662+01	2015-08-12 13:40:37.495896+01	Standard Activity Value	29	f	f	number		2		Standard Activity Value		\N	\N
-79	2015-08-12 13:40:37.500518+01	2015-08-12 13:40:37.50079+01	Standard Activity Type	30	f	f	text		0	A measurement of the carbon dioxide gas in a biological specimen.	Standard Activity Type	CO2	\N	\N
-80	2015-08-12 13:40:37.503164+01	2015-08-12 13:40:37.5034+01	Standard Unit	30	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-81	2015-08-12 13:40:37.50563+01	2015-08-12 13:40:37.505864+01	Standard Activity Value	30	f	f	number		2		Standard Activity Value		\N	\N
-82	2015-08-12 13:40:37.510503+01	2015-08-12 13:40:37.510754+01	Standard Activity Type	31	f	f	text		0	A measurement of the creatinine in a biological specimen.	Standard Activity Type	CREAT	\N	\N
-83	2015-08-12 13:40:37.51305+01	2015-08-12 13:40:37.513286+01	Standard Unit	31	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-84	2015-08-12 13:40:37.515551+01	2015-08-12 13:40:37.515786+01	Standard Activity Value	31	f	f	number		2		Standard Activity Value		\N	\N
-85	2015-08-12 13:40:37.520434+01	2015-08-12 13:40:37.520684+01	Standard Activity Type	32	f	f	text		0	Effective concentration for 50% activity	Standard Activity Type	EC50	\N	\N
-86	2015-08-12 13:40:37.522982+01	2015-08-12 13:40:37.523246+01	Standard Unit	32	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-87	2015-08-12 13:40:37.525658+01	2015-08-12 13:40:37.525894+01	Standard Activity Value	32	f	f	number		2		Standard Activity Value		\N	\N
-88	2015-08-12 13:40:37.530556+01	2015-08-12 13:40:37.530812+01	Standard Activity Type	33	f	f	text		0	Effective dose for 50% activity	Standard Activity Type	ED50	\N	\N
-89	2015-08-12 13:40:37.533064+01	2015-08-12 13:40:37.533299+01	Standard Unit	33	f	f	uiselect	mg.kg-1,umol.kg-1	1		Standard Unit	mg.kg-1	\N	\N
-90	2015-08-12 13:40:37.535507+01	2015-08-12 13:40:37.535742+01	Standard Activity Value	33	f	f	number		2		Standard Activity Value		\N	\N
-91	2015-08-12 13:40:37.540424+01	2015-08-12 13:40:37.540686+01	Standard Activity Type	34	f	f	text		0	A measurement of the eosinophils in a biological specimen.	Standard Activity Type	EOS	\N	\N
-92	2015-08-12 13:40:37.543087+01	2015-08-12 13:40:37.543335+01	Standard Unit	34	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N
-93	2015-08-12 13:40:37.545659+01	2015-08-12 13:40:37.545901+01	Standard Activity Value	34	f	f	number		2		Standard Activity Value		\N	\N
-94	2015-08-12 13:40:37.550771+01	2015-08-12 13:40:37.55105+01	Standard Activity Type	35	f	f	text		0	A relative measurement (ratio or percentage) of the eosinophils to leukocytes in a biological specimen.	Standard Activity Type	EOSLE	\N	\N
-95	2015-08-12 13:40:37.553302+01	2015-08-12 13:40:37.55354+01	Standard Unit	35	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-96	2015-08-12 13:40:37.555775+01	2015-08-12 13:40:37.556014+01	Standard Activity Value	35	f	f	number		2		Standard Activity Value		\N	\N
-97	2015-08-12 13:40:37.560742+01	2015-08-12 13:40:37.560996+01	Standard Activity Type	36	f	f	text		0	Bioavailability	Standard Activity Type	F	\N	\N
-98	2015-08-12 13:40:37.563281+01	2015-08-12 13:40:37.563518+01	Standard Unit	36	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-99	2015-08-12 13:40:37.565755+01	2015-08-12 13:40:37.565992+01	Standard Activity Value	36	f	f	number		2		Standard Activity Value		\N	\N
-100	2015-08-12 13:40:37.570946+01	2015-08-12 13:40:37.571332+01	Standard Activity Type	37	f	f	text		0	Area under the free drug concentration time curve	Standard Activity Type	fAUC	\N	\N
-101	2015-08-12 13:40:37.574417+01	2015-08-12 13:40:37.574661+01	Standard Unit	37	f	f	uiselect	uM.hr,ng.hr.mL-1	1		Standard Unit	uM.hr	\N	\N
-102	2015-08-12 13:40:37.576957+01	2015-08-12 13:40:37.577193+01	Standard Activity Value	37	f	f	number		2		Standard Activity Value		\N	\N
-103	2015-08-12 13:40:37.582469+01	2015-08-12 13:40:37.582724+01	Standard Activity Type	38	f	f	text		0	A measurement of the fibrinogen in a biological specimen.	Standard Activity Type	FIBRINO	\N	\N
-104	2015-08-12 13:40:37.585134+01	2015-08-12 13:40:37.585396+01	Standard Unit	38	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-105	2015-08-12 13:40:37.587749+01	2015-08-12 13:40:37.587987+01	Standard Activity Value	38	f	f	number		2		Standard Activity Value		\N	\N
-106	2015-08-12 13:40:37.592784+01	2015-08-12 13:40:37.59304+01	Standard Activity Type	39	f	f	text		0	A measurement of the gamma glutamyl transferase in a biological specimen.	Standard Activity Type	GGT	\N	\N
-107	2015-08-12 13:40:37.595374+01	2015-08-12 13:40:37.595608+01	Standard Unit	39	f	f	uiselect	IU.L-1	1		Standard Unit	IU.L-1	\N	\N
-108	2015-08-12 13:40:37.598167+01	2015-08-12 13:40:37.598423+01	Standard Activity Value	39	f	f	number		2		Standard Activity Value		\N	\N
-109	2015-08-12 13:40:37.605097+01	2015-08-12 13:40:37.605364+01	Standard Activity Type	40	f	f	text		0	Concentration required for 50% growth inhibition	Standard Activity Type	GI50	\N	\N
-110	2015-08-12 13:40:37.607943+01	2015-08-12 13:40:37.608205+01	Standard Unit	40	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-111	2015-08-12 13:40:37.611967+01	2015-08-12 13:40:37.612237+01	Standard Activity Value	40	f	f	number		2		Standard Activity Value		\N	\N
-112	2015-08-12 13:40:37.620947+01	2015-08-12 13:40:37.621259+01	Standard Activity Type	41	f	f	text		0	A measurement of the glucose in a biological specimen.	Standard Activity Type	GLUC	\N	\N
-113	2015-08-12 13:40:37.623793+01	2015-08-12 13:40:37.624228+01	Standard Unit	41	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-114	2015-08-12 13:40:37.629037+01	2015-08-12 13:40:37.629486+01	Standard Activity Value	41	f	f	number		2		Standard Activity Value		\N	\N
-115	2015-08-12 13:40:37.639041+01	2015-08-12 13:40:37.639544+01	Standard Activity Type	42	f	f	text		0	The percentage of a whole blood specimen that is composed of red blood cells (erythrocytes).	Standard Activity Type	HCT	\N	\N
-116	2015-08-12 13:40:37.643204+01	2015-08-12 13:40:37.643462+01	Standard Unit	42	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-117	2015-08-12 13:40:37.64588+01	2015-08-12 13:40:37.646122+01	Standard Activity Value	42	f	f	number		2		Standard Activity Value		\N	\N
-118	2015-08-12 13:40:37.651877+01	2015-08-12 13:40:37.652141+01	Standard Activity Type	43	f	f	text		0	A measurement of the hemoglobin in a biological specimen.	Standard Activity Type	HGB	\N	\N
-119	2015-08-12 13:40:37.654909+01	2015-08-12 13:40:37.655189+01	Standard Unit	43	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-120	2015-08-12 13:40:37.657921+01	2015-08-12 13:40:37.658163+01	Standard Activity Value	43	f	f	number		2		Standard Activity Value		\N	\N
-121	2015-08-12 13:40:37.663187+01	2015-08-12 13:40:37.663461+01	Standard Activity Type	44	f	f	text		0	Concentration required for 50% inhibition	Standard Activity Type	IC50	\N	\N
-122	2015-08-12 13:40:37.666915+01	2015-08-12 13:40:37.667303+01	Standard Unit	44	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-123	2015-08-12 13:40:37.671909+01	2015-08-12 13:40:37.672161+01	Standard Activity Value	44	f	f	number		2		Standard Activity Value		\N	\N
-124	2015-08-12 13:40:37.682175+01	2015-08-12 13:40:37.682473+01	Standard Activity Type	45	f	f	text		0	Concentration required for 90% inhibition	Standard Activity Type	IC90	\N	\N
-125	2015-08-12 13:40:37.684886+01	2015-08-12 13:40:37.685123+01	Standard Unit	45	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-126	2015-08-12 13:40:37.68789+01	2015-08-12 13:40:37.688135+01	Standard Activity Value	45	f	f	number		2		Standard Activity Value		\N	\N
-127	2015-08-12 13:40:37.696613+01	2015-08-12 13:40:37.697025+01	Standard Activity Type	46	f	f	text		0	Concentration required for 95% inhibition	Standard Activity Type	IC95	\N	\N
-128	2015-08-12 13:40:37.700531+01	2015-08-12 13:40:37.700897+01	Standard Unit	46	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-129	2015-08-12 13:40:37.704147+01	2015-08-12 13:40:37.704492+01	Standard Activity Value	46	f	f	number		2		Standard Activity Value		\N	\N
-130	2015-08-12 13:40:37.710519+01	2015-08-12 13:40:37.710889+01	Standard Activity Type	47	f	f	text		0	Concentration required for 99% inhibition	Standard Activity Type	IC99	\N	\N
-131	2015-08-12 13:40:37.714422+01	2015-08-12 13:40:37.71483+01	Standard Unit	47	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-132	2015-08-12 13:40:37.718944+01	2015-08-12 13:40:37.719369+01	Standard Activity Value	47	f	f	number		2		Standard Activity Value		\N	\N
-133	2015-08-12 13:40:37.724999+01	2015-08-12 13:40:37.72541+01	Standard Activity Type	48	f	f	text		0	Dose required for 50% inhibition	Standard Activity Type	ID50	\N	\N
-134	2015-08-12 13:40:37.72905+01	2015-08-12 13:40:37.729392+01	Standard Unit	48	f	f	uiselect	mg.kg-1,umol.kg-1	1		Standard Unit	mg.kg-1	\N	\N
-135	2015-08-12 13:40:37.731985+01	2015-08-12 13:40:37.732312+01	Standard Activity Value	48	f	f	number		2		Standard Activity Value		\N	\N
-136	2015-08-12 13:40:37.738971+01	2015-08-12 13:40:37.739287+01	Standard Activity Type	49	f	f	text		0	Inhibition Frequency (promiscuity) Index	Standard Activity Type	IFI	\N	\N
-137	2015-08-12 13:40:37.74202+01	2015-08-12 13:40:37.742256+01	Standard Unit	49	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-138	2015-08-12 13:40:37.744874+01	2015-08-12 13:40:37.745114+01	Standard Activity Value	49	f	f	number		2		Standard Activity Value		\N	\N
-139	2015-08-12 13:40:37.752024+01	2015-08-12 13:40:37.752485+01	Standard Activity Type	50	f	f	text		0	Inhibition	Standard Activity Type	Inhibition	\N	\N
-140	2015-08-12 13:40:37.757039+01	2015-08-12 13:40:37.757556+01	Standard Unit	50	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-141	2015-08-12 13:40:37.762179+01	2015-08-12 13:40:37.762674+01	Standard Activity Value	50	f	f	number		2		Standard Activity Value		\N	\N
-142	2015-08-12 13:40:37.771919+01	2015-08-12 13:40:37.772187+01	Standard Activity Type	51	f	f	text		0	Zone of inhibition	Standard Activity Type	IZ	\N	\N
-143	2015-08-12 13:40:37.774961+01	2015-08-12 13:40:37.775274+01	Standard Unit	51	f	f	uiselect	mm	1		Standard Unit	mm	\N	\N
-144	2015-08-12 13:40:37.778328+01	2015-08-12 13:40:37.778684+01	Standard Activity Value	51	f	f	number		2		Standard Activity Value		\N	\N
-145	2015-08-12 13:40:37.800633+01	2015-08-12 13:40:37.800925+01	Standard Activity Type	52	f	f	text		0	Observed rate constant	Standard Activity Type	k_obs	\N	\N
-146	2015-08-12 13:40:37.805866+01	2015-08-12 13:40:37.80612+01	Standard Unit	52	f	f	uiselect	s-1	1		Standard Unit	s-1	\N	\N
-147	2015-08-12 13:40:37.809065+01	2015-08-12 13:40:37.809313+01	Standard Activity Value	52	f	f	number		2		Standard Activity Value		\N	\N
-148	2015-08-12 13:40:37.814633+01	2015-08-12 13:40:37.814908+01	Standard Activity Type	53	f	f	text		0	Dissociation rate constant	Standard Activity Type	k_off	\N	\N
-149	2015-08-12 13:40:37.818303+01	2015-08-12 13:40:37.818561+01	Standard Unit	53	f	f	uiselect	s-1	1		Standard Unit	s-1	\N	\N
-150	2015-08-12 13:40:37.821927+01	2015-08-12 13:40:37.822181+01	Standard Activity Value	53	f	f	number		2		Standard Activity Value		\N	\N
-151	2015-08-12 13:40:37.827923+01	2015-08-12 13:40:37.828191+01	Standard Activity Type	54	f	f	text		0	Association rate constant	Standard Activity Type	k_on	\N	\N
-152	2015-08-12 13:40:37.832097+01	2015-08-12 13:40:37.832439+01	Standard Unit	54	f	f	uiselect	M-1.s-1	1		Standard Unit	M-1.s-1	\N	\N
-153	2015-08-12 13:40:37.837233+01	2015-08-12 13:40:37.837672+01	Standard Activity Value	54	f	f	number		2		Standard Activity Value		\N	\N
-154	2015-08-12 13:40:37.846564+01	2015-08-12 13:40:37.847062+01	Standard Activity Type	55	f	f	text		0	Dissociation constant	Standard Activity Type	Kd	\N	\N
-155	2015-08-12 13:40:37.851224+01	2015-08-12 13:40:37.851635+01	Standard Unit	55	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-156	2015-08-12 13:40:37.855072+01	2015-08-12 13:40:37.855419+01	Standard Activity Value	55	f	f	number		2		Standard Activity Value		\N	\N
-157	2015-08-12 13:40:37.862103+01	2015-08-12 13:40:37.862482+01	Standard Activity Type	56	f	f	text		0	Inhibition constant	Standard Activity Type	Ki	\N	\N
-158	2015-08-12 13:40:37.867998+01	2015-08-12 13:40:37.868285+01	Standard Unit	56	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-159	2015-08-12 13:40:37.871962+01	2015-08-12 13:40:37.872224+01	Standard Activity Value	56	f	f	number		2		Standard Activity Value		\N	\N
-160	2015-08-12 13:40:37.879089+01	2015-08-12 13:40:37.879393+01	Standard Activity Type	57	f	f	text		0	Michaelis constant	Standard Activity Type	Km	\N	\N
-161	2015-08-12 13:40:37.882003+01	2015-08-12 13:40:37.882428+01	Standard Unit	57	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-162	2015-08-12 13:40:37.887571+01	2015-08-12 13:40:37.887833+01	Standard Activity Value	57	f	f	number		2		Standard Activity Value		\N	\N
-163	2015-08-12 13:40:37.898046+01	2015-08-12 13:40:37.898322+01	Standard Activity Type	58	f	f	text		0	Concentration required for 50% lethality	Standard Activity Type	LC50	\N	\N
-164	2015-08-12 13:40:37.90125+01	2015-08-12 13:40:37.901682+01	Standard Unit	58	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-165	2015-08-12 13:40:37.904756+01	2015-08-12 13:40:37.905051+01	Standard Activity Value	58	f	f	number		2		Standard Activity Value		\N	\N
-166	2015-08-12 13:40:37.911115+01	2015-08-12 13:40:37.911402+01	Standard Activity Type	59	f	f	text		0	Dose required for 50% lethality	Standard Activity Type	LD50	\N	\N
-167	2015-08-12 13:40:37.913868+01	2015-08-12 13:40:37.914122+01	Standard Unit	59	f	f	uiselect	mg.kg-1,umol.kg-1	1		Standard Unit	mg.kg-1	\N	\N
-168	2015-08-12 13:40:37.917968+01	2015-08-12 13:40:37.918242+01	Standard Activity Value	59	f	f	number		2		Standard Activity Value		\N	\N
-276	2015-08-12 13:40:38.40129+01	2015-08-12 13:40:38.401654+01	Standard Activity Value	96	f	f	number		2		Standard Activity Value		\N	\N
-169	2015-08-12 13:40:37.92498+01	2015-08-12 13:40:37.925273+01	Standard Activity Type	60	f	f	text		0	A measurement of the lactate dehydrogenase in a biological specimen.	Standard Activity Type	LDH	\N	\N
-170	2015-08-12 13:40:37.927937+01	2015-08-12 13:40:37.928185+01	Standard Unit	60	f	f	uiselect	U.L-1,IU.L-1	1		Standard Unit	U.L-1	\N	\N
-171	2015-08-12 13:40:37.931084+01	2015-08-12 13:40:37.93133+01	Standard Activity Value	60	f	f	number		2		Standard Activity Value		\N	\N
-172	2015-08-12 13:40:37.936977+01	2015-08-12 13:40:37.937288+01	Standard Activity Type	61	f	f	text		0	A measurement of the pancreatic lipase in a biological specimen.	Standard Activity Type	LIPASE	\N	\N
-173	2015-08-12 13:40:37.941955+01	2015-08-12 13:40:37.942207+01	Standard Unit	61	f	f	uiselect	U.L-1	1		Standard Unit	U.L-1	\N	\N
-174	2015-08-12 13:40:37.944932+01	2015-08-12 13:40:37.945187+01	Standard Activity Value	61	f	f	number		2		Standard Activity Value		\N	\N
-175	2015-08-12 13:40:37.951913+01	2015-08-12 13:40:37.952179+01	Standard Activity Type	62	f	f	text		0	Log(Partition Coefficient)	Standard Activity Type	LogP	\N	\N
-176	2015-08-12 13:40:37.957907+01	2015-08-12 13:40:37.958163+01	Standard Unit	62	f	f	uiselect	-	1		Standard Unit	-	\N	\N
-177	2015-08-12 13:40:37.961902+01	2015-08-12 13:40:37.962145+01	Standard Activity Value	62	f	f	number		2		Standard Activity Value		\N	\N
-178	2015-08-12 13:40:37.967489+01	2015-08-12 13:40:37.96776+01	Standard Activity Type	63	f	f	text		0	Log(Apparent permeability)	Standard Activity Type	LogPapp	\N	\N
-179	2015-08-12 13:40:37.97014+01	2015-08-12 13:40:37.970393+01	Standard Unit	63	f	f	uiselect	-	1		Standard Unit	-	\N	\N
-180	2015-08-12 13:40:37.973459+01	2015-08-12 13:40:37.973709+01	Standard Activity Value	63	f	f	number		2		Standard Activity Value		\N	\N
-181	2015-08-12 13:40:37.981773+01	2015-08-12 13:40:37.982045+01	Standard Activity Type	64	f	f	text		0	A measurement of the lymphocytes in a biological specimen.	Standard Activity Type	LYM	\N	\N
-182	2015-08-12 13:40:37.984481+01	2015-08-12 13:40:37.984736+01	Standard Unit	64	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N
-183	2015-08-12 13:40:37.987213+01	2015-08-12 13:40:37.987496+01	Standard Activity Value	64	f	f	number		2		Standard Activity Value		\N	\N
-184	2015-08-12 13:40:37.993221+01	2015-08-12 13:40:37.993512+01	Standard Activity Type	65	f	f	text		0	A relative measurement (ratio or percentage) of the lymphocytes to leukocytes in a biological specimen.	Standard Activity Type	LYMLE	\N	\N
-185	2015-08-12 13:40:37.995924+01	2015-08-12 13:40:37.996175+01	Standard Unit	65	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-186	2015-08-12 13:40:37.999064+01	2015-08-12 13:40:37.999366+01	Standard Activity Value	65	f	f	number		2		Standard Activity Value		\N	\N
-187	2015-08-12 13:40:38.005195+01	2015-08-12 13:40:38.005538+01	Standard Activity Type	66	f	f	text		0	Minimum cytotoxic concentration	Standard Activity Type	MCC	\N	\N
-188	2015-08-12 13:40:38.008104+01	2015-08-12 13:40:38.008368+01	Standard Unit	66	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-189	2015-08-12 13:40:38.0136+01	2015-08-12 13:40:38.013879+01	Standard Activity Value	66	f	f	number		2		Standard Activity Value		\N	\N
-190	2015-08-12 13:40:38.019452+01	2015-08-12 13:40:38.019718+01	Standard Activity Type	67	f	f	text		0	A quantitative measurement of the mean amount of hemoglobin per erythrocyte in a biological specimen.	Standard Activity Type	MCH	\N	\N
-191	2015-08-12 13:40:38.022061+01	2015-08-12 13:40:38.022374+01	Standard Unit	67	f	f	uiselect	pg	1		Standard Unit	pg	\N	\N
-192	2015-08-12 13:40:38.024985+01	2015-08-12 13:40:38.025242+01	Standard Activity Value	67	f	f	number		2		Standard Activity Value		\N	\N
-193	2015-08-12 13:40:38.03075+01	2015-08-12 13:40:38.031986+01	Standard Activity Type	68	f	f	text		0	A quantitative measurement of the mean amount of hemoglobin per erythrocytes in a specified volume of a biological specimen.	Standard Activity Type	MCHC	\N	\N
-194	2015-08-12 13:40:38.03559+01	2015-08-12 13:40:38.035883+01	Standard Unit	68	f	f	uiselect	%,ug.mL-1	1		Standard Unit	%	\N	\N
-195	2015-08-12 13:40:38.038975+01	2015-08-12 13:40:38.03926+01	Standard Activity Value	68	f	f	number		2		Standard Activity Value		\N	\N
-196	2015-08-12 13:40:38.045036+01	2015-08-12 13:40:38.045382+01	Standard Activity Type	69	f	f	text		0	A quantitative measurement of the mean volume of erythrocytes in a biological specimen.	Standard Activity Type	MCV	\N	\N
-197	2015-08-12 13:40:38.047928+01	2015-08-12 13:40:38.048203+01	Standard Unit	69	f	f	uiselect	fL	1		Standard Unit	fL	\N	\N
-198	2015-08-12 13:40:38.051135+01	2015-08-12 13:40:38.051406+01	Standard Activity Value	69	f	f	number		2		Standard Activity Value		\N	\N
-199	2015-08-12 13:40:38.056947+01	2015-08-12 13:40:38.057245+01	Standard Activity Type	70	f	f	text		0	Minimum inhibitory concentration	Standard Activity Type	MIC	\N	\N
-200	2015-08-12 13:40:38.062192+01	2015-08-12 13:40:38.062491+01	Standard Unit	70	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-201	2015-08-12 13:40:38.065034+01	2015-08-12 13:40:38.065276+01	Standard Activity Value	70	f	f	number		2		Standard Activity Value		\N	\N
-202	2015-08-12 13:40:38.078166+01	2015-08-12 13:40:38.078477+01	Standard Activity Type	71	f	f	text		0	Minimum inhibitory concentration in 50% of population	Standard Activity Type	MIC50	\N	\N
-203	2015-08-12 13:40:38.081662+01	2015-08-12 13:40:38.081926+01	Standard Unit	71	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-204	2015-08-12 13:40:38.085024+01	2015-08-12 13:40:38.085315+01	Standard Activity Value	71	f	f	number		2		Standard Activity Value		\N	\N
-205	2015-08-12 13:40:38.092066+01	2015-08-12 13:40:38.092396+01	Standard Activity Type	72	f	f	text		0	Minimum inhibitory concentration in 70% of population	Standard Activity Type	MIC70	\N	\N
-206	2015-08-12 13:40:38.095087+01	2015-08-12 13:40:38.09539+01	Standard Unit	72	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-207	2015-08-12 13:40:38.098114+01	2015-08-12 13:40:38.098421+01	Standard Activity Value	72	f	f	number		2		Standard Activity Value		\N	\N
-208	2015-08-12 13:40:38.104999+01	2015-08-12 13:40:38.105298+01	Standard Activity Type	73	f	f	text		0	Minimum inhibitory concentration in 80% of population	Standard Activity Type	MIC80	\N	\N
-209	2015-08-12 13:40:38.107708+01	2015-08-12 13:40:38.107949+01	Standard Unit	73	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-210	2015-08-12 13:40:38.111837+01	2015-08-12 13:40:38.112093+01	Standard Activity Value	73	f	f	number		2		Standard Activity Value		\N	\N
-211	2015-08-12 13:40:38.119448+01	2015-08-12 13:40:38.119751+01	Standard Activity Type	74	f	f	text		0	Minimum inhibitory concentration in 90% of population	Standard Activity Type	MIC90	\N	\N
-212	2015-08-12 13:40:38.122138+01	2015-08-12 13:40:38.122378+01	Standard Unit	74	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-213	2015-08-12 13:40:38.12484+01	2015-08-12 13:40:38.125092+01	Standard Activity Value	74	f	f	number		2		Standard Activity Value		\N	\N
-214	2015-08-12 13:40:38.133598+01	2015-08-12 13:40:38.133877+01	Standard Activity Type	75	f	f	text		0	A measurement of the monocytes in a biological specimen.	Standard Activity Type	MONO	\N	\N
-215	2015-08-12 13:40:38.136702+01	2015-08-12 13:40:38.136945+01	Standard Unit	75	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N
-216	2015-08-12 13:40:38.139384+01	2015-08-12 13:40:38.139624+01	Standard Activity Value	75	f	f	number		2		Standard Activity Value		\N	\N
-217	2015-08-12 13:40:38.145898+01	2015-08-12 13:40:38.146157+01	Standard Activity Type	76	f	f	text		0	A relative measurement (ratio or percentage) of the monocytes to leukocytes in a biological specimen.	Standard Activity Type	MONOLE	\N	\N
-218	2015-08-12 13:40:38.148979+01	2015-08-12 13:40:38.149217+01	Standard Unit	76	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-219	2015-08-12 13:40:38.151639+01	2015-08-12 13:40:38.151882+01	Standard Activity Value	76	f	f	number		2		Standard Activity Value		\N	\N
-220	2015-08-12 13:40:38.157207+01	2015-08-12 13:40:38.157474+01	Standard Activity Type	77	f	f	text		0	Mean residence time	Standard Activity Type	MRT	\N	\N
-221	2015-08-12 13:40:38.161257+01	2015-08-12 13:40:38.161503+01	Standard Unit	77	f	f	uiselect	hr	1		Standard Unit	hr	\N	\N
-222	2015-08-12 13:40:38.164133+01	2015-08-12 13:40:38.164374+01	Standard Activity Value	77	f	f	number		2		Standard Activity Value		\N	\N
-428	2015-08-12 18:02:33.361769+01	2015-08-12 18:02:33.612718+01	References (DOI)	114	f	f	char		10				\N	\N
-223	2015-08-12 13:40:38.171811+01	2015-08-12 13:40:38.172088+01	Standard Activity Type	78	f	f	text		0	A relative measurement (ratio or percentage) of the neutrophils to leukocytes in a biological specimen.	Standard Activity Type	NEUTLE	\N	\N
-224	2015-08-12 13:40:38.174459+01	2015-08-12 13:40:38.174699+01	Standard Unit	78	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-225	2015-08-12 13:40:38.177892+01	2015-08-12 13:40:38.178131+01	Standard Activity Value	78	f	f	number		2		Standard Activity Value		\N	\N
-226	2015-08-12 13:40:38.183197+01	2015-08-12 13:40:38.183451+01	Standard Activity Type	79	f	f	text		0	A measurement of the segmented neutrophils in a biological specimen.	Standard Activity Type	NEUTSG	\N	\N
-227	2015-08-12 13:40:38.18628+01	2015-08-12 13:40:38.186523+01	Standard Unit	79	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N
-228	2015-08-12 13:40:38.188847+01	2015-08-12 13:40:38.189089+01	Standard Activity Value	79	f	f	number		2		Standard Activity Value		\N	\N
-229	2015-08-12 13:40:38.194895+01	2015-08-12 13:40:38.195199+01	Standard Activity Type	80	f	f	text		0	A measurement of the phosphate in a biological specimen.	Standard Activity Type	PHOS	\N	\N
-230	2015-08-12 13:40:38.19791+01	2015-08-12 13:40:38.198148+01	Standard Unit	80	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-231	2015-08-12 13:40:38.201958+01	2015-08-12 13:40:38.202217+01	Standard Activity Value	80	f	f	number		2		Standard Activity Value		\N	\N
-232	2015-08-12 13:40:38.207929+01	2015-08-12 13:40:38.208193+01	Standard Activity Type	81	f	f	text		0	A measurement of the phospholipids in a biological specimen.	Standard Activity Type	PHOSLPD	\N	\N
-233	2015-08-12 13:40:38.210605+01	2015-08-12 13:40:38.210844+01	Standard Unit	81	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-234	2015-08-12 13:40:38.214914+01	2015-08-12 13:40:38.215188+01	Standard Activity Value	81	f	f	number		2		Standard Activity Value		\N	\N
-355	2015-08-12 17:06:41.228291+01	2015-08-12 17:16:00.491846+01	Slope at Tm 	109	f	f	char		14				\N	\N
-235	2015-08-12 13:40:38.220327+01	2015-08-12 13:40:38.220584+01	Standard Activity Type	82	f	f	text		0	A measurement of the platelets (non-nucleated thrombocytes) in a biological specimen.	Standard Activity Type	PLAT	\N	\N
-236	2015-08-12 13:40:38.22318+01	2015-08-12 13:40:38.223418+01	Standard Unit	82	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N
-237	2015-08-12 13:40:38.226049+01	2015-08-12 13:40:38.22629+01	Standard Activity Value	82	f	f	number		2		Standard Activity Value		\N	\N
-238	2015-08-12 13:40:38.234672+01	2015-08-12 13:40:38.234952+01	Standard Activity Type	83	f	f	text		0	A measurement of the potassium in a biological specimen.	Standard Activity Type	POTASSIUM	\N	\N
-239	2015-08-12 13:40:38.237962+01	2015-08-12 13:40:38.238214+01	Standard Unit	83	f	f	uiselect	mEq.L-1	1		Standard Unit	mEq.L-1	\N	\N
-240	2015-08-12 13:40:38.242039+01	2015-08-12 13:40:38.242284+01	Standard Activity Value	83	f	f	number		2		Standard Activity Value		\N	\N
-241	2015-08-12 13:40:38.24793+01	2015-08-12 13:40:38.248194+01	Standard Activity Type	84	f	f	text		0	Concentration or dose required to elicit a specific response	Standard Activity Type	Potency	\N	\N
-242	2015-08-12 13:40:38.251944+01	2015-08-12 13:40:38.252191+01	Standard Unit	84	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-243	2015-08-12 13:40:38.254928+01	2015-08-12 13:40:38.2552+01	Standard Activity Value	84	f	f	number		2		Standard Activity Value		\N	\N
-244	2015-08-12 13:40:38.26157+01	2015-08-12 13:40:38.261854+01	Standard Activity Type	85	f	f	text		0	A measurement of a group of complex organic macromolecules composed of one or more alpha-L-amino acid chains in a biological specimen.	Standard Activity Type	PROT	\N	\N
-245	2015-08-12 13:40:38.264956+01	2015-08-12 13:40:38.265254+01	Standard Unit	85	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-246	2015-08-12 13:40:38.267905+01	2015-08-12 13:40:38.268211+01	Standard Activity Value	85	f	f	number		2		Standard Activity Value		\N	\N
-247	2015-08-12 13:40:38.273796+01	2015-08-12 13:40:38.274238+01	Standard Activity Type	86	f	f	text		0	A blood clotting measurement that evaluates the extrinsic pathway of coagulation.	Standard Activity Type	PT	\N	\N
-248	2015-08-12 13:40:38.277129+01	2015-08-12 13:40:38.277417+01	Standard Unit	86	f	f	uiselect	s	1		Standard Unit	s	\N	\N
-249	2015-08-12 13:40:38.280306+01	2015-08-12 13:40:38.280554+01	Standard Activity Value	86	f	f	number		2		Standard Activity Value		\N	\N
-250	2015-08-12 13:40:38.286365+01	2015-08-12 13:40:38.286635+01	Standard Activity Type	87	f	f	text		0	A measurement of the total erythrocytes in a biological specimen.	Standard Activity Type	RBC	\N	\N
-251	2015-08-12 13:40:38.289461+01	2015-08-12 13:40:38.289772+01	Standard Unit	87	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N
-252	2015-08-12 13:40:38.292608+01	2015-08-12 13:40:38.292929+01	Standard Activity Value	87	f	f	number		2		Standard Activity Value		\N	\N
-253	2015-08-12 13:40:38.298277+01	2015-08-12 13:40:38.298552+01	Standard Activity Type	88	f	f	text		0	A measurement of the nucleated erythrocytes (large, immature nucleated erythrocytes) in a biological specimen.	Standard Activity Type	RBCNUC	\N	\N
-254	2015-08-12 13:40:38.30098+01	2015-08-12 13:40:38.301229+01	Standard Unit	88	f	f	uiselect	/100WBC	1		Standard Unit	/100WBC	\N	\N
-255	2015-08-12 13:40:38.303588+01	2015-08-12 13:40:38.303841+01	Standard Activity Value	88	f	f	number		2		Standard Activity Value		\N	\N
-256	2015-08-12 13:40:38.309461+01	2015-08-12 13:40:38.309729+01	Standard Activity Type	89	f	f	text		0	A relative measurement (ratio or percentage) of reticulocytes to erythrocytes in a biological specimen.	Standard Activity Type	RETIRBC	\N	\N
-257	2015-08-12 13:40:38.312279+01	2015-08-12 13:40:38.312527+01	Standard Unit	89	f	f	uiselect	%	1		Standard Unit	%	\N	\N
-258	2015-08-12 13:40:38.315204+01	2015-08-12 13:40:38.315447+01	Standard Activity Value	89	f	f	number		2		Standard Activity Value		\N	\N
-259	2015-08-12 13:40:38.321933+01	2015-08-12 13:40:38.322235+01	Standard Activity Type	90	f	f	text		0	A measurement of the sodium in a biological specimen.	Standard Activity Type	SODIUM	\N	\N
-260	2015-08-12 13:40:38.324821+01	2015-08-12 13:40:38.325101+01	Standard Unit	90	f	f	uiselect	mEq.L-1	1		Standard Unit	mEq.L-1	\N	\N
-261	2015-08-12 13:40:38.328244+01	2015-08-12 13:40:38.328554+01	Standard Activity Value	90	f	f	number		2		Standard Activity Value		\N	\N
-262	2015-08-12 13:40:38.336036+01	2015-08-12 13:40:38.336355+01	Standard Activity Type	91	f	f	text		0	Solubility 	Standard Activity Type	Solubility	\N	\N
-263	2015-08-12 13:40:38.339086+01	2015-08-12 13:40:38.339383+01	Standard Unit	91	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-264	2015-08-12 13:40:38.342324+01	2015-08-12 13:40:38.342651+01	Standard Activity Value	91	f	f	number		2		Standard Activity Value		\N	\N
-265	2015-08-12 13:40:38.351152+01	2015-08-12 13:40:38.35146+01	Standard Activity Type	93	f	f	text		0	Half-life	Standard Activity Type	T1/2	\N	\N
-266	2015-08-12 13:40:38.354804+01	2015-08-12 13:40:38.355147+01	Standard Unit	93	f	f	uiselect	hr	1		Standard Unit	hr	\N	\N
-267	2015-08-12 13:40:38.359667+01	2015-08-12 13:40:38.359973+01	Standard Activity Value	93	f	f	number		2		Standard Activity Value		\N	\N
-268	2015-08-12 13:40:38.367127+01	2015-08-12 13:40:38.367415+01	Standard Activity Type	94	f	f	text		0	The weight of a subject at a specified end point. (NCI)	Standard Activity Type	TERMBW	\N	\N
-269	2015-08-12 13:40:38.370031+01	2015-08-12 13:40:38.370292+01	Standard Unit	94	f	f	uiselect	g	1		Standard Unit	g	\N	\N
-270	2015-08-12 13:40:38.37295+01	2015-08-12 13:40:38.373219+01	Standard Activity Value	94	f	f	number		2		Standard Activity Value		\N	\N
-271	2015-08-12 13:40:38.378256+01	2015-08-12 13:40:38.378524+01	Standard Activity Type	95	f	f	text		0	Concentration required for total growth inhibition	Standard Activity Type	TGI	\N	\N
-272	2015-08-12 13:40:38.381827+01	2015-08-12 13:40:38.382086+01	Standard Unit	95	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N
-273	2015-08-12 13:40:38.384702+01	2015-08-12 13:40:38.384952+01	Standard Activity Value	95	f	f	number		2		Standard Activity Value		\N	\N
-274	2015-08-12 13:40:38.390717+01	2015-08-12 13:40:38.39099+01	Standard Activity Type	96	f	f	text		0	Time for maximum concentration	Standard Activity Type	Tmax	\N	\N
-275	2015-08-12 13:40:38.393705+01	2015-08-12 13:40:38.394036+01	Standard Unit	96	f	f	uiselect	hr	1		Standard Unit	hr	\N	\N
-277	2015-08-12 13:40:38.412305+01	2015-08-12 13:40:38.412672+01	Standard Activity Type	97	f	f	text		0	A measurement of the triglycerides in a biological specimen.	Standard Activity Type	TRIG	\N	\N
-278	2015-08-12 13:40:38.415736+01	2015-08-12 13:40:38.416046+01	Standard Unit	97	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-279	2015-08-12 13:40:38.418626+01	2015-08-12 13:40:38.418909+01	Standard Activity Value	97	f	f	number		2		Standard Activity Value		\N	\N
-280	2015-08-12 13:40:38.424045+01	2015-08-12 13:40:38.424304+01	Standard Activity Type	98	f	f	text		0	A measurement of the urate in a biological specimen.	Standard Activity Type	URATE	\N	\N
-281	2015-08-12 13:40:38.429135+01	2015-08-12 13:40:38.429406+01	Standard Unit	98	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N
-282	2015-08-12 13:40:38.432408+01	2015-08-12 13:40:38.432664+01	Standard Activity Value	98	f	f	number		2		Standard Activity Value		\N	\N
-283	2015-08-12 13:40:38.437726+01	2015-08-12 13:40:38.438068+01	Standard Activity Type	99	f	f	text		0	Volume of Distribution	Standard Activity Type	Vd	\N	\N
-284	2015-08-12 13:40:38.441224+01	2015-08-12 13:40:38.441567+01	Standard Unit	99	f	f	uiselect	L.kg-1	1		Standard Unit	L.kg-1	\N	\N
-285	2015-08-12 13:40:38.444106+01	2015-08-12 13:40:38.444346+01	Standard Activity Value	99	f	f	number		2		Standard Activity Value		\N	\N
-286	2015-08-12 13:40:38.450755+01	2015-08-12 13:40:38.45105+01	Standard Activity Type	100	f	f	text		0	Volume of distribution after non-intravenous administration	Standard Activity Type	Vd/F	\N	\N
-287	2015-08-12 13:40:38.453425+01	2015-08-12 13:40:38.453664+01	Standard Unit	100	f	f	uiselect	L.kg-1	1		Standard Unit	L.kg-1	\N	\N
-288	2015-08-12 13:40:38.455925+01	2015-08-12 13:40:38.456162+01	Standard Activity Value	100	f	f	number		2		Standard Activity Value		\N	\N
-289	2015-08-12 13:40:38.463497+01	2015-08-12 13:40:38.463756+01	Standard Activity Type	101	f	f	text		0	Steady State Volume of Distribution	Standard Activity Type	Vdss	\N	\N
-290	2015-08-12 13:40:38.466058+01	2015-08-12 13:40:38.466297+01	Standard Unit	101	f	f	uiselect	L.kg-1	1		Standard Unit	L.kg-1	\N	\N
-291	2015-08-12 13:40:38.4686+01	2015-08-12 13:40:38.468842+01	Standard Activity Value	101	f	f	number		2		Standard Activity Value		\N	\N
-356	2015-08-12 17:06:41.231261+01	2015-08-12 17:16:00.507086+01	Amplitude 	109	f	f	char		15				\N	\N
-292	2015-08-12 13:40:38.473868+01	2015-08-12 13:40:38.474144+01	Standard Activity Type	102	f	f	text		0	Volume of distribution at steady state after non-intravenous administration	Standard Activity Type	Vdss/F	\N	\N
-293	2015-08-12 13:40:38.47659+01	2015-08-12 13:40:38.476852+01	Standard Unit	102	f	f	uiselect	L.kg-1	1		Standard Unit	L.kg-1	\N	\N
-294	2015-08-12 13:40:38.479217+01	2015-08-12 13:40:38.479461+01	Standard Activity Value	102	f	f	number		2		Standard Activity Value		\N	\N
-295	2015-08-12 13:40:38.48677+01	2015-08-12 13:40:38.487085+01	Standard Activity Type	103	f	f	text		0	A measurement of the leukocytes in a biological specimen.	Standard Activity Type	WBC	\N	\N
-296	2015-08-12 13:40:38.48988+01	2015-08-12 13:40:38.490302+01	Standard Unit	103	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N
-297	2015-08-12 13:40:38.492929+01	2015-08-12 13:40:38.493171+01	Standard Activity Value	103	f	f	number		2		Standard Activity Value		\N	\N
-298	2015-08-12 13:40:38.497905+01	2015-08-12 13:40:38.498158+01	Standard Activity Type	104	f	f	text		0	The vertical force exerted by a mass as a result of gravity. (NCI)	Standard Activity Type	WEIGHT	\N	\N
-299	2015-08-12 13:40:38.500453+01	2015-08-12 13:40:38.500697+01	Standard Unit	104	f	f	uiselect	g	1		Standard Unit	g	\N	\N
-300	2015-08-12 13:40:38.503054+01	2015-08-12 13:40:38.503301+01	Standard Activity Value	104	f	f	number		2		Standard Activity Value		\N	\N
-301	2015-08-12 13:40:38.508565+01	2015-08-12 13:40:38.508846+01	Standard Activity Type	105	f	f	text		0	Concentration required for 50% effect	Standard Activity Type	XC50	\N	\N
-302	2015-08-12 13:40:38.511205+01	2015-08-12 13:40:38.511445+01	Standard Unit	105	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N
-303	2015-08-12 13:40:38.513725+01	2015-08-12 13:40:38.513965+01	Standard Activity Value	105	f	f	number		2		Standard Activity Value		\N	\N
-304	2015-08-12 16:22:56.762568+01	2015-08-12 16:22:56.807714+01	Project ID	106	f	f	char		0				\N	\N
-305	2015-08-12 16:22:56.76626+01	2015-08-12 16:22:56.812662+01	Abstract	106	f	f	char		1				\N	\N
-306	2015-08-12 16:22:56.76985+01	2015-08-12 16:22:56.813812+01	Grant code	106	f	f	char		2				\N	\N
-307	2015-08-12 16:22:56.773528+01	2015-08-12 16:22:56.814828+01	Authors	106	f	f	char		3				\N	\N
-308	2015-08-12 16:22:56.778046+01	2015-08-12 16:22:56.815857+01	DOI	106	f	f	char		4				\N	\N
-309	2015-08-12 16:24:28.435516+01	2015-08-12 16:24:28.456202+01	Sub-Project ID	107	f	f	char		0	Sub Project (outlines the goals of discrete sets of related experiments, that when combined comprise the overall project) 			\N	\N
-310	2015-08-12 16:24:28.438881+01	2015-08-12 16:24:28.457843+01	Aims	107	f	f	char		1				\N	\N
-311	2015-08-12 16:24:28.442282+01	2015-08-12 16:24:28.458816+01	Assays included	107	f	f	char		2				\N	\N
-312	2015-08-12 17:04:01.037593+01	2015-08-12 17:04:01.214352+01	Assay ID	108	f	f	char		0				\N	\N
-313	2015-08-12 17:04:01.040633+01	2015-08-12 17:04:01.217774+01	Activity	108	f	f	char		1				\N	\N
-314	2015-08-12 17:04:01.043566+01	2015-08-12 17:04:01.218547+01	Written Protocol	108	f	f	char		2				\N	\N
-315	2015-08-12 17:04:01.046495+01	2015-08-12 17:04:01.219263+01	Assay Type	108	f	f	char		3				\N	\N
-316	2015-08-12 17:04:01.04974+01	2015-08-12 17:04:01.219948+01	Cell line / tissue	108	f	f	char		4				\N	\N
-317	2015-08-12 17:04:01.052662+01	2015-08-12 17:04:01.220621+01	Target type	108	f	f	char		5				\N	\N
-318	2015-08-12 17:04:01.055625+01	2015-08-12 17:04:01.221288+01	Model organism	108	f	f	char		6				\N	\N
-319	2015-08-12 17:04:01.058526+01	2015-08-12 17:04:01.221964+01	Target name	108	f	f	char		7				\N	\N
-320	2015-08-12 17:04:01.061478+01	2015-08-12 17:04:01.222636+01	Target type	108	f	f	char		8				\N	\N
-321	2015-08-12 17:04:01.064796+01	2015-08-12 17:04:01.223339+01	UniProt ID	108	f	f	char		9				\N	\N
-322	2015-08-12 17:04:01.067809+01	2015-08-12 17:04:01.224028+01	References (DOI)	108	f	f	char		10				\N	\N
-323	2015-08-12 17:04:01.070712+01	2015-08-12 17:04:01.224701+01	Standard Units	108	f	f	char		11				\N	\N
-324	2015-08-12 17:04:01.073652+01	2015-08-12 17:04:01.225377+01	Compound	108	f	f	char		12				\N	\N
-325	2015-08-12 17:04:01.076887+01	2015-08-12 17:04:01.226098+01	Target Organism	108	f	f	char		13				\N	\N
-326	2015-08-12 17:04:01.079899+01	2015-08-12 17:04:01.226767+01	One protein only (at single concentration)? 	108	f	f	uiselect	Yes, No	14	Yes / No			\N	\N
-327	2015-08-12 17:04:01.082783+01	2015-08-12 17:04:01.227474+01	Fixed concentration for first compound?	108	f	f	uiselect	Yes, No	15	Yes / No			\N	\N
-328	2015-08-12 17:04:01.085749+01	2015-08-12 17:04:01.22821+01	Second compound (at single concentration)?	108	f	f	uiselect	Yes, No	16	Yes / No			\N	\N
-329	2015-08-12 17:04:01.088679+01	2015-08-12 17:04:01.22888+01	One buffer only?	108	f	f	uiselect	Yes, No	17	Yes / No			\N	\N
-330	2015-08-12 17:04:01.091849+01	2015-08-12 17:04:01.229552+01	Well no.	108	f	f	char		18				\N	\N
-331	2015-08-12 17:04:01.094725+01	2015-08-12 17:04:01.230228+01	Well	108	f	f	char		19				\N	\N
-332	2015-08-12 17:04:01.097803+01	2015-08-12 17:04:01.230896+01	Protein	108	f	f	char		20				\N	\N
-333	2015-08-12 17:04:01.100904+01	2015-08-12 17:04:01.23159+01	Protein concentration	108	f	f	char		21				\N	\N
-334	2015-08-12 17:04:01.10421+01	2015-08-12 17:04:01.232263+01	1st compound,  ID	108	f	f	char		22				\N	\N
-335	2015-08-12 17:04:01.107216+01	2015-08-12 17:04:01.233014+01	1st Compound, name	108	f	f	char		23				\N	\N
-336	2015-08-12 17:04:01.110144+01	2015-08-12 17:04:01.233685+01	1st compound, concentration	108	f	f	char		24				\N	\N
-337	2015-08-12 17:04:01.113111+01	2015-08-12 17:04:01.234354+01	2nd compound,  ID	108	f	f	char		25				\N	\N
-338	2015-08-12 17:04:01.116232+01	2015-08-12 17:04:01.235055+01	2ndCompound, name	108	f	f	char		26				\N	\N
-339	2015-08-12 17:04:01.119646+01	2015-08-12 17:04:01.235793+01	2nd compound, concentration	108	f	f	char		27				\N	\N
-340	2015-08-12 17:04:01.122785+01	2015-08-12 17:04:01.236474+01	Buffer Description	108	f	f	char		28				\N	\N
-341	2015-08-12 17:04:01.125956+01	2015-08-12 17:04:01.237159+01	Buffer ID	108	f	f	char		29				\N	\N
-342	2015-08-12 17:06:41.184653+01	2015-08-12 17:16:00.474747+01	Purification ID	109	f	f	char		1				\N	\N
-343	2015-08-12 17:06:41.187902+01	2015-08-12 17:16:00.476464+01	Protein  Concetration	109	f	f	char		2				\N	\N
-344	2015-08-12 17:06:41.193606+01	2015-08-12 17:16:00.477702+01	Plate Well ID	109	f	f	char		3				\N	\N
-345	2015-08-12 17:06:41.196737+01	2015-08-12 17:16:00.478898+01	1st compound concentration	109	f	f	char		4				\N	\N
-346	2015-08-12 17:06:41.199771+01	2015-08-12 17:16:00.480143+01	1st compound ID	109	f	f	char		5				\N	\N
-347	2015-08-12 17:06:41.202742+01	2015-08-12 17:16:00.481454+01	1st compound name	109	f	f	char		6				\N	\N
-348	2015-08-12 17:06:41.205818+01	2015-08-12 17:16:00.482736+01	Buffer ID	109	f	f	char		7				\N	\N
-349	2015-08-12 17:06:41.209065+01	2015-08-12 17:16:00.484133+01	2nd compound concentration	109	f	f	char		8				\N	\N
-350	2015-08-12 17:06:41.212108+01	2015-08-12 17:16:00.485581+01	2nd compound ID	109	f	f	char		9				\N	\N
-351	2015-08-12 17:06:41.215246+01	2015-08-12 17:16:00.486816+01	2nd compound name	109	f	f	char		10				\N	\N
-352	2015-08-12 17:06:41.218302+01	2015-08-12 17:16:00.488053+01	Tm value 	109	f	f	char		11				\N	\N
-353	2015-08-12 17:06:41.221392+01	2015-08-12 17:16:00.489268+01	Tm Shift	109	f	f	char		12				\N	\N
-354	2015-08-12 17:06:41.225144+01	2015-08-12 17:16:00.490603+01	Temperature at peak of intensity	109	f	f	char		13				\N	\N
-357	2015-08-12 17:06:41.234329+01	2015-08-12 17:16:00.509219+01	Experiment ID	109	f	f	char		16				\N	\N
-358	2015-08-12 17:06:41.237711+01	2015-08-12 17:16:00.511243+01	Comments	109	f	f	char		17				\N	\N
-359	2015-08-12 17:16:00.428409+01	2015-08-12 17:16:00.513779+01	Experiment ID	109	f	f	char		0				\N	\N
-360	2015-08-12 17:19:53.157443+01	2015-08-12 17:19:53.223762+01	Assay ID	110	f	f	char		0				\N	\N
-361	2015-08-12 17:19:53.160629+01	2015-08-12 17:19:53.259845+01	Activity	110	f	f	char		1				\N	\N
-362	2015-08-12 17:19:53.163766+01	2015-08-12 17:19:53.260712+01	Written Protocol	110	f	f	char		2				\N	\N
-363	2015-08-12 17:19:53.166864+01	2015-08-12 17:19:53.261419+01	Assay Type	110	f	f	char		3				\N	\N
-364	2015-08-12 17:19:53.170314+01	2015-08-12 17:19:53.262168+01	Cell line / tissue	110	f	f	char		4				\N	\N
-365	2015-08-12 17:19:53.173473+01	2015-08-12 17:19:53.262872+01	Target type	110	f	f	char		5				\N	\N
-366	2015-08-12 17:19:53.17666+01	2015-08-12 17:19:53.263624+01	Model organism	110	f	f	char		6				\N	\N
-367	2015-08-12 17:19:53.17985+01	2015-08-12 17:19:53.264357+01	Target name	110	f	f	char		7				\N	\N
-368	2015-08-12 17:19:53.182946+01	2015-08-12 17:19:53.265113+01	Target type	110	f	f	char		8				\N	\N
-369	2015-08-12 17:19:53.186302+01	2015-08-12 17:19:53.26582+01	UniProt ID	110	f	f	char		9				\N	\N
-370	2015-08-12 17:19:53.189436+01	2015-08-12 17:19:53.2666+01	References (DOI)	110	f	f	char		10				\N	\N
-371	2015-08-12 17:19:53.192565+01	2015-08-12 17:19:53.267405+01	Standard Units	110	f	f	char		11				\N	\N
-372	2015-08-12 17:19:53.195728+01	2015-08-12 17:19:53.26813+01	Compound	110	f	f	char		12				\N	\N
-373	2015-08-12 17:19:53.199255+01	2015-08-12 17:19:53.268829+01	Target Organism	110	f	f	char		13				\N	\N
-374	2015-08-12 17:21:47.465937+01	2015-08-12 17:21:47.520852+01	Experiment ID	111	f	f	char		0				\N	\N
-375	2015-08-12 17:21:47.470096+01	2015-08-12 17:21:47.521794+01	Plate Well ID	111	f	f	char		1				\N	\N
-376	2015-08-12 17:21:47.474238+01	2015-08-12 17:21:47.522651+01	1st compound concentration	111	f	f	char		2				\N	\N
-377	2015-08-12 17:21:47.478705+01	2015-08-12 17:21:47.523685+01	1st compound ID	111	f	f	char		3				\N	\N
-378	2015-08-12 17:21:47.482275+01	2015-08-12 17:21:47.524403+01	1st compound name	111	f	f	char		4				\N	\N
-379	2015-08-12 17:21:47.485635+01	2015-08-12 17:21:47.525115+01	2nd compound concentration	111	f	f	char		5				\N	\N
-380	2015-08-12 17:21:47.488703+01	2015-08-12 17:21:47.525811+01	2nd compound ID	111	f	f	char		6				\N	\N
-381	2015-08-12 17:21:47.4917+01	2015-08-12 17:21:47.526491+01	2nd compound name	111	f	f	char		7				\N	\N
-382	2015-08-12 17:21:47.49474+01	2015-08-12 17:21:47.527198+01	IC50 value	111	f	f	char		8				\N	\N
-383	2015-08-12 17:21:47.498008+01	2015-08-12 17:21:47.527878+01	IC50 value units	111	f	f	char		9				\N	\N
-384	2015-08-12 17:21:47.501042+01	2015-08-12 17:21:47.52856+01	Comments	111	f	f	char		10				\N	\N
-385	2015-08-12 17:47:09.854543+01	2015-08-12 17:47:10.005468+01	Assay ID	112	f	f	char		0				\N	\N
-386	2015-08-12 17:47:09.857871+01	2015-08-12 17:47:10.006525+01	Activity	112	f	f	char		1				\N	\N
-387	2015-08-12 17:47:09.861894+01	2015-08-12 17:47:10.007245+01	Written Protocol	112	f	f	char		2				\N	\N
-388	2015-08-12 17:47:09.865754+01	2015-08-12 17:47:10.008002+01	Assay Type	112	f	f	char		3				\N	\N
-389	2015-08-12 17:47:09.869935+01	2015-08-12 17:47:10.008689+01	Cell line / tissue	112	f	f	char		4				\N	\N
-390	2015-08-12 17:47:09.872831+01	2015-08-12 17:47:10.00943+01	Target type	112	f	f	char		5				\N	\N
-391	2015-08-12 17:47:09.875749+01	2015-08-12 17:47:10.010142+01	Model organism	112	f	f	char		6				\N	\N
-392	2015-08-12 17:47:09.878612+01	2015-08-12 17:47:10.01083+01	Target name	112	f	f	char		7				\N	\N
-393	2015-08-12 17:47:09.881519+01	2015-08-12 17:47:10.011571+01	Target type	112	f	f	char		8				\N	\N
-394	2015-08-12 17:47:09.884737+01	2015-08-12 17:47:10.01226+01	UniProt ID	112	f	f	char		9				\N	\N
-395	2015-08-12 17:47:09.887729+01	2015-08-12 17:47:10.012941+01	References (DOI)	112	f	f	char		10				\N	\N
-396	2015-08-12 17:47:09.890728+01	2015-08-12 17:47:10.013883+01	Standard Units	112	f	f	char		11				\N	\N
-397	2015-08-12 17:47:09.893636+01	2015-08-12 17:47:10.014569+01	Compound	112	f	f	char		12				\N	\N
-398	2015-08-12 17:47:09.89675+01	2015-08-12 17:47:10.015291+01	Target Organism	112	f	f	char		13				\N	\N
-399	2015-08-12 17:47:09.89963+01	2015-08-12 17:47:10.015981+01	1st concentration	112	f	f	char		14				\N	\N
-400	2015-08-12 17:47:09.902589+01	2015-08-12 17:47:10.016693+01	1st compound ID	112	f	f	char		15				\N	\N
-401	2015-08-12 17:47:09.905599+01	2015-08-12 17:47:10.017383+01	1st compound name	112	f	f	char		16				\N	\N
-402	2015-08-12 17:47:09.908619+01	2015-08-12 17:47:10.018118+01	2nd concentration	112	f	f	char		17				\N	\N
-403	2015-08-12 17:47:09.911833+01	2015-08-12 17:47:10.018803+01	2nd compound ID	112	f	f	char		18				\N	\N
-404	2015-08-12 17:47:09.914697+01	2015-08-12 17:47:10.019529+01	2nd compound name	112	f	f	char		19				\N	\N
-405	2015-08-12 17:49:04.946899+01	2015-08-12 17:49:05.0246+01	Experiment ID	113	f	f	char		0				\N	\N
-406	2015-08-12 17:49:04.950045+01	2015-08-12 17:49:05.027693+01	Plate Well ID	113	f	f	char		1				\N	\N
-407	2015-08-12 17:49:04.953112+01	2015-08-12 17:49:05.028907+01	1st concentration	113	f	f	char		2				\N	\N
-408	2015-08-12 17:49:04.956176+01	2015-08-12 17:49:05.029631+01	1st compound ID	113	f	f	char		3				\N	\N
-409	2015-08-12 17:49:04.959243+01	2015-08-12 17:49:05.030358+01	1st compound name	113	f	f	char		4				\N	\N
-410	2015-08-12 17:49:04.962518+01	2015-08-12 17:49:05.031093+01	Activity at 1st concentration	113	f	f	char		5				\N	\N
-411	2015-08-12 17:49:04.96564+01	2015-08-12 17:49:05.03184+01	Units (Luminescence)	113	f	f	char		6				\N	\N
-412	2015-08-12 17:49:04.968721+01	2015-08-12 17:49:05.032529+01	2nd concentration	113	f	f	char		7				\N	\N
-413	2015-08-12 17:49:04.971807+01	2015-08-12 17:49:05.033256+01	2nd compound ID	113	f	f	char		8				\N	\N
-414	2015-08-12 17:49:04.975125+01	2015-08-12 17:49:05.034002+01	2nd compound name	113	f	f	char		9				\N	\N
-415	2015-08-12 17:49:04.978164+01	2015-08-12 17:49:05.034706+01	Activity at 2nd concentration	113	f	f	char		10				\N	\N
-416	2015-08-12 17:49:04.981342+01	2015-08-12 17:49:05.035484+01	Units (Luminescence)	113	f	f	char		11				\N	\N
-417	2015-08-12 17:49:04.984614+01	2015-08-12 17:49:05.036193+01	Comments	113	f	f	char		12				\N	\N
-418	2015-08-12 18:02:33.331285+01	2015-08-12 18:02:33.605028+01	Assay ID	114	f	f	char		0				\N	\N
-419	2015-08-12 18:02:33.334278+01	2015-08-12 18:02:33.60608+01	Activity	114	f	f	char		1				\N	\N
-420	2015-08-12 18:02:33.3373+01	2015-08-12 18:02:33.606779+01	Written Protocol	114	f	f	char		2				\N	\N
-421	2015-08-12 18:02:33.340392+01	2015-08-12 18:02:33.607511+01	Assay Type	114	f	f	char		3				\N	\N
-422	2015-08-12 18:02:33.343609+01	2015-08-12 18:02:33.60847+01	Cell line / tissue	114	f	f	char		4				\N	\N
-423	2015-08-12 18:02:33.346596+01	2015-08-12 18:02:33.609178+01	Target type	114	f	f	char		5				\N	\N
-424	2015-08-12 18:02:33.349507+01	2015-08-12 18:02:33.609882+01	Model organism	114	f	f	char		6				\N	\N
-425	2015-08-12 18:02:33.352489+01	2015-08-12 18:02:33.610615+01	Target name	114	f	f	char		7				\N	\N
-426	2015-08-12 18:02:33.355782+01	2015-08-12 18:02:33.611334+01	Target type	114	f	f	char		8				\N	\N
-427	2015-08-12 18:02:33.358728+01	2015-08-12 18:02:33.612027+01	UniProt ID	114	f	f	char		9				\N	\N
-429	2015-08-12 18:02:33.364766+01	2015-08-12 18:02:33.613418+01	Standard Units	114	f	f	char		11				\N	\N
-430	2015-08-12 18:02:33.367721+01	2015-08-12 18:02:33.614119+01	Compound	114	f	f	char		12				\N	\N
-431	2015-08-12 18:02:33.370904+01	2015-08-12 18:02:33.61485+01	Target Organism	114	f	f	char		13				\N	\N
-432	2015-08-12 18:02:33.373806+01	2015-08-12 18:02:33.615568+01	Assay Buffer	114	f	f	char		14				\N	\N
-433	2015-08-12 18:02:33.376737+01	2015-08-12 18:02:33.616261+01	Compound Incubation Time (mins)	114	f	f	char		15				\N	\N
-434	2015-08-12 18:02:33.379693+01	2015-08-12 18:02:33.616988+01	Compound Incubation Temperature	114	f	f	char		16				\N	\N
-435	2015-08-12 18:02:33.382823+01	2015-08-12 18:02:33.617703+01	Protein	114	f	f	char		17				\N	\N
-436	2015-08-12 18:02:33.385711+01	2015-08-12 18:02:33.618395+01	Protein Concentration (nM)	114	f	f	char		18				\N	\N
-437	2015-08-12 18:02:33.388777+01	2015-08-12 18:02:33.619114+01	Peptide ID	114	f	f	char		19				\N	\N
-438	2015-08-12 18:02:33.391853+01	2015-08-12 18:02:33.619813+01	Peptide Description	114	f	f	char		20				\N	\N
-439	2015-08-12 18:02:33.394787+01	2015-08-12 18:02:33.62058+01	Solvent	114	f	f	char		21				\N	\N
-440	2015-08-12 18:02:33.399235+01	2015-08-12 18:02:33.621268+01	Solvent Concentration (%)	114	f	f	char		22				\N	\N
-441	2015-08-12 18:02:33.402312+01	2015-08-12 18:02:33.621972+01	Peptide Concentration (nM)	114	f	f	char		23				\N	\N
-442	2015-08-12 18:02:33.405304+01	2015-08-12 18:02:33.62268+01	Peptide Incubation Time	114	f	f	char		24				\N	\N
-443	2015-08-12 18:02:33.40823+01	2015-08-12 18:02:33.623482+01	Incubation Temperature	114	f	f	char		25				\N	\N
-444	2015-08-12 18:02:33.411133+01	2015-08-12 18:02:33.624186+01	Bead Donor (mg/ml)	114	f	f	char		26				\N	\N
-445	2015-08-12 18:02:33.414299+01	2015-08-12 18:02:33.625068+01	Bead Acceptor (mg/ml)	114	f	f	char		27				\N	\N
-446	2015-08-12 18:02:33.417217+01	2015-08-12 18:02:33.625798+01	Antibody Concentration(ug/ml)	114	f	f	char		28				\N	\N
-447	2015-08-12 18:02:33.420126+01	2015-08-12 18:02:33.626695+01	Bead Incubation time (mins)	114	f	f	char		29				\N	\N
-448	2015-08-12 18:02:33.423138+01	2015-08-12 18:02:33.627425+01	Incubation Temperature	114	f	f	char		30				\N	\N
-449	2015-08-12 18:02:33.42636+01	2015-08-12 18:02:33.628116+01	Reference Compound Wells	114	f	f	char		31				\N	\N
-450	2015-08-12 18:02:33.429417+01	2015-08-12 18:02:33.628805+01	Control Wells	114	f	f	char		32				\N	\N
-451	2015-08-12 18:04:28.080826+01	2015-08-12 18:04:28.170595+01	Experiment ID	115	f	f	char		0				\N	\N
-452	2015-08-12 18:04:28.084236+01	2015-08-12 18:04:28.171617+01	Plate Well ID	115	f	f	char		1				\N	\N
-453	2015-08-12 18:04:28.087185+01	2015-08-12 18:04:28.172374+01	1st concentration	115	f	f	char		2				\N	\N
-454	2015-08-12 18:04:28.090188+01	2015-08-12 18:04:28.173066+01	1st compound ID	115	f	f	char		3				\N	\N
-455	2015-08-12 18:04:28.093902+01	2015-08-12 18:04:28.173767+01	1st compound name	115	f	f	char		4				\N	\N
-456	2015-08-12 18:04:28.097198+01	2015-08-12 18:04:28.174456+01	Activity at 1st concentration	115	f	f	char		5				\N	\N
-457	2015-08-12 18:04:28.100143+01	2015-08-12 18:04:28.175171+01	2nd concentration	115	f	f	char		6				\N	\N
-458	2015-08-12 18:04:28.103281+01	2015-08-12 18:04:28.175878+01	22nd compound ID	115	f	f	char		7				\N	\N
-459	2015-08-12 18:04:28.106287+01	2015-08-12 18:04:28.176603+01	2nd compound name	115	f	f	char		8				\N	\N
-460	2015-08-12 18:04:28.109563+01	2015-08-12 18:04:28.177294+01	Activity at 2nd concentration	115	f	f	char		9				\N	\N
-461	2015-08-12 18:04:28.112554+01	2015-08-12 18:04:28.178+01	Compound ID	115	f	f	char		10				\N	\N
-462	2015-08-12 18:04:28.115554+01	2015-08-12 18:04:28.178692+01	LogIC50	115	f	f	char		11				\N	\N
-463	2015-08-12 18:04:28.118453+01	2015-08-12 18:04:28.179431+01	IC50 (μM)	115	f	f	char		12				\N	\N
-464	2015-08-12 18:04:28.121384+01	2015-08-12 18:04:28.180165+01	IC50 standard error	115	f	f	char		13				\N	\N
-465	2015-08-12 18:04:28.12482+01	2015-08-12 18:04:28.180855+01	Hill	115	f	f	char		14				\N	\N
-466	2015-08-12 18:04:28.127753+01	2015-08-12 18:04:28.181543+01	Hill standard error	115	f	f	char		15				\N	\N
-467	2015-08-12 18:04:28.130713+01	2015-08-12 18:04:28.182235+01	Comments	115	f	f	char		16				\N	\N
+COPY cbh_core_model_pinnedcustomfield (id, created, modified, name, custom_field_config_id, required, part_of_blinded_key, field_type, allowed_values, "position", description, field_key, "default", pinned_for_datatype_id, standardised_alias_id, attachment_field_mapped_to_id) FROM stdin;
+3	2015-05-08 12:40:39.264742+01	2015-05-08 12:40:39.299629+01	ttest	4	f	f	char		0				\N	\N	\N
+4	2015-08-12 13:40:37.188198+01	2015-08-12 13:40:37.188482+01	Standard Activity Type	5	f	f	text		0	Concentration required for 50% activity	Standard Activity Type	AC50	\N	\N	\N
+5	2015-08-12 13:40:37.236376+01	2015-08-12 13:40:37.236713+01	Standard Unit	5	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+6	2015-08-12 13:40:37.239346+01	2015-08-12 13:40:37.239628+01	Standard Activity Value	5	f	f	number		2		Standard Activity Value		\N	\N	\N
+7	2015-08-12 13:40:37.244504+01	2015-08-12 13:40:37.244765+01	Standard Activity Type	6	f	f	text		0	A measurement of the albumin protein in a biological specimen.	Standard Activity Type	ALB	\N	\N	\N
+8	2015-08-12 13:40:37.247075+01	2015-08-12 13:40:37.247325+01	Standard Unit	6	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+9	2015-08-12 13:40:37.249663+01	2015-08-12 13:40:37.249903+01	Standard Activity Value	6	f	f	number		2		Standard Activity Value		\N	\N	\N
+10	2015-08-12 13:40:37.254765+01	2015-08-12 13:40:37.255049+01	Standard Activity Type	7	f	f	text		0	The ratio of albumin to globulin in a biological specimen.	Standard Activity Type	ALBGLOB	\N	\N	\N
+11	2015-08-12 13:40:37.260173+01	2015-08-12 13:40:37.260422+01	Standard Unit	7	f	f	uiselect	-	1		Standard Unit	-	\N	\N	\N
+12	2015-08-12 13:40:37.262733+01	2015-08-12 13:40:37.262974+01	Standard Activity Value	7	f	f	number		2		Standard Activity Value		\N	\N	\N
+13	2015-08-12 13:40:37.267836+01	2015-08-12 13:40:37.268094+01	Standard Activity Type	8	f	f	text		0	A measurement of the alkaline phosphatase in a biological specimen.	Standard Activity Type	ALP	\N	\N	\N
+14	2015-08-12 13:40:37.270385+01	2015-08-12 13:40:37.270626+01	Standard Unit	8	f	f	uiselect	U.L-1,IU.L-1	1		Standard Unit	U.L-1	\N	\N	\N
+15	2015-08-12 13:40:37.27294+01	2015-08-12 13:40:37.27318+01	Standard Activity Value	8	f	f	number		2		Standard Activity Value		\N	\N	\N
+16	2015-08-12 13:40:37.27799+01	2015-08-12 13:40:37.2783+01	Standard Activity Type	9	f	f	text		0	A measurement of the alanine aminotransferase in a biological specimen.	Standard Activity Type	ALT	\N	\N	\N
+17	2015-08-12 13:40:37.280723+01	2015-08-12 13:40:37.280967+01	Standard Unit	9	f	f	uiselect	U.L-1,IU.L-1	1		Standard Unit	U.L-1	\N	\N	\N
+18	2015-08-12 13:40:37.283234+01	2015-08-12 13:40:37.283475+01	Standard Activity Value	9	f	f	number		2		Standard Activity Value		\N	\N	\N
+19	2015-08-12 13:40:37.288268+01	2015-08-12 13:40:37.288524+01	Standard Activity Type	10	f	f	text		0	A measurement of the length of time that it takes for clotting to occur when reagents are added to a plasma specimen. The test is partial due to the absence of tissue factor (Factor III) from the reaction mixture.	Standard Activity Type	APTT	\N	\N	\N
+20	2015-08-12 13:40:37.290807+01	2015-08-12 13:40:37.29112+01	Standard Unit	10	f	f	uiselect	s	1		Standard Unit	s	\N	\N	\N
+21	2015-08-12 13:40:37.293375+01	2015-08-12 13:40:37.293614+01	Standard Activity Value	10	f	f	number		2		Standard Activity Value		\N	\N	\N
+22	2015-08-12 13:40:37.298281+01	2015-08-12 13:40:37.298536+01	Standard Activity Type	11	f	f	text		0	A measurement of the aspartate aminotransferase in a biological specimen.	Standard Activity Type	AST	\N	\N	\N
+23	2015-08-12 13:40:37.300802+01	2015-08-12 13:40:37.301042+01	Standard Unit	11	f	f	uiselect	U.L-1,IU.L-1	1		Standard Unit	U.L-1	\N	\N	\N
+24	2015-08-12 13:40:37.30345+01	2015-08-12 13:40:37.303692+01	Standard Activity Value	11	f	f	number		2		Standard Activity Value		\N	\N	\N
+25	2015-08-12 13:40:37.308356+01	2015-08-12 13:40:37.308612+01	Standard Activity Type	12	f	f	text		0	Area under the drug concentration time curve	Standard Activity Type	AUC	\N	\N	\N
+26	2015-08-12 13:40:37.310866+01	2015-08-12 13:40:37.311153+01	Standard Unit	12	f	f	uiselect	uM.hr,ng.hr.mL-1	1		Standard Unit	uM.hr	\N	\N	\N
+27	2015-08-12 13:40:37.313395+01	2015-08-12 13:40:37.313634+01	Standard Activity Value	12	f	f	number		2		Standard Activity Value		\N	\N	\N
+28	2015-08-12 13:40:37.318339+01	2015-08-12 13:40:37.318594+01	Standard Activity Type	13	f	f	text		0	A measurement of the basophils in a biological specimen.	Standard Activity Type	BASO	\N	\N	\N
+29	2015-08-12 13:40:37.320876+01	2015-08-12 13:40:37.321114+01	Standard Unit	13	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N	\N
+30	2015-08-12 13:40:37.323503+01	2015-08-12 13:40:37.323765+01	Standard Activity Value	13	f	f	number		2		Standard Activity Value		\N	\N	\N
+31	2015-08-12 13:40:37.329698+01	2015-08-12 13:40:37.329957+01	Standard Activity Type	14	f	f	text		0	A relative measurement (ratio or percentage) of the basophils to leukocytes in a biological specimen.	Standard Activity Type	BASOLE	\N	\N	\N
+32	2015-08-12 13:40:37.332236+01	2015-08-12 13:40:37.332475+01	Standard Unit	14	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+33	2015-08-12 13:40:37.334797+01	2015-08-12 13:40:37.335057+01	Standard Activity Value	14	f	f	number		2		Standard Activity Value		\N	\N	\N
+34	2015-08-12 13:40:37.340477+01	2015-08-12 13:40:37.340837+01	Standard Activity Type	15	f	f	text		0	A measurement of the conjugated or water-soluble bilirubin in a biological specimen.	Standard Activity Type	BILDIR	\N	\N	\N
+35	2015-08-12 13:40:37.343151+01	2015-08-12 13:40:37.343388+01	Standard Unit	15	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+36	2015-08-12 13:40:37.345608+01	2015-08-12 13:40:37.345845+01	Standard Activity Value	15	f	f	number		2		Standard Activity Value		\N	\N	\N
+37	2015-08-12 13:40:37.350754+01	2015-08-12 13:40:37.351023+01	Standard Activity Type	16	f	f	text		0	A measurement of the total bilirubin in a biological specimen.	Standard Activity Type	BILI	\N	\N	\N
+38	2015-08-12 13:40:37.353261+01	2015-08-12 13:40:37.353517+01	Standard Unit	16	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+39	2015-08-12 13:40:37.355804+01	2015-08-12 13:40:37.356051+01	Standard Activity Value	16	f	f	number		2		Standard Activity Value		\N	\N	\N
+40	2015-08-12 13:40:37.360844+01	2015-08-12 13:40:37.361097+01	Standard Activity Type	17	f	f	text		0	A measurement of the urea nitrogen in a blood specimen.	Standard Activity Type	BUN	\N	\N	\N
+41	2015-08-12 13:40:37.36339+01	2015-08-12 13:40:37.363627+01	Standard Unit	17	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+42	2015-08-12 13:40:37.365853+01	2015-08-12 13:40:37.36609+01	Standard Activity Value	17	f	f	number		2		Standard Activity Value		\N	\N	\N
+43	2015-08-12 13:40:37.371081+01	2015-08-12 13:40:37.371399+01	Standard Activity Type	18	f	f	text		0	A measurement of the calcium in a biological specimen.	Standard Activity Type	CALCIUM	\N	\N	\N
+44	2015-08-12 13:40:37.373958+01	2015-08-12 13:40:37.374237+01	Standard Unit	18	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+45	2015-08-12 13:40:37.376676+01	2015-08-12 13:40:37.376958+01	Standard Activity Value	18	f	f	number		2		Standard Activity Value		\N	\N	\N
+46	2015-08-12 13:40:37.381742+01	2015-08-12 13:40:37.381997+01	Standard Activity Type	19	f	f	text		0	Concentration required for 50% cytotoxicity	Standard Activity Type	CC50	\N	\N	\N
+47	2015-08-12 13:40:37.384286+01	2015-08-12 13:40:37.384522+01	Standard Unit	19	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+48	2015-08-12 13:40:37.386812+01	2015-08-12 13:40:37.387074+01	Standard Activity Value	19	f	f	number		2		Standard Activity Value		\N	\N	\N
+49	2015-08-12 13:40:37.393955+01	2015-08-12 13:40:37.394248+01	Standard Activity Type	20	f	f	text		0	A measurement of the chloride in a biological specimen.	Standard Activity Type	CHLORIDE	\N	\N	\N
+50	2015-08-12 13:40:37.396808+01	2015-08-12 13:40:37.397102+01	Standard Unit	20	f	f	uiselect	mEq.L-1	1		Standard Unit	mEq.L-1	\N	\N	\N
+51	2015-08-12 13:40:37.399672+01	2015-08-12 13:40:37.39996+01	Standard Activity Value	20	f	f	number		2		Standard Activity Value		\N	\N	\N
+52	2015-08-12 13:40:37.405087+01	2015-08-12 13:40:37.405362+01	Standard Activity Type	21	f	f	text		0	A measurement of the cholesterol in a biological specimen.	Standard Activity Type	CHOL	\N	\N	\N
+53	2015-08-12 13:40:37.407649+01	2015-08-12 13:40:37.407892+01	Standard Unit	21	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+54	2015-08-12 13:40:37.411851+01	2015-08-12 13:40:37.412092+01	Standard Activity Value	21	f	f	number		2		Standard Activity Value		\N	\N	\N
+55	2015-08-12 13:40:37.418841+01	2015-08-12 13:40:37.419129+01	Standard Activity Type	22	f	f	text		0	A measurement of the total creatine kinase in a biological specimen.	Standard Activity Type	CK	\N	\N	\N
+56	2015-08-12 13:40:37.421858+01	2015-08-12 13:40:37.422096+01	Standard Unit	22	f	f	uiselect	U.L-1	1		Standard Unit	U.L-1	\N	\N	\N
+57	2015-08-12 13:40:37.424328+01	2015-08-12 13:40:37.424564+01	Standard Activity Value	22	f	f	number		2		Standard Activity Value		\N	\N	\N
+58	2015-08-12 13:40:37.429271+01	2015-08-12 13:40:37.429525+01	Standard Activity Type	23	f	f	text		0	Clearance	Standard Activity Type	CL	\N	\N	\N
+59	2015-08-12 13:40:37.431749+01	2015-08-12 13:40:37.431985+01	Standard Unit	23	f	f	uiselect	mL.min-1.g-1,mL.min-1.kg-1,uL.min-1.(10^6cells)-1	1		Standard Unit	mL.min-1.g-1	\N	\N	\N
+60	2015-08-12 13:40:37.434385+01	2015-08-12 13:40:37.434624+01	Standard Activity Value	23	f	f	number		2		Standard Activity Value		\N	\N	\N
+61	2015-08-12 13:40:37.439495+01	2015-08-12 13:40:37.439753+01	Standard Activity Type	24	f	f	text		0	Renal clearance	Standard Activity Type	CL_renal	\N	\N	\N
+62	2015-08-12 13:40:37.442172+01	2015-08-12 13:40:37.442412+01	Standard Unit	24	f	f	uiselect	mL.min-1.kg-1	1		Standard Unit	mL.min-1.kg-1	\N	\N	\N
+63	2015-08-12 13:40:37.444686+01	2015-08-12 13:40:37.444922+01	Standard Activity Value	24	f	f	number		2		Standard Activity Value		\N	\N	\N
+64	2015-08-12 13:40:37.449621+01	2015-08-12 13:40:37.449875+01	Standard Activity Type	25	f	f	text		0	Clearance/Bioavailability	Standard Activity Type	CL/F	\N	\N	\N
+65	2015-08-12 13:40:37.452114+01	2015-08-12 13:40:37.45235+01	Standard Unit	25	f	f	uiselect	mL.min-1.kg-1	1		Standard Unit	mL.min-1.kg-1	\N	\N	\N
+66	2015-08-12 13:40:37.454576+01	2015-08-12 13:40:37.454813+01	Standard Activity Value	25	f	f	number		2		Standard Activity Value		\N	\N	\N
+67	2015-08-12 13:40:37.459859+01	2015-08-12 13:40:37.460142+01	Standard Activity Type	26	f	f	text		0	Calculated Log(Distribution Coefficient)	Standard Activity Type	CLogD	\N	\N	\N
+68	2015-08-12 13:40:37.462434+01	2015-08-12 13:40:37.462683+01	Standard Unit	26	f	f	uiselect	-	1		Standard Unit	-	\N	\N	\N
+69	2015-08-12 13:40:37.465047+01	2015-08-12 13:40:37.465285+01	Standard Activity Value	26	f	f	number		2		Standard Activity Value		\N	\N	\N
+70	2015-08-12 13:40:37.469925+01	2015-08-12 13:40:37.470178+01	Standard Activity Type	27	f	f	text		0	Calculated Log(Distribution Coefficient) at pH7.4	Standard Activity Type	CLogD7.4	\N	\N	\N
+71	2015-08-12 13:40:37.47244+01	2015-08-12 13:40:37.472688+01	Standard Unit	27	f	f	uiselect	-	1		Standard Unit	-	\N	\N	\N
+72	2015-08-12 13:40:37.475115+01	2015-08-12 13:40:37.475357+01	Standard Activity Value	27	f	f	number		2		Standard Activity Value		\N	\N	\N
+73	2015-08-12 13:40:37.480208+01	2015-08-12 13:40:37.480462+01	Standard Activity Type	28	f	f	text		0	Calculated Log(Partition Coefficient)	Standard Activity Type	CLogP	\N	\N	\N
+74	2015-08-12 13:40:37.48311+01	2015-08-12 13:40:37.483346+01	Standard Unit	28	f	f	uiselect	-	1		Standard Unit	-	\N	\N	\N
+75	2015-08-12 13:40:37.485576+01	2015-08-12 13:40:37.485812+01	Standard Activity Value	28	f	f	number		2		Standard Activity Value		\N	\N	\N
+76	2015-08-12 13:40:37.490489+01	2015-08-12 13:40:37.490741+01	Standard Activity Type	29	f	f	text		0	Maximum concentration	Standard Activity Type	Cmax	\N	\N	\N
+77	2015-08-12 13:40:37.493185+01	2015-08-12 13:40:37.493421+01	Standard Unit	29	f	f	uiselect	ug.mL-1,nM	1		Standard Unit	ug.mL-1	\N	\N	\N
+78	2015-08-12 13:40:37.495662+01	2015-08-12 13:40:37.495896+01	Standard Activity Value	29	f	f	number		2		Standard Activity Value		\N	\N	\N
+79	2015-08-12 13:40:37.500518+01	2015-08-12 13:40:37.50079+01	Standard Activity Type	30	f	f	text		0	A measurement of the carbon dioxide gas in a biological specimen.	Standard Activity Type	CO2	\N	\N	\N
+80	2015-08-12 13:40:37.503164+01	2015-08-12 13:40:37.5034+01	Standard Unit	30	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+81	2015-08-12 13:40:37.50563+01	2015-08-12 13:40:37.505864+01	Standard Activity Value	30	f	f	number		2		Standard Activity Value		\N	\N	\N
+82	2015-08-12 13:40:37.510503+01	2015-08-12 13:40:37.510754+01	Standard Activity Type	31	f	f	text		0	A measurement of the creatinine in a biological specimen.	Standard Activity Type	CREAT	\N	\N	\N
+83	2015-08-12 13:40:37.51305+01	2015-08-12 13:40:37.513286+01	Standard Unit	31	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+84	2015-08-12 13:40:37.515551+01	2015-08-12 13:40:37.515786+01	Standard Activity Value	31	f	f	number		2		Standard Activity Value		\N	\N	\N
+85	2015-08-12 13:40:37.520434+01	2015-08-12 13:40:37.520684+01	Standard Activity Type	32	f	f	text		0	Effective concentration for 50% activity	Standard Activity Type	EC50	\N	\N	\N
+86	2015-08-12 13:40:37.522982+01	2015-08-12 13:40:37.523246+01	Standard Unit	32	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+87	2015-08-12 13:40:37.525658+01	2015-08-12 13:40:37.525894+01	Standard Activity Value	32	f	f	number		2		Standard Activity Value		\N	\N	\N
+88	2015-08-12 13:40:37.530556+01	2015-08-12 13:40:37.530812+01	Standard Activity Type	33	f	f	text		0	Effective dose for 50% activity	Standard Activity Type	ED50	\N	\N	\N
+89	2015-08-12 13:40:37.533064+01	2015-08-12 13:40:37.533299+01	Standard Unit	33	f	f	uiselect	mg.kg-1,umol.kg-1	1		Standard Unit	mg.kg-1	\N	\N	\N
+90	2015-08-12 13:40:37.535507+01	2015-08-12 13:40:37.535742+01	Standard Activity Value	33	f	f	number		2		Standard Activity Value		\N	\N	\N
+91	2015-08-12 13:40:37.540424+01	2015-08-12 13:40:37.540686+01	Standard Activity Type	34	f	f	text		0	A measurement of the eosinophils in a biological specimen.	Standard Activity Type	EOS	\N	\N	\N
+92	2015-08-12 13:40:37.543087+01	2015-08-12 13:40:37.543335+01	Standard Unit	34	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N	\N
+93	2015-08-12 13:40:37.545659+01	2015-08-12 13:40:37.545901+01	Standard Activity Value	34	f	f	number		2		Standard Activity Value		\N	\N	\N
+94	2015-08-12 13:40:37.550771+01	2015-08-12 13:40:37.55105+01	Standard Activity Type	35	f	f	text		0	A relative measurement (ratio or percentage) of the eosinophils to leukocytes in a biological specimen.	Standard Activity Type	EOSLE	\N	\N	\N
+95	2015-08-12 13:40:37.553302+01	2015-08-12 13:40:37.55354+01	Standard Unit	35	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+96	2015-08-12 13:40:37.555775+01	2015-08-12 13:40:37.556014+01	Standard Activity Value	35	f	f	number		2		Standard Activity Value		\N	\N	\N
+97	2015-08-12 13:40:37.560742+01	2015-08-12 13:40:37.560996+01	Standard Activity Type	36	f	f	text		0	Bioavailability	Standard Activity Type	F	\N	\N	\N
+98	2015-08-12 13:40:37.563281+01	2015-08-12 13:40:37.563518+01	Standard Unit	36	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+99	2015-08-12 13:40:37.565755+01	2015-08-12 13:40:37.565992+01	Standard Activity Value	36	f	f	number		2		Standard Activity Value		\N	\N	\N
+100	2015-08-12 13:40:37.570946+01	2015-08-12 13:40:37.571332+01	Standard Activity Type	37	f	f	text		0	Area under the free drug concentration time curve	Standard Activity Type	fAUC	\N	\N	\N
+101	2015-08-12 13:40:37.574417+01	2015-08-12 13:40:37.574661+01	Standard Unit	37	f	f	uiselect	uM.hr,ng.hr.mL-1	1		Standard Unit	uM.hr	\N	\N	\N
+102	2015-08-12 13:40:37.576957+01	2015-08-12 13:40:37.577193+01	Standard Activity Value	37	f	f	number		2		Standard Activity Value		\N	\N	\N
+103	2015-08-12 13:40:37.582469+01	2015-08-12 13:40:37.582724+01	Standard Activity Type	38	f	f	text		0	A measurement of the fibrinogen in a biological specimen.	Standard Activity Type	FIBRINO	\N	\N	\N
+104	2015-08-12 13:40:37.585134+01	2015-08-12 13:40:37.585396+01	Standard Unit	38	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+105	2015-08-12 13:40:37.587749+01	2015-08-12 13:40:37.587987+01	Standard Activity Value	38	f	f	number		2		Standard Activity Value		\N	\N	\N
+106	2015-08-12 13:40:37.592784+01	2015-08-12 13:40:37.59304+01	Standard Activity Type	39	f	f	text		0	A measurement of the gamma glutamyl transferase in a biological specimen.	Standard Activity Type	GGT	\N	\N	\N
+107	2015-08-12 13:40:37.595374+01	2015-08-12 13:40:37.595608+01	Standard Unit	39	f	f	uiselect	IU.L-1	1		Standard Unit	IU.L-1	\N	\N	\N
+108	2015-08-12 13:40:37.598167+01	2015-08-12 13:40:37.598423+01	Standard Activity Value	39	f	f	number		2		Standard Activity Value		\N	\N	\N
+109	2015-08-12 13:40:37.605097+01	2015-08-12 13:40:37.605364+01	Standard Activity Type	40	f	f	text		0	Concentration required for 50% growth inhibition	Standard Activity Type	GI50	\N	\N	\N
+110	2015-08-12 13:40:37.607943+01	2015-08-12 13:40:37.608205+01	Standard Unit	40	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+111	2015-08-12 13:40:37.611967+01	2015-08-12 13:40:37.612237+01	Standard Activity Value	40	f	f	number		2		Standard Activity Value		\N	\N	\N
+112	2015-08-12 13:40:37.620947+01	2015-08-12 13:40:37.621259+01	Standard Activity Type	41	f	f	text		0	A measurement of the glucose in a biological specimen.	Standard Activity Type	GLUC	\N	\N	\N
+113	2015-08-12 13:40:37.623793+01	2015-08-12 13:40:37.624228+01	Standard Unit	41	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+114	2015-08-12 13:40:37.629037+01	2015-08-12 13:40:37.629486+01	Standard Activity Value	41	f	f	number		2		Standard Activity Value		\N	\N	\N
+115	2015-08-12 13:40:37.639041+01	2015-08-12 13:40:37.639544+01	Standard Activity Type	42	f	f	text		0	The percentage of a whole blood specimen that is composed of red blood cells (erythrocytes).	Standard Activity Type	HCT	\N	\N	\N
+116	2015-08-12 13:40:37.643204+01	2015-08-12 13:40:37.643462+01	Standard Unit	42	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+117	2015-08-12 13:40:37.64588+01	2015-08-12 13:40:37.646122+01	Standard Activity Value	42	f	f	number		2		Standard Activity Value		\N	\N	\N
+118	2015-08-12 13:40:37.651877+01	2015-08-12 13:40:37.652141+01	Standard Activity Type	43	f	f	text		0	A measurement of the hemoglobin in a biological specimen.	Standard Activity Type	HGB	\N	\N	\N
+119	2015-08-12 13:40:37.654909+01	2015-08-12 13:40:37.655189+01	Standard Unit	43	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+120	2015-08-12 13:40:37.657921+01	2015-08-12 13:40:37.658163+01	Standard Activity Value	43	f	f	number		2		Standard Activity Value		\N	\N	\N
+121	2015-08-12 13:40:37.663187+01	2015-08-12 13:40:37.663461+01	Standard Activity Type	44	f	f	text		0	Concentration required for 50% inhibition	Standard Activity Type	IC50	\N	\N	\N
+122	2015-08-12 13:40:37.666915+01	2015-08-12 13:40:37.667303+01	Standard Unit	44	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+123	2015-08-12 13:40:37.671909+01	2015-08-12 13:40:37.672161+01	Standard Activity Value	44	f	f	number		2		Standard Activity Value		\N	\N	\N
+124	2015-08-12 13:40:37.682175+01	2015-08-12 13:40:37.682473+01	Standard Activity Type	45	f	f	text		0	Concentration required for 90% inhibition	Standard Activity Type	IC90	\N	\N	\N
+125	2015-08-12 13:40:37.684886+01	2015-08-12 13:40:37.685123+01	Standard Unit	45	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+126	2015-08-12 13:40:37.68789+01	2015-08-12 13:40:37.688135+01	Standard Activity Value	45	f	f	number		2		Standard Activity Value		\N	\N	\N
+127	2015-08-12 13:40:37.696613+01	2015-08-12 13:40:37.697025+01	Standard Activity Type	46	f	f	text		0	Concentration required for 95% inhibition	Standard Activity Type	IC95	\N	\N	\N
+128	2015-08-12 13:40:37.700531+01	2015-08-12 13:40:37.700897+01	Standard Unit	46	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+129	2015-08-12 13:40:37.704147+01	2015-08-12 13:40:37.704492+01	Standard Activity Value	46	f	f	number		2		Standard Activity Value		\N	\N	\N
+130	2015-08-12 13:40:37.710519+01	2015-08-12 13:40:37.710889+01	Standard Activity Type	47	f	f	text		0	Concentration required for 99% inhibition	Standard Activity Type	IC99	\N	\N	\N
+131	2015-08-12 13:40:37.714422+01	2015-08-12 13:40:37.71483+01	Standard Unit	47	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+132	2015-08-12 13:40:37.718944+01	2015-08-12 13:40:37.719369+01	Standard Activity Value	47	f	f	number		2		Standard Activity Value		\N	\N	\N
+133	2015-08-12 13:40:37.724999+01	2015-08-12 13:40:37.72541+01	Standard Activity Type	48	f	f	text		0	Dose required for 50% inhibition	Standard Activity Type	ID50	\N	\N	\N
+134	2015-08-12 13:40:37.72905+01	2015-08-12 13:40:37.729392+01	Standard Unit	48	f	f	uiselect	mg.kg-1,umol.kg-1	1		Standard Unit	mg.kg-1	\N	\N	\N
+135	2015-08-12 13:40:37.731985+01	2015-08-12 13:40:37.732312+01	Standard Activity Value	48	f	f	number		2		Standard Activity Value		\N	\N	\N
+136	2015-08-12 13:40:37.738971+01	2015-08-12 13:40:37.739287+01	Standard Activity Type	49	f	f	text		0	Inhibition Frequency (promiscuity) Index	Standard Activity Type	IFI	\N	\N	\N
+137	2015-08-12 13:40:37.74202+01	2015-08-12 13:40:37.742256+01	Standard Unit	49	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+138	2015-08-12 13:40:37.744874+01	2015-08-12 13:40:37.745114+01	Standard Activity Value	49	f	f	number		2		Standard Activity Value		\N	\N	\N
+139	2015-08-12 13:40:37.752024+01	2015-08-12 13:40:37.752485+01	Standard Activity Type	50	f	f	text		0	Inhibition	Standard Activity Type	Inhibition	\N	\N	\N
+140	2015-08-12 13:40:37.757039+01	2015-08-12 13:40:37.757556+01	Standard Unit	50	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+141	2015-08-12 13:40:37.762179+01	2015-08-12 13:40:37.762674+01	Standard Activity Value	50	f	f	number		2		Standard Activity Value		\N	\N	\N
+142	2015-08-12 13:40:37.771919+01	2015-08-12 13:40:37.772187+01	Standard Activity Type	51	f	f	text		0	Zone of inhibition	Standard Activity Type	IZ	\N	\N	\N
+143	2015-08-12 13:40:37.774961+01	2015-08-12 13:40:37.775274+01	Standard Unit	51	f	f	uiselect	mm	1		Standard Unit	mm	\N	\N	\N
+144	2015-08-12 13:40:37.778328+01	2015-08-12 13:40:37.778684+01	Standard Activity Value	51	f	f	number		2		Standard Activity Value		\N	\N	\N
+145	2015-08-12 13:40:37.800633+01	2015-08-12 13:40:37.800925+01	Standard Activity Type	52	f	f	text		0	Observed rate constant	Standard Activity Type	k_obs	\N	\N	\N
+146	2015-08-12 13:40:37.805866+01	2015-08-12 13:40:37.80612+01	Standard Unit	52	f	f	uiselect	s-1	1		Standard Unit	s-1	\N	\N	\N
+147	2015-08-12 13:40:37.809065+01	2015-08-12 13:40:37.809313+01	Standard Activity Value	52	f	f	number		2		Standard Activity Value		\N	\N	\N
+148	2015-08-12 13:40:37.814633+01	2015-08-12 13:40:37.814908+01	Standard Activity Type	53	f	f	text		0	Dissociation rate constant	Standard Activity Type	k_off	\N	\N	\N
+149	2015-08-12 13:40:37.818303+01	2015-08-12 13:40:37.818561+01	Standard Unit	53	f	f	uiselect	s-1	1		Standard Unit	s-1	\N	\N	\N
+150	2015-08-12 13:40:37.821927+01	2015-08-12 13:40:37.822181+01	Standard Activity Value	53	f	f	number		2		Standard Activity Value		\N	\N	\N
+151	2015-08-12 13:40:37.827923+01	2015-08-12 13:40:37.828191+01	Standard Activity Type	54	f	f	text		0	Association rate constant	Standard Activity Type	k_on	\N	\N	\N
+152	2015-08-12 13:40:37.832097+01	2015-08-12 13:40:37.832439+01	Standard Unit	54	f	f	uiselect	M-1.s-1	1		Standard Unit	M-1.s-1	\N	\N	\N
+153	2015-08-12 13:40:37.837233+01	2015-08-12 13:40:37.837672+01	Standard Activity Value	54	f	f	number		2		Standard Activity Value		\N	\N	\N
+154	2015-08-12 13:40:37.846564+01	2015-08-12 13:40:37.847062+01	Standard Activity Type	55	f	f	text		0	Dissociation constant	Standard Activity Type	Kd	\N	\N	\N
+155	2015-08-12 13:40:37.851224+01	2015-08-12 13:40:37.851635+01	Standard Unit	55	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+156	2015-08-12 13:40:37.855072+01	2015-08-12 13:40:37.855419+01	Standard Activity Value	55	f	f	number		2		Standard Activity Value		\N	\N	\N
+157	2015-08-12 13:40:37.862103+01	2015-08-12 13:40:37.862482+01	Standard Activity Type	56	f	f	text		0	Inhibition constant	Standard Activity Type	Ki	\N	\N	\N
+158	2015-08-12 13:40:37.867998+01	2015-08-12 13:40:37.868285+01	Standard Unit	56	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+159	2015-08-12 13:40:37.871962+01	2015-08-12 13:40:37.872224+01	Standard Activity Value	56	f	f	number		2		Standard Activity Value		\N	\N	\N
+160	2015-08-12 13:40:37.879089+01	2015-08-12 13:40:37.879393+01	Standard Activity Type	57	f	f	text		0	Michaelis constant	Standard Activity Type	Km	\N	\N	\N
+161	2015-08-12 13:40:37.882003+01	2015-08-12 13:40:37.882428+01	Standard Unit	57	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+162	2015-08-12 13:40:37.887571+01	2015-08-12 13:40:37.887833+01	Standard Activity Value	57	f	f	number		2		Standard Activity Value		\N	\N	\N
+163	2015-08-12 13:40:37.898046+01	2015-08-12 13:40:37.898322+01	Standard Activity Type	58	f	f	text		0	Concentration required for 50% lethality	Standard Activity Type	LC50	\N	\N	\N
+164	2015-08-12 13:40:37.90125+01	2015-08-12 13:40:37.901682+01	Standard Unit	58	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+165	2015-08-12 13:40:37.904756+01	2015-08-12 13:40:37.905051+01	Standard Activity Value	58	f	f	number		2		Standard Activity Value		\N	\N	\N
+166	2015-08-12 13:40:37.911115+01	2015-08-12 13:40:37.911402+01	Standard Activity Type	59	f	f	text		0	Dose required for 50% lethality	Standard Activity Type	LD50	\N	\N	\N
+167	2015-08-12 13:40:37.913868+01	2015-08-12 13:40:37.914122+01	Standard Unit	59	f	f	uiselect	mg.kg-1,umol.kg-1	1		Standard Unit	mg.kg-1	\N	\N	\N
+168	2015-08-12 13:40:37.917968+01	2015-08-12 13:40:37.918242+01	Standard Activity Value	59	f	f	number		2		Standard Activity Value		\N	\N	\N
+276	2015-08-12 13:40:38.40129+01	2015-08-12 13:40:38.401654+01	Standard Activity Value	96	f	f	number		2		Standard Activity Value		\N	\N	\N
+169	2015-08-12 13:40:37.92498+01	2015-08-12 13:40:37.925273+01	Standard Activity Type	60	f	f	text		0	A measurement of the lactate dehydrogenase in a biological specimen.	Standard Activity Type	LDH	\N	\N	\N
+170	2015-08-12 13:40:37.927937+01	2015-08-12 13:40:37.928185+01	Standard Unit	60	f	f	uiselect	U.L-1,IU.L-1	1		Standard Unit	U.L-1	\N	\N	\N
+171	2015-08-12 13:40:37.931084+01	2015-08-12 13:40:37.93133+01	Standard Activity Value	60	f	f	number		2		Standard Activity Value		\N	\N	\N
+172	2015-08-12 13:40:37.936977+01	2015-08-12 13:40:37.937288+01	Standard Activity Type	61	f	f	text		0	A measurement of the pancreatic lipase in a biological specimen.	Standard Activity Type	LIPASE	\N	\N	\N
+173	2015-08-12 13:40:37.941955+01	2015-08-12 13:40:37.942207+01	Standard Unit	61	f	f	uiselect	U.L-1	1		Standard Unit	U.L-1	\N	\N	\N
+174	2015-08-12 13:40:37.944932+01	2015-08-12 13:40:37.945187+01	Standard Activity Value	61	f	f	number		2		Standard Activity Value		\N	\N	\N
+175	2015-08-12 13:40:37.951913+01	2015-08-12 13:40:37.952179+01	Standard Activity Type	62	f	f	text		0	Log(Partition Coefficient)	Standard Activity Type	LogP	\N	\N	\N
+176	2015-08-12 13:40:37.957907+01	2015-08-12 13:40:37.958163+01	Standard Unit	62	f	f	uiselect	-	1		Standard Unit	-	\N	\N	\N
+177	2015-08-12 13:40:37.961902+01	2015-08-12 13:40:37.962145+01	Standard Activity Value	62	f	f	number		2		Standard Activity Value		\N	\N	\N
+178	2015-08-12 13:40:37.967489+01	2015-08-12 13:40:37.96776+01	Standard Activity Type	63	f	f	text		0	Log(Apparent permeability)	Standard Activity Type	LogPapp	\N	\N	\N
+179	2015-08-12 13:40:37.97014+01	2015-08-12 13:40:37.970393+01	Standard Unit	63	f	f	uiselect	-	1		Standard Unit	-	\N	\N	\N
+180	2015-08-12 13:40:37.973459+01	2015-08-12 13:40:37.973709+01	Standard Activity Value	63	f	f	number		2		Standard Activity Value		\N	\N	\N
+181	2015-08-12 13:40:37.981773+01	2015-08-12 13:40:37.982045+01	Standard Activity Type	64	f	f	text		0	A measurement of the lymphocytes in a biological specimen.	Standard Activity Type	LYM	\N	\N	\N
+182	2015-08-12 13:40:37.984481+01	2015-08-12 13:40:37.984736+01	Standard Unit	64	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N	\N
+183	2015-08-12 13:40:37.987213+01	2015-08-12 13:40:37.987496+01	Standard Activity Value	64	f	f	number		2		Standard Activity Value		\N	\N	\N
+184	2015-08-12 13:40:37.993221+01	2015-08-12 13:40:37.993512+01	Standard Activity Type	65	f	f	text		0	A relative measurement (ratio or percentage) of the lymphocytes to leukocytes in a biological specimen.	Standard Activity Type	LYMLE	\N	\N	\N
+185	2015-08-12 13:40:37.995924+01	2015-08-12 13:40:37.996175+01	Standard Unit	65	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+186	2015-08-12 13:40:37.999064+01	2015-08-12 13:40:37.999366+01	Standard Activity Value	65	f	f	number		2		Standard Activity Value		\N	\N	\N
+187	2015-08-12 13:40:38.005195+01	2015-08-12 13:40:38.005538+01	Standard Activity Type	66	f	f	text		0	Minimum cytotoxic concentration	Standard Activity Type	MCC	\N	\N	\N
+188	2015-08-12 13:40:38.008104+01	2015-08-12 13:40:38.008368+01	Standard Unit	66	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+189	2015-08-12 13:40:38.0136+01	2015-08-12 13:40:38.013879+01	Standard Activity Value	66	f	f	number		2		Standard Activity Value		\N	\N	\N
+190	2015-08-12 13:40:38.019452+01	2015-08-12 13:40:38.019718+01	Standard Activity Type	67	f	f	text		0	A quantitative measurement of the mean amount of hemoglobin per erythrocyte in a biological specimen.	Standard Activity Type	MCH	\N	\N	\N
+191	2015-08-12 13:40:38.022061+01	2015-08-12 13:40:38.022374+01	Standard Unit	67	f	f	uiselect	pg	1		Standard Unit	pg	\N	\N	\N
+192	2015-08-12 13:40:38.024985+01	2015-08-12 13:40:38.025242+01	Standard Activity Value	67	f	f	number		2		Standard Activity Value		\N	\N	\N
+193	2015-08-12 13:40:38.03075+01	2015-08-12 13:40:38.031986+01	Standard Activity Type	68	f	f	text		0	A quantitative measurement of the mean amount of hemoglobin per erythrocytes in a specified volume of a biological specimen.	Standard Activity Type	MCHC	\N	\N	\N
+194	2015-08-12 13:40:38.03559+01	2015-08-12 13:40:38.035883+01	Standard Unit	68	f	f	uiselect	%,ug.mL-1	1		Standard Unit	%	\N	\N	\N
+195	2015-08-12 13:40:38.038975+01	2015-08-12 13:40:38.03926+01	Standard Activity Value	68	f	f	number		2		Standard Activity Value		\N	\N	\N
+196	2015-08-12 13:40:38.045036+01	2015-08-12 13:40:38.045382+01	Standard Activity Type	69	f	f	text		0	A quantitative measurement of the mean volume of erythrocytes in a biological specimen.	Standard Activity Type	MCV	\N	\N	\N
+197	2015-08-12 13:40:38.047928+01	2015-08-12 13:40:38.048203+01	Standard Unit	69	f	f	uiselect	fL	1		Standard Unit	fL	\N	\N	\N
+198	2015-08-12 13:40:38.051135+01	2015-08-12 13:40:38.051406+01	Standard Activity Value	69	f	f	number		2		Standard Activity Value		\N	\N	\N
+199	2015-08-12 13:40:38.056947+01	2015-08-12 13:40:38.057245+01	Standard Activity Type	70	f	f	text		0	Minimum inhibitory concentration	Standard Activity Type	MIC	\N	\N	\N
+200	2015-08-12 13:40:38.062192+01	2015-08-12 13:40:38.062491+01	Standard Unit	70	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+201	2015-08-12 13:40:38.065034+01	2015-08-12 13:40:38.065276+01	Standard Activity Value	70	f	f	number		2		Standard Activity Value		\N	\N	\N
+202	2015-08-12 13:40:38.078166+01	2015-08-12 13:40:38.078477+01	Standard Activity Type	71	f	f	text		0	Minimum inhibitory concentration in 50% of population	Standard Activity Type	MIC50	\N	\N	\N
+203	2015-08-12 13:40:38.081662+01	2015-08-12 13:40:38.081926+01	Standard Unit	71	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+204	2015-08-12 13:40:38.085024+01	2015-08-12 13:40:38.085315+01	Standard Activity Value	71	f	f	number		2		Standard Activity Value		\N	\N	\N
+205	2015-08-12 13:40:38.092066+01	2015-08-12 13:40:38.092396+01	Standard Activity Type	72	f	f	text		0	Minimum inhibitory concentration in 70% of population	Standard Activity Type	MIC70	\N	\N	\N
+206	2015-08-12 13:40:38.095087+01	2015-08-12 13:40:38.09539+01	Standard Unit	72	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+207	2015-08-12 13:40:38.098114+01	2015-08-12 13:40:38.098421+01	Standard Activity Value	72	f	f	number		2		Standard Activity Value		\N	\N	\N
+208	2015-08-12 13:40:38.104999+01	2015-08-12 13:40:38.105298+01	Standard Activity Type	73	f	f	text		0	Minimum inhibitory concentration in 80% of population	Standard Activity Type	MIC80	\N	\N	\N
+209	2015-08-12 13:40:38.107708+01	2015-08-12 13:40:38.107949+01	Standard Unit	73	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+210	2015-08-12 13:40:38.111837+01	2015-08-12 13:40:38.112093+01	Standard Activity Value	73	f	f	number		2		Standard Activity Value		\N	\N	\N
+211	2015-08-12 13:40:38.119448+01	2015-08-12 13:40:38.119751+01	Standard Activity Type	74	f	f	text		0	Minimum inhibitory concentration in 90% of population	Standard Activity Type	MIC90	\N	\N	\N
+212	2015-08-12 13:40:38.122138+01	2015-08-12 13:40:38.122378+01	Standard Unit	74	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+213	2015-08-12 13:40:38.12484+01	2015-08-12 13:40:38.125092+01	Standard Activity Value	74	f	f	number		2		Standard Activity Value		\N	\N	\N
+214	2015-08-12 13:40:38.133598+01	2015-08-12 13:40:38.133877+01	Standard Activity Type	75	f	f	text		0	A measurement of the monocytes in a biological specimen.	Standard Activity Type	MONO	\N	\N	\N
+215	2015-08-12 13:40:38.136702+01	2015-08-12 13:40:38.136945+01	Standard Unit	75	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N	\N
+216	2015-08-12 13:40:38.139384+01	2015-08-12 13:40:38.139624+01	Standard Activity Value	75	f	f	number		2		Standard Activity Value		\N	\N	\N
+217	2015-08-12 13:40:38.145898+01	2015-08-12 13:40:38.146157+01	Standard Activity Type	76	f	f	text		0	A relative measurement (ratio or percentage) of the monocytes to leukocytes in a biological specimen.	Standard Activity Type	MONOLE	\N	\N	\N
+218	2015-08-12 13:40:38.148979+01	2015-08-12 13:40:38.149217+01	Standard Unit	76	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+219	2015-08-12 13:40:38.151639+01	2015-08-12 13:40:38.151882+01	Standard Activity Value	76	f	f	number		2		Standard Activity Value		\N	\N	\N
+220	2015-08-12 13:40:38.157207+01	2015-08-12 13:40:38.157474+01	Standard Activity Type	77	f	f	text		0	Mean residence time	Standard Activity Type	MRT	\N	\N	\N
+221	2015-08-12 13:40:38.161257+01	2015-08-12 13:40:38.161503+01	Standard Unit	77	f	f	uiselect	hr	1		Standard Unit	hr	\N	\N	\N
+222	2015-08-12 13:40:38.164133+01	2015-08-12 13:40:38.164374+01	Standard Activity Value	77	f	f	number		2		Standard Activity Value		\N	\N	\N
+428	2015-08-12 18:02:33.361769+01	2015-08-12 18:02:33.612718+01	References (DOI)	114	f	f	char		10				\N	\N	\N
+223	2015-08-12 13:40:38.171811+01	2015-08-12 13:40:38.172088+01	Standard Activity Type	78	f	f	text		0	A relative measurement (ratio or percentage) of the neutrophils to leukocytes in a biological specimen.	Standard Activity Type	NEUTLE	\N	\N	\N
+224	2015-08-12 13:40:38.174459+01	2015-08-12 13:40:38.174699+01	Standard Unit	78	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+225	2015-08-12 13:40:38.177892+01	2015-08-12 13:40:38.178131+01	Standard Activity Value	78	f	f	number		2		Standard Activity Value		\N	\N	\N
+226	2015-08-12 13:40:38.183197+01	2015-08-12 13:40:38.183451+01	Standard Activity Type	79	f	f	text		0	A measurement of the segmented neutrophils in a biological specimen.	Standard Activity Type	NEUTSG	\N	\N	\N
+227	2015-08-12 13:40:38.18628+01	2015-08-12 13:40:38.186523+01	Standard Unit	79	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N	\N
+228	2015-08-12 13:40:38.188847+01	2015-08-12 13:40:38.189089+01	Standard Activity Value	79	f	f	number		2		Standard Activity Value		\N	\N	\N
+229	2015-08-12 13:40:38.194895+01	2015-08-12 13:40:38.195199+01	Standard Activity Type	80	f	f	text		0	A measurement of the phosphate in a biological specimen.	Standard Activity Type	PHOS	\N	\N	\N
+230	2015-08-12 13:40:38.19791+01	2015-08-12 13:40:38.198148+01	Standard Unit	80	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+231	2015-08-12 13:40:38.201958+01	2015-08-12 13:40:38.202217+01	Standard Activity Value	80	f	f	number		2		Standard Activity Value		\N	\N	\N
+232	2015-08-12 13:40:38.207929+01	2015-08-12 13:40:38.208193+01	Standard Activity Type	81	f	f	text		0	A measurement of the phospholipids in a biological specimen.	Standard Activity Type	PHOSLPD	\N	\N	\N
+233	2015-08-12 13:40:38.210605+01	2015-08-12 13:40:38.210844+01	Standard Unit	81	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+234	2015-08-12 13:40:38.214914+01	2015-08-12 13:40:38.215188+01	Standard Activity Value	81	f	f	number		2		Standard Activity Value		\N	\N	\N
+355	2015-08-12 17:06:41.228291+01	2015-08-12 17:16:00.491846+01	Slope at Tm 	109	f	f	char		14				\N	\N	\N
+235	2015-08-12 13:40:38.220327+01	2015-08-12 13:40:38.220584+01	Standard Activity Type	82	f	f	text		0	A measurement of the platelets (non-nucleated thrombocytes) in a biological specimen.	Standard Activity Type	PLAT	\N	\N	\N
+236	2015-08-12 13:40:38.22318+01	2015-08-12 13:40:38.223418+01	Standard Unit	82	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N	\N
+237	2015-08-12 13:40:38.226049+01	2015-08-12 13:40:38.22629+01	Standard Activity Value	82	f	f	number		2		Standard Activity Value		\N	\N	\N
+238	2015-08-12 13:40:38.234672+01	2015-08-12 13:40:38.234952+01	Standard Activity Type	83	f	f	text		0	A measurement of the potassium in a biological specimen.	Standard Activity Type	POTASSIUM	\N	\N	\N
+239	2015-08-12 13:40:38.237962+01	2015-08-12 13:40:38.238214+01	Standard Unit	83	f	f	uiselect	mEq.L-1	1		Standard Unit	mEq.L-1	\N	\N	\N
+240	2015-08-12 13:40:38.242039+01	2015-08-12 13:40:38.242284+01	Standard Activity Value	83	f	f	number		2		Standard Activity Value		\N	\N	\N
+241	2015-08-12 13:40:38.24793+01	2015-08-12 13:40:38.248194+01	Standard Activity Type	84	f	f	text		0	Concentration or dose required to elicit a specific response	Standard Activity Type	Potency	\N	\N	\N
+242	2015-08-12 13:40:38.251944+01	2015-08-12 13:40:38.252191+01	Standard Unit	84	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+243	2015-08-12 13:40:38.254928+01	2015-08-12 13:40:38.2552+01	Standard Activity Value	84	f	f	number		2		Standard Activity Value		\N	\N	\N
+244	2015-08-12 13:40:38.26157+01	2015-08-12 13:40:38.261854+01	Standard Activity Type	85	f	f	text		0	A measurement of a group of complex organic macromolecules composed of one or more alpha-L-amino acid chains in a biological specimen.	Standard Activity Type	PROT	\N	\N	\N
+245	2015-08-12 13:40:38.264956+01	2015-08-12 13:40:38.265254+01	Standard Unit	85	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+246	2015-08-12 13:40:38.267905+01	2015-08-12 13:40:38.268211+01	Standard Activity Value	85	f	f	number		2		Standard Activity Value		\N	\N	\N
+247	2015-08-12 13:40:38.273796+01	2015-08-12 13:40:38.274238+01	Standard Activity Type	86	f	f	text		0	A blood clotting measurement that evaluates the extrinsic pathway of coagulation.	Standard Activity Type	PT	\N	\N	\N
+248	2015-08-12 13:40:38.277129+01	2015-08-12 13:40:38.277417+01	Standard Unit	86	f	f	uiselect	s	1		Standard Unit	s	\N	\N	\N
+249	2015-08-12 13:40:38.280306+01	2015-08-12 13:40:38.280554+01	Standard Activity Value	86	f	f	number		2		Standard Activity Value		\N	\N	\N
+250	2015-08-12 13:40:38.286365+01	2015-08-12 13:40:38.286635+01	Standard Activity Type	87	f	f	text		0	A measurement of the total erythrocytes in a biological specimen.	Standard Activity Type	RBC	\N	\N	\N
+251	2015-08-12 13:40:38.289461+01	2015-08-12 13:40:38.289772+01	Standard Unit	87	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N	\N
+252	2015-08-12 13:40:38.292608+01	2015-08-12 13:40:38.292929+01	Standard Activity Value	87	f	f	number		2		Standard Activity Value		\N	\N	\N
+253	2015-08-12 13:40:38.298277+01	2015-08-12 13:40:38.298552+01	Standard Activity Type	88	f	f	text		0	A measurement of the nucleated erythrocytes (large, immature nucleated erythrocytes) in a biological specimen.	Standard Activity Type	RBCNUC	\N	\N	\N
+254	2015-08-12 13:40:38.30098+01	2015-08-12 13:40:38.301229+01	Standard Unit	88	f	f	uiselect	/100WBC	1		Standard Unit	/100WBC	\N	\N	\N
+255	2015-08-12 13:40:38.303588+01	2015-08-12 13:40:38.303841+01	Standard Activity Value	88	f	f	number		2		Standard Activity Value		\N	\N	\N
+256	2015-08-12 13:40:38.309461+01	2015-08-12 13:40:38.309729+01	Standard Activity Type	89	f	f	text		0	A relative measurement (ratio or percentage) of reticulocytes to erythrocytes in a biological specimen.	Standard Activity Type	RETIRBC	\N	\N	\N
+257	2015-08-12 13:40:38.312279+01	2015-08-12 13:40:38.312527+01	Standard Unit	89	f	f	uiselect	%	1		Standard Unit	%	\N	\N	\N
+258	2015-08-12 13:40:38.315204+01	2015-08-12 13:40:38.315447+01	Standard Activity Value	89	f	f	number		2		Standard Activity Value		\N	\N	\N
+259	2015-08-12 13:40:38.321933+01	2015-08-12 13:40:38.322235+01	Standard Activity Type	90	f	f	text		0	A measurement of the sodium in a biological specimen.	Standard Activity Type	SODIUM	\N	\N	\N
+260	2015-08-12 13:40:38.324821+01	2015-08-12 13:40:38.325101+01	Standard Unit	90	f	f	uiselect	mEq.L-1	1		Standard Unit	mEq.L-1	\N	\N	\N
+261	2015-08-12 13:40:38.328244+01	2015-08-12 13:40:38.328554+01	Standard Activity Value	90	f	f	number		2		Standard Activity Value		\N	\N	\N
+262	2015-08-12 13:40:38.336036+01	2015-08-12 13:40:38.336355+01	Standard Activity Type	91	f	f	text		0	Solubility 	Standard Activity Type	Solubility	\N	\N	\N
+263	2015-08-12 13:40:38.339086+01	2015-08-12 13:40:38.339383+01	Standard Unit	91	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+264	2015-08-12 13:40:38.342324+01	2015-08-12 13:40:38.342651+01	Standard Activity Value	91	f	f	number		2		Standard Activity Value		\N	\N	\N
+265	2015-08-12 13:40:38.351152+01	2015-08-12 13:40:38.35146+01	Standard Activity Type	93	f	f	text		0	Half-life	Standard Activity Type	T1/2	\N	\N	\N
+266	2015-08-12 13:40:38.354804+01	2015-08-12 13:40:38.355147+01	Standard Unit	93	f	f	uiselect	hr	1		Standard Unit	hr	\N	\N	\N
+267	2015-08-12 13:40:38.359667+01	2015-08-12 13:40:38.359973+01	Standard Activity Value	93	f	f	number		2		Standard Activity Value		\N	\N	\N
+268	2015-08-12 13:40:38.367127+01	2015-08-12 13:40:38.367415+01	Standard Activity Type	94	f	f	text		0	The weight of a subject at a specified end point. (NCI)	Standard Activity Type	TERMBW	\N	\N	\N
+269	2015-08-12 13:40:38.370031+01	2015-08-12 13:40:38.370292+01	Standard Unit	94	f	f	uiselect	g	1		Standard Unit	g	\N	\N	\N
+270	2015-08-12 13:40:38.37295+01	2015-08-12 13:40:38.373219+01	Standard Activity Value	94	f	f	number		2		Standard Activity Value		\N	\N	\N
+271	2015-08-12 13:40:38.378256+01	2015-08-12 13:40:38.378524+01	Standard Activity Type	95	f	f	text		0	Concentration required for total growth inhibition	Standard Activity Type	TGI	\N	\N	\N
+272	2015-08-12 13:40:38.381827+01	2015-08-12 13:40:38.382086+01	Standard Unit	95	f	f	uiselect	nM,ug.mL-1	1		Standard Unit	nM	\N	\N	\N
+273	2015-08-12 13:40:38.384702+01	2015-08-12 13:40:38.384952+01	Standard Activity Value	95	f	f	number		2		Standard Activity Value		\N	\N	\N
+274	2015-08-12 13:40:38.390717+01	2015-08-12 13:40:38.39099+01	Standard Activity Type	96	f	f	text		0	Time for maximum concentration	Standard Activity Type	Tmax	\N	\N	\N
+275	2015-08-12 13:40:38.393705+01	2015-08-12 13:40:38.394036+01	Standard Unit	96	f	f	uiselect	hr	1		Standard Unit	hr	\N	\N	\N
+277	2015-08-12 13:40:38.412305+01	2015-08-12 13:40:38.412672+01	Standard Activity Type	97	f	f	text		0	A measurement of the triglycerides in a biological specimen.	Standard Activity Type	TRIG	\N	\N	\N
+278	2015-08-12 13:40:38.415736+01	2015-08-12 13:40:38.416046+01	Standard Unit	97	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+279	2015-08-12 13:40:38.418626+01	2015-08-12 13:40:38.418909+01	Standard Activity Value	97	f	f	number		2		Standard Activity Value		\N	\N	\N
+280	2015-08-12 13:40:38.424045+01	2015-08-12 13:40:38.424304+01	Standard Activity Type	98	f	f	text		0	A measurement of the urate in a biological specimen.	Standard Activity Type	URATE	\N	\N	\N
+281	2015-08-12 13:40:38.429135+01	2015-08-12 13:40:38.429406+01	Standard Unit	98	f	f	uiselect	ug.mL-1	1		Standard Unit	ug.mL-1	\N	\N	\N
+282	2015-08-12 13:40:38.432408+01	2015-08-12 13:40:38.432664+01	Standard Activity Value	98	f	f	number		2		Standard Activity Value		\N	\N	\N
+283	2015-08-12 13:40:38.437726+01	2015-08-12 13:40:38.438068+01	Standard Activity Type	99	f	f	text		0	Volume of Distribution	Standard Activity Type	Vd	\N	\N	\N
+284	2015-08-12 13:40:38.441224+01	2015-08-12 13:40:38.441567+01	Standard Unit	99	f	f	uiselect	L.kg-1	1		Standard Unit	L.kg-1	\N	\N	\N
+285	2015-08-12 13:40:38.444106+01	2015-08-12 13:40:38.444346+01	Standard Activity Value	99	f	f	number		2		Standard Activity Value		\N	\N	\N
+286	2015-08-12 13:40:38.450755+01	2015-08-12 13:40:38.45105+01	Standard Activity Type	100	f	f	text		0	Volume of distribution after non-intravenous administration	Standard Activity Type	Vd/F	\N	\N	\N
+287	2015-08-12 13:40:38.453425+01	2015-08-12 13:40:38.453664+01	Standard Unit	100	f	f	uiselect	L.kg-1	1		Standard Unit	L.kg-1	\N	\N	\N
+288	2015-08-12 13:40:38.455925+01	2015-08-12 13:40:38.456162+01	Standard Activity Value	100	f	f	number		2		Standard Activity Value		\N	\N	\N
+289	2015-08-12 13:40:38.463497+01	2015-08-12 13:40:38.463756+01	Standard Activity Type	101	f	f	text		0	Steady State Volume of Distribution	Standard Activity Type	Vdss	\N	\N	\N
+290	2015-08-12 13:40:38.466058+01	2015-08-12 13:40:38.466297+01	Standard Unit	101	f	f	uiselect	L.kg-1	1		Standard Unit	L.kg-1	\N	\N	\N
+291	2015-08-12 13:40:38.4686+01	2015-08-12 13:40:38.468842+01	Standard Activity Value	101	f	f	number		2		Standard Activity Value		\N	\N	\N
+356	2015-08-12 17:06:41.231261+01	2015-08-12 17:16:00.507086+01	Amplitude 	109	f	f	char		15				\N	\N	\N
+292	2015-08-12 13:40:38.473868+01	2015-08-12 13:40:38.474144+01	Standard Activity Type	102	f	f	text		0	Volume of distribution at steady state after non-intravenous administration	Standard Activity Type	Vdss/F	\N	\N	\N
+293	2015-08-12 13:40:38.47659+01	2015-08-12 13:40:38.476852+01	Standard Unit	102	f	f	uiselect	L.kg-1	1		Standard Unit	L.kg-1	\N	\N	\N
+294	2015-08-12 13:40:38.479217+01	2015-08-12 13:40:38.479461+01	Standard Activity Value	102	f	f	number		2		Standard Activity Value		\N	\N	\N
+295	2015-08-12 13:40:38.48677+01	2015-08-12 13:40:38.487085+01	Standard Activity Type	103	f	f	text		0	A measurement of the leukocytes in a biological specimen.	Standard Activity Type	WBC	\N	\N	\N
+296	2015-08-12 13:40:38.48988+01	2015-08-12 13:40:38.490302+01	Standard Unit	103	f	f	uiselect	cells.uL-1	1		Standard Unit	cells.uL-1	\N	\N	\N
+297	2015-08-12 13:40:38.492929+01	2015-08-12 13:40:38.493171+01	Standard Activity Value	103	f	f	number		2		Standard Activity Value		\N	\N	\N
+298	2015-08-12 13:40:38.497905+01	2015-08-12 13:40:38.498158+01	Standard Activity Type	104	f	f	text		0	The vertical force exerted by a mass as a result of gravity. (NCI)	Standard Activity Type	WEIGHT	\N	\N	\N
+299	2015-08-12 13:40:38.500453+01	2015-08-12 13:40:38.500697+01	Standard Unit	104	f	f	uiselect	g	1		Standard Unit	g	\N	\N	\N
+300	2015-08-12 13:40:38.503054+01	2015-08-12 13:40:38.503301+01	Standard Activity Value	104	f	f	number		2		Standard Activity Value		\N	\N	\N
+301	2015-08-12 13:40:38.508565+01	2015-08-12 13:40:38.508846+01	Standard Activity Type	105	f	f	text		0	Concentration required for 50% effect	Standard Activity Type	XC50	\N	\N	\N
+302	2015-08-12 13:40:38.511205+01	2015-08-12 13:40:38.511445+01	Standard Unit	105	f	f	uiselect	nM	1		Standard Unit	nM	\N	\N	\N
+303	2015-08-12 13:40:38.513725+01	2015-08-12 13:40:38.513965+01	Standard Activity Value	105	f	f	number		2		Standard Activity Value		\N	\N	\N
+304	2015-08-12 16:22:56.762568+01	2015-08-12 16:22:56.807714+01	Project ID	106	f	f	char		0				\N	\N	\N
+305	2015-08-12 16:22:56.76626+01	2015-08-12 16:22:56.812662+01	Abstract	106	f	f	char		1				\N	\N	\N
+306	2015-08-12 16:22:56.76985+01	2015-08-12 16:22:56.813812+01	Grant code	106	f	f	char		2				\N	\N	\N
+307	2015-08-12 16:22:56.773528+01	2015-08-12 16:22:56.814828+01	Authors	106	f	f	char		3				\N	\N	\N
+308	2015-08-12 16:22:56.778046+01	2015-08-12 16:22:56.815857+01	DOI	106	f	f	char		4				\N	\N	\N
+309	2015-08-12 16:24:28.435516+01	2015-08-12 16:24:28.456202+01	Sub-Project ID	107	f	f	char		0	Sub Project (outlines the goals of discrete sets of related experiments, that when combined comprise the overall project) 			\N	\N	\N
+310	2015-08-12 16:24:28.438881+01	2015-08-12 16:24:28.457843+01	Aims	107	f	f	char		1				\N	\N	\N
+311	2015-08-12 16:24:28.442282+01	2015-08-12 16:24:28.458816+01	Assays included	107	f	f	char		2				\N	\N	\N
+312	2015-08-12 17:04:01.037593+01	2015-08-12 17:04:01.214352+01	Assay ID	108	f	f	char		0				\N	\N	\N
+313	2015-08-12 17:04:01.040633+01	2015-08-12 17:04:01.217774+01	Activity	108	f	f	char		1				\N	\N	\N
+314	2015-08-12 17:04:01.043566+01	2015-08-12 17:04:01.218547+01	Written Protocol	108	f	f	char		2				\N	\N	\N
+315	2015-08-12 17:04:01.046495+01	2015-08-12 17:04:01.219263+01	Assay Type	108	f	f	char		3				\N	\N	\N
+316	2015-08-12 17:04:01.04974+01	2015-08-12 17:04:01.219948+01	Cell line / tissue	108	f	f	char		4				\N	\N	\N
+317	2015-08-12 17:04:01.052662+01	2015-08-12 17:04:01.220621+01	Target type	108	f	f	char		5				\N	\N	\N
+318	2015-08-12 17:04:01.055625+01	2015-08-12 17:04:01.221288+01	Model organism	108	f	f	char		6				\N	\N	\N
+319	2015-08-12 17:04:01.058526+01	2015-08-12 17:04:01.221964+01	Target name	108	f	f	char		7				\N	\N	\N
+320	2015-08-12 17:04:01.061478+01	2015-08-12 17:04:01.222636+01	Target type	108	f	f	char		8				\N	\N	\N
+321	2015-08-12 17:04:01.064796+01	2015-08-12 17:04:01.223339+01	UniProt ID	108	f	f	char		9				\N	\N	\N
+322	2015-08-12 17:04:01.067809+01	2015-08-12 17:04:01.224028+01	References (DOI)	108	f	f	char		10				\N	\N	\N
+323	2015-08-12 17:04:01.070712+01	2015-08-12 17:04:01.224701+01	Standard Units	108	f	f	char		11				\N	\N	\N
+324	2015-08-12 17:04:01.073652+01	2015-08-12 17:04:01.225377+01	Compound	108	f	f	char		12				\N	\N	\N
+325	2015-08-12 17:04:01.076887+01	2015-08-12 17:04:01.226098+01	Target Organism	108	f	f	char		13				\N	\N	\N
+326	2015-08-12 17:04:01.079899+01	2015-08-12 17:04:01.226767+01	One protein only (at single concentration)? 	108	f	f	uiselect	Yes, No	14	Yes / No			\N	\N	\N
+327	2015-08-12 17:04:01.082783+01	2015-08-12 17:04:01.227474+01	Fixed concentration for first compound?	108	f	f	uiselect	Yes, No	15	Yes / No			\N	\N	\N
+328	2015-08-12 17:04:01.085749+01	2015-08-12 17:04:01.22821+01	Second compound (at single concentration)?	108	f	f	uiselect	Yes, No	16	Yes / No			\N	\N	\N
+329	2015-08-12 17:04:01.088679+01	2015-08-12 17:04:01.22888+01	One buffer only?	108	f	f	uiselect	Yes, No	17	Yes / No			\N	\N	\N
+330	2015-08-12 17:04:01.091849+01	2015-08-12 17:04:01.229552+01	Well no.	108	f	f	char		18				\N	\N	\N
+331	2015-08-12 17:04:01.094725+01	2015-08-12 17:04:01.230228+01	Well	108	f	f	char		19				\N	\N	\N
+332	2015-08-12 17:04:01.097803+01	2015-08-12 17:04:01.230896+01	Protein	108	f	f	char		20				\N	\N	\N
+333	2015-08-12 17:04:01.100904+01	2015-08-12 17:04:01.23159+01	Protein concentration	108	f	f	char		21				\N	\N	\N
+334	2015-08-12 17:04:01.10421+01	2015-08-12 17:04:01.232263+01	1st compound,  ID	108	f	f	char		22				\N	\N	\N
+335	2015-08-12 17:04:01.107216+01	2015-08-12 17:04:01.233014+01	1st Compound, name	108	f	f	char		23				\N	\N	\N
+336	2015-08-12 17:04:01.110144+01	2015-08-12 17:04:01.233685+01	1st compound, concentration	108	f	f	char		24				\N	\N	\N
+337	2015-08-12 17:04:01.113111+01	2015-08-12 17:04:01.234354+01	2nd compound,  ID	108	f	f	char		25				\N	\N	\N
+338	2015-08-12 17:04:01.116232+01	2015-08-12 17:04:01.235055+01	2ndCompound, name	108	f	f	char		26				\N	\N	\N
+339	2015-08-12 17:04:01.119646+01	2015-08-12 17:04:01.235793+01	2nd compound, concentration	108	f	f	char		27				\N	\N	\N
+340	2015-08-12 17:04:01.122785+01	2015-08-12 17:04:01.236474+01	Buffer Description	108	f	f	char		28				\N	\N	\N
+341	2015-08-12 17:04:01.125956+01	2015-08-12 17:04:01.237159+01	Buffer ID	108	f	f	char		29				\N	\N	\N
+342	2015-08-12 17:06:41.184653+01	2015-08-12 17:16:00.474747+01	Purification ID	109	f	f	char		1				\N	\N	\N
+343	2015-08-12 17:06:41.187902+01	2015-08-12 17:16:00.476464+01	Protein  Concetration	109	f	f	char		2				\N	\N	\N
+344	2015-08-12 17:06:41.193606+01	2015-08-12 17:16:00.477702+01	Plate Well ID	109	f	f	char		3				\N	\N	\N
+345	2015-08-12 17:06:41.196737+01	2015-08-12 17:16:00.478898+01	1st compound concentration	109	f	f	char		4				\N	\N	\N
+346	2015-08-12 17:06:41.199771+01	2015-08-12 17:16:00.480143+01	1st compound ID	109	f	f	char		5				\N	\N	\N
+347	2015-08-12 17:06:41.202742+01	2015-08-12 17:16:00.481454+01	1st compound name	109	f	f	char		6				\N	\N	\N
+348	2015-08-12 17:06:41.205818+01	2015-08-12 17:16:00.482736+01	Buffer ID	109	f	f	char		7				\N	\N	\N
+349	2015-08-12 17:06:41.209065+01	2015-08-12 17:16:00.484133+01	2nd compound concentration	109	f	f	char		8				\N	\N	\N
+350	2015-08-12 17:06:41.212108+01	2015-08-12 17:16:00.485581+01	2nd compound ID	109	f	f	char		9				\N	\N	\N
+351	2015-08-12 17:06:41.215246+01	2015-08-12 17:16:00.486816+01	2nd compound name	109	f	f	char		10				\N	\N	\N
+352	2015-08-12 17:06:41.218302+01	2015-08-12 17:16:00.488053+01	Tm value 	109	f	f	char		11				\N	\N	\N
+353	2015-08-12 17:06:41.221392+01	2015-08-12 17:16:00.489268+01	Tm Shift	109	f	f	char		12				\N	\N	\N
+354	2015-08-12 17:06:41.225144+01	2015-08-12 17:16:00.490603+01	Temperature at peak of intensity	109	f	f	char		13				\N	\N	\N
+357	2015-08-12 17:06:41.234329+01	2015-08-12 17:16:00.509219+01	Experiment ID	109	f	f	char		16				\N	\N	\N
+358	2015-08-12 17:06:41.237711+01	2015-08-12 17:16:00.511243+01	Comments	109	f	f	char		17				\N	\N	\N
+359	2015-08-12 17:16:00.428409+01	2015-08-12 17:16:00.513779+01	Experiment ID	109	f	f	char		0				\N	\N	\N
+360	2015-08-12 17:19:53.157443+01	2015-08-12 17:19:53.223762+01	Assay ID	110	f	f	char		0				\N	\N	\N
+361	2015-08-12 17:19:53.160629+01	2015-08-12 17:19:53.259845+01	Activity	110	f	f	char		1				\N	\N	\N
+362	2015-08-12 17:19:53.163766+01	2015-08-12 17:19:53.260712+01	Written Protocol	110	f	f	char		2				\N	\N	\N
+363	2015-08-12 17:19:53.166864+01	2015-08-12 17:19:53.261419+01	Assay Type	110	f	f	char		3				\N	\N	\N
+364	2015-08-12 17:19:53.170314+01	2015-08-12 17:19:53.262168+01	Cell line / tissue	110	f	f	char		4				\N	\N	\N
+365	2015-08-12 17:19:53.173473+01	2015-08-12 17:19:53.262872+01	Target type	110	f	f	char		5				\N	\N	\N
+366	2015-08-12 17:19:53.17666+01	2015-08-12 17:19:53.263624+01	Model organism	110	f	f	char		6				\N	\N	\N
+367	2015-08-12 17:19:53.17985+01	2015-08-12 17:19:53.264357+01	Target name	110	f	f	char		7				\N	\N	\N
+368	2015-08-12 17:19:53.182946+01	2015-08-12 17:19:53.265113+01	Target type	110	f	f	char		8				\N	\N	\N
+369	2015-08-12 17:19:53.186302+01	2015-08-12 17:19:53.26582+01	UniProt ID	110	f	f	char		9				\N	\N	\N
+370	2015-08-12 17:19:53.189436+01	2015-08-12 17:19:53.2666+01	References (DOI)	110	f	f	char		10				\N	\N	\N
+371	2015-08-12 17:19:53.192565+01	2015-08-12 17:19:53.267405+01	Standard Units	110	f	f	char		11				\N	\N	\N
+372	2015-08-12 17:19:53.195728+01	2015-08-12 17:19:53.26813+01	Compound	110	f	f	char		12				\N	\N	\N
+373	2015-08-12 17:19:53.199255+01	2015-08-12 17:19:53.268829+01	Target Organism	110	f	f	char		13				\N	\N	\N
+374	2015-08-12 17:21:47.465937+01	2015-08-12 17:21:47.520852+01	Experiment ID	111	f	f	char		0				\N	\N	\N
+375	2015-08-12 17:21:47.470096+01	2015-08-12 17:21:47.521794+01	Plate Well ID	111	f	f	char		1				\N	\N	\N
+376	2015-08-12 17:21:47.474238+01	2015-08-12 17:21:47.522651+01	1st compound concentration	111	f	f	char		2				\N	\N	\N
+377	2015-08-12 17:21:47.478705+01	2015-08-12 17:21:47.523685+01	1st compound ID	111	f	f	char		3				\N	\N	\N
+378	2015-08-12 17:21:47.482275+01	2015-08-12 17:21:47.524403+01	1st compound name	111	f	f	char		4				\N	\N	\N
+379	2015-08-12 17:21:47.485635+01	2015-08-12 17:21:47.525115+01	2nd compound concentration	111	f	f	char		5				\N	\N	\N
+380	2015-08-12 17:21:47.488703+01	2015-08-12 17:21:47.525811+01	2nd compound ID	111	f	f	char		6				\N	\N	\N
+381	2015-08-12 17:21:47.4917+01	2015-08-12 17:21:47.526491+01	2nd compound name	111	f	f	char		7				\N	\N	\N
+382	2015-08-12 17:21:47.49474+01	2015-08-12 17:21:47.527198+01	IC50 value	111	f	f	char		8				\N	\N	\N
+383	2015-08-12 17:21:47.498008+01	2015-08-12 17:21:47.527878+01	IC50 value units	111	f	f	char		9				\N	\N	\N
+384	2015-08-12 17:21:47.501042+01	2015-08-12 17:21:47.52856+01	Comments	111	f	f	char		10				\N	\N	\N
+385	2015-08-12 17:47:09.854543+01	2015-08-12 17:47:10.005468+01	Assay ID	112	f	f	char		0				\N	\N	\N
+386	2015-08-12 17:47:09.857871+01	2015-08-12 17:47:10.006525+01	Activity	112	f	f	char		1				\N	\N	\N
+387	2015-08-12 17:47:09.861894+01	2015-08-12 17:47:10.007245+01	Written Protocol	112	f	f	char		2				\N	\N	\N
+388	2015-08-12 17:47:09.865754+01	2015-08-12 17:47:10.008002+01	Assay Type	112	f	f	char		3				\N	\N	\N
+389	2015-08-12 17:47:09.869935+01	2015-08-12 17:47:10.008689+01	Cell line / tissue	112	f	f	char		4				\N	\N	\N
+390	2015-08-12 17:47:09.872831+01	2015-08-12 17:47:10.00943+01	Target type	112	f	f	char		5				\N	\N	\N
+391	2015-08-12 17:47:09.875749+01	2015-08-12 17:47:10.010142+01	Model organism	112	f	f	char		6				\N	\N	\N
+392	2015-08-12 17:47:09.878612+01	2015-08-12 17:47:10.01083+01	Target name	112	f	f	char		7				\N	\N	\N
+393	2015-08-12 17:47:09.881519+01	2015-08-12 17:47:10.011571+01	Target type	112	f	f	char		8				\N	\N	\N
+394	2015-08-12 17:47:09.884737+01	2015-08-12 17:47:10.01226+01	UniProt ID	112	f	f	char		9				\N	\N	\N
+395	2015-08-12 17:47:09.887729+01	2015-08-12 17:47:10.012941+01	References (DOI)	112	f	f	char		10				\N	\N	\N
+396	2015-08-12 17:47:09.890728+01	2015-08-12 17:47:10.013883+01	Standard Units	112	f	f	char		11				\N	\N	\N
+397	2015-08-12 17:47:09.893636+01	2015-08-12 17:47:10.014569+01	Compound	112	f	f	char		12				\N	\N	\N
+398	2015-08-12 17:47:09.89675+01	2015-08-12 17:47:10.015291+01	Target Organism	112	f	f	char		13				\N	\N	\N
+399	2015-08-12 17:47:09.89963+01	2015-08-12 17:47:10.015981+01	1st concentration	112	f	f	char		14				\N	\N	\N
+400	2015-08-12 17:47:09.902589+01	2015-08-12 17:47:10.016693+01	1st compound ID	112	f	f	char		15				\N	\N	\N
+401	2015-08-12 17:47:09.905599+01	2015-08-12 17:47:10.017383+01	1st compound name	112	f	f	char		16				\N	\N	\N
+402	2015-08-12 17:47:09.908619+01	2015-08-12 17:47:10.018118+01	2nd concentration	112	f	f	char		17				\N	\N	\N
+403	2015-08-12 17:47:09.911833+01	2015-08-12 17:47:10.018803+01	2nd compound ID	112	f	f	char		18				\N	\N	\N
+404	2015-08-12 17:47:09.914697+01	2015-08-12 17:47:10.019529+01	2nd compound name	112	f	f	char		19				\N	\N	\N
+405	2015-08-12 17:49:04.946899+01	2015-08-12 17:49:05.0246+01	Experiment ID	113	f	f	char		0				\N	\N	\N
+406	2015-08-12 17:49:04.950045+01	2015-08-12 17:49:05.027693+01	Plate Well ID	113	f	f	char		1				\N	\N	\N
+407	2015-08-12 17:49:04.953112+01	2015-08-12 17:49:05.028907+01	1st concentration	113	f	f	char		2				\N	\N	\N
+408	2015-08-12 17:49:04.956176+01	2015-08-12 17:49:05.029631+01	1st compound ID	113	f	f	char		3				\N	\N	\N
+409	2015-08-12 17:49:04.959243+01	2015-08-12 17:49:05.030358+01	1st compound name	113	f	f	char		4				\N	\N	\N
+410	2015-08-12 17:49:04.962518+01	2015-08-12 17:49:05.031093+01	Activity at 1st concentration	113	f	f	char		5				\N	\N	\N
+411	2015-08-12 17:49:04.96564+01	2015-08-12 17:49:05.03184+01	Units (Luminescence)	113	f	f	char		6				\N	\N	\N
+412	2015-08-12 17:49:04.968721+01	2015-08-12 17:49:05.032529+01	2nd concentration	113	f	f	char		7				\N	\N	\N
+413	2015-08-12 17:49:04.971807+01	2015-08-12 17:49:05.033256+01	2nd compound ID	113	f	f	char		8				\N	\N	\N
+414	2015-08-12 17:49:04.975125+01	2015-08-12 17:49:05.034002+01	2nd compound name	113	f	f	char		9				\N	\N	\N
+415	2015-08-12 17:49:04.978164+01	2015-08-12 17:49:05.034706+01	Activity at 2nd concentration	113	f	f	char		10				\N	\N	\N
+416	2015-08-12 17:49:04.981342+01	2015-08-12 17:49:05.035484+01	Units (Luminescence)	113	f	f	char		11				\N	\N	\N
+417	2015-08-12 17:49:04.984614+01	2015-08-12 17:49:05.036193+01	Comments	113	f	f	char		12				\N	\N	\N
+418	2015-08-12 18:02:33.331285+01	2015-08-12 18:02:33.605028+01	Assay ID	114	f	f	char		0				\N	\N	\N
+419	2015-08-12 18:02:33.334278+01	2015-08-12 18:02:33.60608+01	Activity	114	f	f	char		1				\N	\N	\N
+420	2015-08-12 18:02:33.3373+01	2015-08-12 18:02:33.606779+01	Written Protocol	114	f	f	char		2				\N	\N	\N
+421	2015-08-12 18:02:33.340392+01	2015-08-12 18:02:33.607511+01	Assay Type	114	f	f	char		3				\N	\N	\N
+422	2015-08-12 18:02:33.343609+01	2015-08-12 18:02:33.60847+01	Cell line / tissue	114	f	f	char		4				\N	\N	\N
+423	2015-08-12 18:02:33.346596+01	2015-08-12 18:02:33.609178+01	Target type	114	f	f	char		5				\N	\N	\N
+424	2015-08-12 18:02:33.349507+01	2015-08-12 18:02:33.609882+01	Model organism	114	f	f	char		6				\N	\N	\N
+425	2015-08-12 18:02:33.352489+01	2015-08-12 18:02:33.610615+01	Target name	114	f	f	char		7				\N	\N	\N
+426	2015-08-12 18:02:33.355782+01	2015-08-12 18:02:33.611334+01	Target type	114	f	f	char		8				\N	\N	\N
+427	2015-08-12 18:02:33.358728+01	2015-08-12 18:02:33.612027+01	UniProt ID	114	f	f	char		9				\N	\N	\N
+429	2015-08-12 18:02:33.364766+01	2015-08-12 18:02:33.613418+01	Standard Units	114	f	f	char		11				\N	\N	\N
+430	2015-08-12 18:02:33.367721+01	2015-08-12 18:02:33.614119+01	Compound	114	f	f	char		12				\N	\N	\N
+431	2015-08-12 18:02:33.370904+01	2015-08-12 18:02:33.61485+01	Target Organism	114	f	f	char		13				\N	\N	\N
+432	2015-08-12 18:02:33.373806+01	2015-08-12 18:02:33.615568+01	Assay Buffer	114	f	f	char		14				\N	\N	\N
+433	2015-08-12 18:02:33.376737+01	2015-08-12 18:02:33.616261+01	Compound Incubation Time (mins)	114	f	f	char		15				\N	\N	\N
+434	2015-08-12 18:02:33.379693+01	2015-08-12 18:02:33.616988+01	Compound Incubation Temperature	114	f	f	char		16				\N	\N	\N
+435	2015-08-12 18:02:33.382823+01	2015-08-12 18:02:33.617703+01	Protein	114	f	f	char		17				\N	\N	\N
+436	2015-08-12 18:02:33.385711+01	2015-08-12 18:02:33.618395+01	Protein Concentration (nM)	114	f	f	char		18				\N	\N	\N
+437	2015-08-12 18:02:33.388777+01	2015-08-12 18:02:33.619114+01	Peptide ID	114	f	f	char		19				\N	\N	\N
+438	2015-08-12 18:02:33.391853+01	2015-08-12 18:02:33.619813+01	Peptide Description	114	f	f	char		20				\N	\N	\N
+439	2015-08-12 18:02:33.394787+01	2015-08-12 18:02:33.62058+01	Solvent	114	f	f	char		21				\N	\N	\N
+440	2015-08-12 18:02:33.399235+01	2015-08-12 18:02:33.621268+01	Solvent Concentration (%)	114	f	f	char		22				\N	\N	\N
+441	2015-08-12 18:02:33.402312+01	2015-08-12 18:02:33.621972+01	Peptide Concentration (nM)	114	f	f	char		23				\N	\N	\N
+442	2015-08-12 18:02:33.405304+01	2015-08-12 18:02:33.62268+01	Peptide Incubation Time	114	f	f	char		24				\N	\N	\N
+443	2015-08-12 18:02:33.40823+01	2015-08-12 18:02:33.623482+01	Incubation Temperature	114	f	f	char		25				\N	\N	\N
+444	2015-08-12 18:02:33.411133+01	2015-08-12 18:02:33.624186+01	Bead Donor (mg/ml)	114	f	f	char		26				\N	\N	\N
+445	2015-08-12 18:02:33.414299+01	2015-08-12 18:02:33.625068+01	Bead Acceptor (mg/ml)	114	f	f	char		27				\N	\N	\N
+446	2015-08-12 18:02:33.417217+01	2015-08-12 18:02:33.625798+01	Antibody Concentration(ug/ml)	114	f	f	char		28				\N	\N	\N
+447	2015-08-12 18:02:33.420126+01	2015-08-12 18:02:33.626695+01	Bead Incubation time (mins)	114	f	f	char		29				\N	\N	\N
+448	2015-08-12 18:02:33.423138+01	2015-08-12 18:02:33.627425+01	Incubation Temperature	114	f	f	char		30				\N	\N	\N
+449	2015-08-12 18:02:33.42636+01	2015-08-12 18:02:33.628116+01	Reference Compound Wells	114	f	f	char		31				\N	\N	\N
+450	2015-08-12 18:02:33.429417+01	2015-08-12 18:02:33.628805+01	Control Wells	114	f	f	char		32				\N	\N	\N
+451	2015-08-12 18:04:28.080826+01	2015-08-12 18:04:28.170595+01	Experiment ID	115	f	f	char		0				\N	\N	\N
+452	2015-08-12 18:04:28.084236+01	2015-08-12 18:04:28.171617+01	Plate Well ID	115	f	f	char		1				\N	\N	\N
+453	2015-08-12 18:04:28.087185+01	2015-08-12 18:04:28.172374+01	1st concentration	115	f	f	char		2				\N	\N	\N
+454	2015-08-12 18:04:28.090188+01	2015-08-12 18:04:28.173066+01	1st compound ID	115	f	f	char		3				\N	\N	\N
+455	2015-08-12 18:04:28.093902+01	2015-08-12 18:04:28.173767+01	1st compound name	115	f	f	char		4				\N	\N	\N
+456	2015-08-12 18:04:28.097198+01	2015-08-12 18:04:28.174456+01	Activity at 1st concentration	115	f	f	char		5				\N	\N	\N
+457	2015-08-12 18:04:28.100143+01	2015-08-12 18:04:28.175171+01	2nd concentration	115	f	f	char		6				\N	\N	\N
+458	2015-08-12 18:04:28.103281+01	2015-08-12 18:04:28.175878+01	22nd compound ID	115	f	f	char		7				\N	\N	\N
+459	2015-08-12 18:04:28.106287+01	2015-08-12 18:04:28.176603+01	2nd compound name	115	f	f	char		8				\N	\N	\N
+460	2015-08-12 18:04:28.109563+01	2015-08-12 18:04:28.177294+01	Activity at 2nd concentration	115	f	f	char		9				\N	\N	\N
+461	2015-08-12 18:04:28.112554+01	2015-08-12 18:04:28.178+01	Compound ID	115	f	f	char		10				\N	\N	\N
+462	2015-08-12 18:04:28.115554+01	2015-08-12 18:04:28.178692+01	LogIC50	115	f	f	char		11				\N	\N	\N
+463	2015-08-12 18:04:28.118453+01	2015-08-12 18:04:28.179431+01	IC50 (μM)	115	f	f	char		12				\N	\N	\N
+464	2015-08-12 18:04:28.121384+01	2015-08-12 18:04:28.180165+01	IC50 standard error	115	f	f	char		13				\N	\N	\N
+465	2015-08-12 18:04:28.12482+01	2015-08-12 18:04:28.180855+01	Hill	115	f	f	char		14				\N	\N	\N
+466	2015-08-12 18:04:28.127753+01	2015-08-12 18:04:28.181543+01	Hill standard error	115	f	f	char		15				\N	\N	\N
+467	2015-08-12 18:04:28.130713+01	2015-08-12 18:04:28.182235+01	Comments	115	f	f	char		16				\N	\N	\N
 \.
 
 
@@ -4586,6 +4637,21 @@ COPY cbh_core_model_projecttype (id, created, modified, name, show_compounds) FR
 COPY cbh_core_model_skinningconfig (id, instance_alias, project_alias, result_alias) FROM stdin;
 1	ChemReg	project	result
 \.
+
+
+--
+-- Data for Name: cbh_datastore_model_attachment; Type: TABLE DATA; Schema: public; Owner: chembl
+--
+
+COPY cbh_datastore_model_attachment (id, created, modified, sheet_name, attachment_custom_field_config_id, chosen_data_form_config_id, created_by_id, data_point_classification_id, flowfile_id) FROM stdin;
+\.
+
+
+--
+-- Name: cbh_datastore_model_attachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
+--
+
+SELECT pg_catalog.setval('cbh_datastore_model_attachment_id_seq', 1, false);
 
 
 --
@@ -5252,6 +5318,7 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 166	Assaysreadonly	5	Assaysreadonly
 167	query	cbh_datastore_model	query
 168	cbh plugin	cbh_chembl_id_generator	cbhplugin
+169	attachment	cbh_datastore_model	attachment
 \.
 
 
@@ -5259,7 +5326,7 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('django_content_type_id_seq', 168, true);
+SELECT pg_catalog.setval('django_content_type_id_seq', 169, true);
 
 
 --
@@ -5350,6 +5417,9 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 81	cbh_core_model	0018_auto_20150915_1238	2015-09-16 12:31:24.713539+01
 82	cbh_core_model	0019_auto_20150916_0629	2015-09-16 12:31:25.165952+01
 83	cbh_chembl_ws_extension	0001_initial	2015-09-16 12:31:34.96324+01
+84	cbh_core_model	0020_auto_20150917_0908	2015-09-21 11:47:31.966738+01
+85	cbh_core_model	0021_pinnedcustomfield_attachment_field_mapped_to	2015-09-21 11:47:32.392799+01
+86	cbh_datastore_model	0017_attachment	2015-09-21 11:47:33.603516+01
 \.
 
 
@@ -5357,7 +5427,7 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('django_migrations_id_seq', 83, true);
+SELECT pg_catalog.setval('django_migrations_id_seq', 86, true);
 
 
 --
@@ -6273,6 +6343,14 @@ ALTER TABLE ONLY cbh_core_model_project_enabled_forms
 
 ALTER TABLE ONLY cbh_core_model_project_enabled_forms
     ADD CONSTRAINT cbh_core_model_project_enabled_project_id_dataformconfig_id_key UNIQUE (project_id, dataformconfig_id);
+
+
+--
+-- Name: cbh_datastore_model_attachment_pkey; Type: CONSTRAINT; Schema: public; Owner: chembl; Tablespace: 
+--
+
+ALTER TABLE ONLY cbh_datastore_model_attachment
+    ADD CONSTRAINT cbh_datastore_model_attachment_pkey PRIMARY KEY (id);
 
 
 --
@@ -7766,6 +7844,13 @@ CREATE INDEX cbh_core_model_pinnedcustomfield_9e8e2d3a ON cbh_core_model_pinnedc
 
 
 --
+-- Name: cbh_core_model_pinnedcustomfield_a1cb7997; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE INDEX cbh_core_model_pinnedcustomfield_a1cb7997 ON cbh_core_model_pinnedcustomfield USING btree (attachment_field_mapped_to_id);
+
+
+--
 -- Name: cbh_core_model_project_enabled_forms_b098ad43; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
 --
 
@@ -7777,6 +7862,41 @@ CREATE INDEX cbh_core_model_project_enabled_forms_b098ad43 ON cbh_core_model_pro
 --
 
 CREATE INDEX cbh_core_model_project_enabled_forms_e48bb7be ON cbh_core_model_project_enabled_forms USING btree (dataformconfig_id);
+
+
+--
+-- Name: cbh_datastore_model_attachment_5a7f35b1; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE INDEX cbh_datastore_model_attachment_5a7f35b1 ON cbh_datastore_model_attachment USING btree (data_point_classification_id);
+
+
+--
+-- Name: cbh_datastore_model_attachment_7bfa90b6; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE INDEX cbh_datastore_model_attachment_7bfa90b6 ON cbh_datastore_model_attachment USING btree (chosen_data_form_config_id);
+
+
+--
+-- Name: cbh_datastore_model_attachment_d036e682; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE INDEX cbh_datastore_model_attachment_d036e682 ON cbh_datastore_model_attachment USING btree (flowfile_id);
+
+
+--
+-- Name: cbh_datastore_model_attachment_e93cb7eb; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE INDEX cbh_datastore_model_attachment_e93cb7eb ON cbh_datastore_model_attachment USING btree (created_by_id);
+
+
+--
+-- Name: cbh_datastore_model_attachment_ef6a9774; Type: INDEX; Schema: public; Owner: chembl; Tablespace: 
+--
+
+CREATE INDEX cbh_datastore_model_attachment_ef6a9774 ON cbh_datastore_model_attachment USING btree (attachment_custom_field_config_id);
 
 
 --
@@ -8918,11 +9038,35 @@ ALTER TABLE ONLY structural_alerts
 
 
 --
+-- Name: D799e0fec7a9e0c434793a1752093cd7; Type: FK CONSTRAINT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_core_model_pinnedcustomfield
+    ADD CONSTRAINT "D799e0fec7a9e0c434793a1752093cd7" FOREIGN KEY (attachment_field_mapped_to_id) REFERENCES cbh_core_model_pinnedcustomfield(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: D7e2d19bbdd809cff3f3c90671ace3cd; Type: FK CONSTRAINT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_datastore_model_attachment
+    ADD CONSTRAINT "D7e2d19bbdd809cff3f3c90671ace3cd" FOREIGN KEY (data_point_classification_id) REFERENCES cbh_datastore_model_datapointclassification(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: D8fccbb1f79cad9dd90291da828a7afd; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
 ALTER TABLE ONLY molecule_irac_classification
     ADD CONSTRAINT "D8fccbb1f79cad9dd90291da828a7afd" FOREIGN KEY (irac_class_id) REFERENCES irac_classification(irac_class_id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: a51a8833f63096604a96a0aedce670cd; Type: FK CONSTRAINT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_datastore_model_attachment
+    ADD CONSTRAINT a51a8833f63096604a96a0aedce670cd FOREIGN KEY (attachment_custom_field_config_id) REFERENCES cbh_core_model_customfieldconfig(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -9278,6 +9422,14 @@ ALTER TABLE ONLY cbh_core_model_customfieldconfig
 
 
 --
+-- Name: cbh_datastor_flowfile_id_5bf8988b9c88812f_fk_flowjs_flowfile_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_datastore_model_attachment
+    ADD CONSTRAINT cbh_datastor_flowfile_id_5bf8988b9c88812f_fk_flowjs_flowfile_id FOREIGN KEY (flowfile_id) REFERENCES flowjs_flowfile(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: cbh_datastore_mo_created_by_id_1f57622084aada95_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
 --
 
@@ -9291,6 +9443,14 @@ ALTER TABLE ONLY cbh_datastore_model_query
 
 ALTER TABLE ONLY cbh_datastore_model_datapoint
     ADD CONSTRAINT cbh_datastore_mo_created_by_id_30811767f457819d_fk_auth_user_id FOREIGN KEY (created_by_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: cbh_datastore_mo_created_by_id_6a640f856e9dd8a7_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_datastore_model_attachment
+    ADD CONSTRAINT cbh_datastore_mo_created_by_id_6a640f856e9dd8a7_fk_auth_user_id FOREIGN KEY (created_by_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -9443,6 +9603,14 @@ ALTER TABLE ONLY auth_permission
 
 ALTER TABLE ONLY cbh_core_model_pinnedcustomfield
     ADD CONSTRAINT d6ff9b61d28876335144afd43a7be12e FOREIGN KEY (pinned_for_datatype_id) REFERENCES cbh_core_model_datatype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: db0999b05985dd643b50c34bb93dc227; Type: FK CONSTRAINT; Schema: public; Owner: chembl
+--
+
+ALTER TABLE ONLY cbh_datastore_model_attachment
+    ADD CONSTRAINT db0999b05985dd643b50c34bb93dc227 FOREIGN KEY (chosen_data_form_config_id) REFERENCES cbh_core_model_dataformconfig(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
