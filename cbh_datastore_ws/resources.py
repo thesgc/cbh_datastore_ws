@@ -6,7 +6,7 @@ from tastypie.resources import ModelResource, Resource , ALL, ALL_WITH_RELATIONS
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from tastypie.serializers import Serializer
 from cbh_core_ws.resources import CoreProjectResource, CustomFieldConfigResource, DataTypeResource, UserResource, CoreProjectResource, ProjectTypeResource
-from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission, Query
+from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission, Query, Attachment
 from cbh_core_model.models import PinnedCustomField, ProjectType, DataFormConfig, Project, CustomFieldConfig
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
@@ -43,7 +43,7 @@ from cbh_datastore_ws.serializers import DataPointClassificationSerializer
 
 from django.db.models import Max, Min
 from django.http import HttpRequest
-
+from cbh_core_ws.parser import get_sheetnames, get_sheet
 
 
 class StandardisedForeignKey(fields.ForeignKey):
@@ -59,6 +59,7 @@ class DataPointProjectFieldResource(ModelResource):
     edit_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     elasticsearch_fieldname = fields.CharField(null=True, blank=False, readonly=False, help_text=None)
     standardised_alias = StandardisedForeignKey("self", attribute="standardised_alias", null=True, blank=False, readonly=False, help_text=None)
+    attachment_field_mapped_to = ForeignKey("self", attribute="attachment_field_mapped_to", null=True, blank=False, readonly=False, help_text=None)
     # filter_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     # filter_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)   
     # exclude_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
@@ -994,6 +995,9 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
     
 
 
+
+
+
     def get_object_list(self, request):
         return super(DataPointClassificationResource, self).get_object_list(request).prefetch_related(Prefetch("data_form_config")).prefetch_related(Prefetch("l0_permitted_projects"))
 
@@ -1231,7 +1235,75 @@ def index_filter_dict(filter_dict):
     elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
 
 
+# def file_to_data_point_classifications(sheetname, dpc_bundle, flowfile ):
+#     data, names, elastisearch_fieldnames = get_sheet(flowfile.path, sheetname)
 
+
+class AttachmentResource(ModelResource):
+    data_point_classification = fields.ForeignKey(DataPointClassification, attribute="data_point_classification", full=True)
+    flowfile_id = fields.IntegerField(attribute="flowfile_id")
+    attachment_custom_field_config = fields.ForeignKey(SimpleCustomFieldConfigResource, attribute="attachment_custom_field_config", full=True)
+    chosen_data_form_config = fields.ForeignKey(DataFormConfigResource, attribute="chosen_data_form_config", full=True)
+    created_by = fields.ForeignKey(UserResource, "created_by")
+
+    class Meta:
+        queryset = Attachment.objects.all()
+        always_return_data=True #required to add the elasticsearch data
+        resource_name = 'cbh_attachments'
+        default_format = 'application/json'
+        include_resource_uri = True
+        allowed_methods = [ 'post','get',]
+        default_format = 'application/json'
+        serializer = Serializer()
+        authentication = SessionAuthentication()
+        authorization = Authorization()
+
+    def prepend_urls(self):
+        return [
+        url(r"^(?P<resource_name>%s)/(?P<pk>\d[\d]*)/save_temporary_data/$" % self._meta.resource_name,
+            self.wrap_view('save_temporary_data'), name="save_temporary_data"),
+        ]
+
+    def hydrate_created_by(self, bundle):
+        user = get_user_model().objects.get(pk=bundle.request.user.pk)
+        bundle.obj.created_by = user
+        return bundle
+
+    def hydrate_attachment_custom_field_config(self, bundle):
+        flowfile = bundle.obj.flowfile
+        if bundle.obj.attachment_custom_field_config_id is None:
+            data, names, data_types, widths = get_sheet(flowfile.path, bundle.data["sheet_name"])
+            custom_field_config, created = CustomFieldConfig.objects.get_or_create(created_by=bundle.request.user, name="%s>>%s" % (flowfile.path, bundle.data["sheet_name"]))
+            for colindex, pandas_dtype in enumerate(data_types):
+                pcf = PinnedCustomField()
+                pcf.field_type = pcf.pandas_converter( widths[colindex], pandas_dtype)
+                pcf.name = names[colindex]
+                pcf.position = colindex
+                pcf.custom_field_config = custom_field_config
+                custom_field_config.pinned_custom_field.add(pcf)
+            custom_field_config.save()
+            bundle.obj.attachment_custom_field_config = custom_field_config
+            tempobjects = [{"id" : index, "attachment_data" :{ "project_data" : item}} for index, item in enumerate( data)]
+            index_datapoint_classification({"objects": temp_data[:9]}, index_name="temp_attachment_sheet__%d", refresh=True)
+            if len(tempobjects) > 10:
+                index_datapoint_classification.delay({"objects": temp_data[9:]}, index_name="temp_attachment_sheet__%d", refresh=False)
+        return bundle
+
+    def dehydrate(self, bundle):
+        """Get the related fields and make them into a list of possibilities"""
+        
+        last_level = bundle.data["chosen_data_form_config"].data["last_level"]
+        fields_being_added_to = bundle.data["chosen_data_form_config"].data[last_level]["project_data_fields"]
+        bundle.data["chosen_data_form_config"] = bundle.data["chosen_data_form_config"].data["resource_uri"]
+        #Here we add the choices and defaults for the matched fields
+        for field in bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
+
+            field["mapped_to_schema"] = []
+
+
+    def post_save_temp_data(self, request, **kwargs):
+        
+ 
 
 class QueryResource(ModelResource):
     """ A resource which saves a query for elasticsearch and then returns the result of the query"""

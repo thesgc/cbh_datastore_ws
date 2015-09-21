@@ -3,7 +3,7 @@ import json
 from cbh_core_model.models import Project, CustomFieldConfig, PinnedCustomField, ProjectType, DataType, DataFormConfig
 from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission
 from django.db import IntegrityError
-from cbh_datastore_ws import parser
+from cbh_core_ws import parser
 from collections import OrderedDict
 
 
