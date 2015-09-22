@@ -33,7 +33,14 @@ class Command(BaseCommand):
         request.user = User.objects.get(pk=1)
         ar = AttachmentResource()
         resp = ar.post_list(request)
-        print resp.content
+        data = json.loads(resp.content) 
+        print data["resource_uri"]
+
+        for index, field in enumerate(data["attachment_custom_field_config"]["project_data_fields"]):
+            print field["mapped_to_form"]["titleMap"]
+            field["attachment_field_mapped_to"] = field["mapped_to_form"]["titleMap"][index]["value"]
+
+        
 
 # document
 # assay

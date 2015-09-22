@@ -30,6 +30,7 @@ api.register(DataPointProjectFieldResource())
 api.register(DataPointResource())
 api.register(SimpleCustomFieldConfigResource())
 
+api.register(AttachmentResource())
 
 api.register(QueryResource())
 

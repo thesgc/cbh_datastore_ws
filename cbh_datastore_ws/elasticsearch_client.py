@@ -13,6 +13,10 @@ except AttributeError:
 import json
 ES_MAIN_INDEX_NAME = "cbh_datastore_index"
 
+def get_attachment_index_name(aid):
+    return "temp_attachment_sheet__%d" % aid
+
+
 def get_index_name():
     return ES_PREFIX + "__" + ES_MAIN_INDEX_NAME
 

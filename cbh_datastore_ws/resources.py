@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django_rq import job
+from django.conf.urls import patterns, url, include
 
 from random import randint
 from tastypie.resources import ModelResource, Resource , ALL, ALL_WITH_RELATIONS
@@ -8,6 +9,7 @@ from tastypie.serializers import Serializer
 from cbh_core_ws.resources import CoreProjectResource, CustomFieldConfigResource, DataTypeResource, UserResource, CoreProjectResource, ProjectTypeResource
 from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission, Query, Attachment
 from cbh_core_model.models import PinnedCustomField, ProjectType, DataFormConfig, Project, CustomFieldConfig
+from cbh_core_ws.serializers import CustomFieldXLSSerializer
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from django.contrib.auth import get_user_model
@@ -284,7 +286,7 @@ class SimpleCustomFieldConfigResource(ModelResource):
         authorization = Authorization()
         include_resource_uri = True
         default_format = 'application/json'
-        serializer = Serializer()
+        serializer = CustomFieldXLSSerializer()
         filtering = {"id" : ALL}
         allowed_methods = ['get', 'post', 'put', 'patch']
         description = {'api_dispatch_detail' : '''
@@ -1260,8 +1262,10 @@ class AttachmentResource(ModelResource):
 
     def prepend_urls(self):
         return [
-        url(r"^(?P<resource_name>%s)/(?P<pk>\d[\d]*)/save_temporary_data/$" % self._meta.resource_name,
-            self.wrap_view('save_temporary_data'), name="save_temporary_data"),
+            url(r"^(?P<resource_name>%s)/(?P<pk>\d[\d]*)/save_temporary_data/$" % self._meta.resource_name,
+                self.wrap_view('save_temporary_data'), name="save_temporary_data"),
+            url(r"^(?P<resource_name>%s)/(?P<pk>\d[\d]*)/_search$" % self._meta.resource_name,
+                self.wrap_view('search_temp_data'), name="search_temp_data"),
         ]
 
     def hydrate_created_by(self, bundle):
@@ -1283,11 +1287,13 @@ class AttachmentResource(ModelResource):
                 custom_field_config.pinned_custom_field.add(pcf)
             custom_field_config.save()
             bundle.obj.attachment_custom_field_config = custom_field_config
-            tempobjects = [{"id" : index, "attachment_data" :{ "project_data" : item}} for index, item in enumerate( data)]
-            elasticsearch_client.index_datapoint_classification({"objects": tempobjects[:9]}, index_name="temp_attachment_sheet__%d", refresh=True, decode_json=False)
-            if len(tempobjects) > 10:
-                elasticsearch_client.index_datapoint_classification.delay({"objects": tempobjects[9:]}, index_name="temp_attachment_sheet__%d", refresh=False, decode_json=False)
+            tempobjects = [{
+             "id" : index, 
+            "attachment_data" :{ "project_data" : item}} for index, item in enumerate( data)]
+            bundle.data["tempobjects"] = tempobjects
+            bundle.obj.number_of_rows = len(tempobjects)
         return bundle
+
 
     def dehydrate(self, bundle):
         """Get the related fields and make them into a list of possibilities"""
@@ -1298,8 +1304,7 @@ class AttachmentResource(ModelResource):
         #Here we add the choices and defaults for the matched fields
         for field in bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
 
-            field.data["mapped_to_form"] = [
-               {
+            field.data["mapped_to_form"] = {
                   "key": "attachment_field_mapped_to",
                   "type": "checkboxes",
                   "titleMap": [
@@ -1310,17 +1315,54 @@ class AttachmentResource(ModelResource):
                     for choice_of_field in fields_being_added_to
                   ]
                 }
-            ]
+            
         return bundle
+
+    def search_temp_data(self, request, **kwargs):
+        attachment_pk = kwargs.get("pk", None)
+        if attachment_pk:
+            request.POST = request.POST.copy()
+            request.POST["index_name"] = elasticsearch_client.get_attachment_index_name(int(attachment_pk))
+            qr = QueryResource()
+            return qr.post_list(request)
+        raise BadRequest("no pk specified")
 
 
     def post_save_temp_data(self, request, **kwargs):
         attachment_pk = kwargs.get("pk",None)
         if attachment_pk:
             attachment = self.Meta.queryset.get(pk=attachment_pk)
+            return self.create_response(request, bundle, response_class=http.HttpAccepted)
 
         else:
             raise BadRequest("No pk")
+
+
+
+    def create_response(self, request, bundle, response_class=HttpResponse, **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+        Mostly a useful shortcut/hook.
+        """
+        if response_class == http.HttpCreated:
+            #There has been a new object created - we must now index it
+            for ob in bundle.data["tempobjects"]:
+                ob["l0_permitted_projects"] =  bundle.data["data_point_classification"].data["l0_permitted_projects"]
+            elasticsearch_client.index_datapoint_classification({"objects": bundle.data["tempobjects"][:9]}, 
+                    index_name=elasticsearch_client.get_attachment_index_name(bundle.obj.id), 
+                        refresh=True, 
+                        decode_json=False)
+            if len(bundle.data["tempobjects"]) > 10:
+                elasticsearch_client.index_datapoint_classification.delay({"objects": bundle.data["tempobjects"][9:]}, index_name=elasticsearch_client.get_attachment_index_name(bundle.obj.id), refresh=False, decode_json=False)
+
+
+        desired_format = self.determine_format(request)
+
+        serialized = self.serialize(request, bundle, desired_format)
+
+        return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
+
+
  
 
 class QueryResource(ModelResource):
@@ -1363,18 +1405,20 @@ class QueryResource(ModelResource):
 
     def alter_detail_data_to_serialize(self, request, updated_bundle):
         es = elasticsearch_client.get_client()
-
+        index_name = elasticsearch_client.get_index_name()
+        if updated_bundle.data.get("index_name", None):
+            index_name = updated_bundle.data.get("index_name")
         data = es.search(
-            elasticsearch_client.get_index_name(), 
-            body={
-                "filter": self.authorization_filter(request, updated_bundle.obj.filter), 
-                "aggs": updated_bundle.obj.aggs,
-                "query" : updated_bundle.obj.query,
-                "sort": updated_bundle.data.get("sort", []),
-                "highlight": updated_bundle.data.get("highlight",{}),
-            },  
-            from_=request.GET.get("from"),  
-            size=request.GET.get("size")
+                index_name, 
+                body={
+                    "filter": self.authorization_filter(request, updated_bundle.obj.filter), 
+                    "aggs": updated_bundle.obj.aggs,
+                    "query" : updated_bundle.obj.query,
+                    "sort": updated_bundle.data.get("sort", []),
+                    "highlight": updated_bundle.data.get("highlight",{}),
+                },  
+                from_=request.GET.get("from"),  
+                size=request.GET.get("size")
             )
         updated_bundle.data.update(data)
         return updated_bundle
