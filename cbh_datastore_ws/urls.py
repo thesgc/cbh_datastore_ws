@@ -29,11 +29,11 @@ api.register(DataPointProjectFieldResource())
 # api.register(DataPointClassificationPermissionResource())
 api.register(DataPointResource())
 api.register(SimpleCustomFieldConfigResource())
-
-api.register(AttachmentResource())
+api.register(FlowFileResource())
 
 api.register(QueryResource())
 
+api.register(AttachmentResource())
 
 
 

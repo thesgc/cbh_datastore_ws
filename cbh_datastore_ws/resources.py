@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django_rq import job
 from django.conf.urls import patterns, url, include
-
+import json
 from random import randint
 from tastypie.resources import ModelResource, Resource , ALL, ALL_WITH_RELATIONS
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -21,12 +21,11 @@ from copy import deepcopy
 from tastypie.exceptions import BadRequest
 
 from tastypie.authorization import Authorization
-
+from itertools import chain
 from django.db.models import Prefetch
 from tastypie.http import HttpConflict
 from tastypie.exceptions import ImmediateHttpResponse
 import inflection
-
 
 from cbh_datastore_ws.authorization import DataClassificationProjectAuthorization
 
@@ -46,6 +45,22 @@ from cbh_datastore_ws.serializers import DataPointClassificationSerializer
 from django.db.models import Max, Min
 from django.http import HttpRequest
 from cbh_core_ws.parser import get_sheetnames, get_sheet
+
+from flowjs.models import FlowFile
+
+class FlowFileResource(ModelResource):
+    sheet_names = fields.ListField()
+
+    class Meta:
+        detail_uri_name = 'identifier'
+        include_resource_uri = True
+        allowed_methods = ['get',]
+        resource_name = 'cbh_flowfiles'
+        queryset = FlowFile.objects.all()
+        filtering = {"identifier": ALL_WITH_RELATIONS}
+
+    def dehydrate_sheet_names(self, bundle):
+        return get_sheetnames(bundle.obj.path)
 
 
 class StandardisedForeignKey(fields.ForeignKey):
@@ -79,7 +94,7 @@ class DataPointProjectFieldResource(ModelResource):
         resource_name = 'cbh_datapoint_fields'
         #authorization = Authorization()
         include_resource_uri = True
-        allowed_methods = ['get','post' ]
+        allowed_methods = ['get','post', 'patch', 'put']
         default_format = 'application/json'
         authentication = SessionAuthentication()
         authorization = Authorization()
@@ -363,7 +378,19 @@ The fields that are in this particular custom field config:
 
 
 
+    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+        Mostly a useful shortcut/hook.
+        """
 
+        desired_format = self.determine_format(request)
+        serialized = self.serialize(request, data, desired_format)
+        rc = response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
+
+        if(desired_format == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'):
+            rc['Content-Disposition'] = 'attachment; filename=project_data_explanation.xlsx'
+        return rc
 
 
 class DataFormConfigResource(ModelResource):
@@ -674,7 +701,7 @@ class DataPointResource(ModelResource):
     supplementary_data = fields.DictField(attribute='supplementary_data', null=True, blank=False, readonly=False, help_text=None)
     class Meta:
         
-        always_return_data = True
+        always_return_data = False
         queryset = DataPoint.objects.all()
         resource_name = 'cbh_datapoints'
         authorization = Authorization()
@@ -1240,10 +1267,16 @@ def index_filter_dict(filter_dict):
 # def file_to_data_point_classifications(sheetname, dpc_bundle, flowfile ):
 #     data, names, elastisearch_fieldnames = get_sheet(flowfile.path, sheetname)
 
+def yield_dpcs(dfc, templ, hits):
+    for hit in hits:
+        mytemp = deepcopy(templ)
+        templ[dfc["last_level"]] = hit["_source"]["attachment_data"]
+        templ[dfc["last_level"]]["custom_field_config"] = dfc[dfc["last_level"]]["resource_uri"]
+        yield templ
 
 class AttachmentResource(ModelResource):
-    data_point_classification = fields.ForeignKey(DataPointClassificationResource, attribute="data_point_classification", full=True)
-    flowfile_id = fields.IntegerField(attribute="flowfile_id")
+    data_point_classification = fields.ForeignKey("cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification", full=True)
+    flowfile = fields.ForeignKey("cbh_datastore_ws.resources.FlowFileResource", attribute="flowfile")
     attachment_custom_field_config = fields.ForeignKey(SimpleCustomFieldConfigResource, attribute="attachment_custom_field_config", full=True)
     chosen_data_form_config = fields.ForeignKey(DataFormConfigResource, attribute="chosen_data_form_config", full=True)
     created_by = fields.ForeignKey(UserResource, "created_by")
@@ -1273,7 +1306,8 @@ class AttachmentResource(ModelResource):
         bundle.obj.created_by = user
         return bundle
 
-    def hydrate_attachment_custom_field_config(self, bundle):
+    def hydrate(self, bundle):
+        bundle.obj.flowfile = self.flowfile.hydrate(bundle).obj
         flowfile = bundle.obj.flowfile
         if bundle.obj.attachment_custom_field_config_id is None:
             data, names, data_types, widths = get_sheet(flowfile.path, bundle.data["sheet_name"])
@@ -1291,7 +1325,7 @@ class AttachmentResource(ModelResource):
              "id" : index, 
             "attachment_data" :{ "project_data" : item}} for index, item in enumerate( data)]
             bundle.data["tempobjects"] = tempobjects
-            bundle.obj.number_of_rows = len(tempobjects)
+            bundle.obj.number_of_rows = len(tempobjects)        
         return bundle
 
 
@@ -1300,7 +1334,7 @@ class AttachmentResource(ModelResource):
         
         last_level = bundle.data["chosen_data_form_config"].data["last_level"]
         fields_being_added_to = bundle.data["chosen_data_form_config"].data[last_level].data["project_data_fields"]
-        bundle.data["chosen_data_form_config"] = bundle.data["chosen_data_form_config"].data["resource_uri"]
+        # bundle.data["chosen_data_form_config"] = bundle.data["chosen_data_form_config"].data["resource_uri"]
         #Here we add the choices and defaults for the matched fields
         for field in bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
 
@@ -1321,8 +1355,8 @@ class AttachmentResource(ModelResource):
     def search_temp_data(self, request, **kwargs):
         attachment_pk = kwargs.get("pk", None)
         if attachment_pk:
-            request.POST = request.POST.copy()
-            request.POST["index_name"] = elasticsearch_client.get_attachment_index_name(int(attachment_pk))
+            request.GET = request.GET.copy()
+            request.GET["index_name"] = elasticsearch_client.get_attachment_index_name(int(attachment_pk))
             qr = QueryResource()
             return qr.post_list(request)
         raise BadRequest("no pk specified")
@@ -1331,11 +1365,49 @@ class AttachmentResource(ModelResource):
     def post_save_temp_data(self, request, **kwargs):
         attachment_pk = kwargs.get("pk",None)
         if attachment_pk:
-            attachment = self.Meta.queryset.get(pk=attachment_pk)
-            return self.create_response(request, bundle, response_class=http.HttpAccepted)
+            attachment_json = json.loads(self.get_detail(request, pk=attachment_pk).content)
+            dpc_template = attachment_json["data_point_classification"]
+            dfc = attachment_json["chosen_data_form_config"]
+            dpc_template["data_form_config"] = dfc["resource_uri"]
+            dpc_template["id"] = None
+            dpc_template["resource_uri"] = None
+            dpc_template["next_level"] = None
+            dpc_template["level_from"] = None
+            
+
+            results_to_find = attachment_json["number_of_rows"]
+            frompoint = 0
+            increment = 1000
+            result_lists = []
+            while results_to_find > 0:
+                
+                request.GET = request.GET.copy()
+                request.GET["from"] = frompoint
+                request.GET["size"] = increment
+                request.GET["index_name"] = elasticsearch_client.get_attachment_index_name(int(attachment_pk))
+                qr = QueryResource()
+                resp = qr.alter_detail_data_to_serialize(request, self.build_bundle())
+                dpcs = yield_dpcs(dfc, dpc_template, resp.data["hits"]["hits"])
+
+                result_lists.append(dpcs)
+                results_to_find = results_to_find - increment
+            results = chain(*result_lists)
+            for result in results:
+                dpc = DataPointClassificationResource()
+
+                bundle = dpc.build_bundle(data=result, request=request)
+                updated_bundle = dpc.obj_create(bundle)
+                print updated_bundle.obj.id
+
+            return self.create_response(request, self.build_bundle(request), response_class=http.HttpAccepted)
 
         else:
             raise BadRequest("No pk")
+
+    
+
+
+
 
 
 
@@ -1387,10 +1459,13 @@ class QueryResource(ModelResource):
         authorization = Authorization()
 
     def authorization_filter(self, request, filter_json):
+        from cbh_datastore_ws.urls import api_name
+
         auth = DataClassificationProjectAuthorization()
+
         project_ids = auth.project_ids(request)
         pr = ProjectWithDataFormResource()
-        from cbh_datastore_ws.urls import api_name
+        
 
         puris = ["/%s/datastore/cbh_projects_with_forms/%d" % (api_name, pid) for pid in project_ids]
         new_filter = {"bool" : {
@@ -1406,14 +1481,14 @@ class QueryResource(ModelResource):
     def alter_detail_data_to_serialize(self, request, updated_bundle):
         es = elasticsearch_client.get_client()
         index_name = elasticsearch_client.get_index_name()
-        if updated_bundle.data.get("index_name", None):
-            index_name = updated_bundle.data.get("index_name")
+        if  request.GET.get("index_name", None):
+            index_name = request.GET.get("index_name")
         data = es.search(
                 index_name, 
                 body={
-                    "filter": self.authorization_filter(request, updated_bundle.obj.filter), 
-                    "aggs": updated_bundle.obj.aggs,
-                    "query" : updated_bundle.obj.query,
+                    "filter": self.authorization_filter(request, updated_bundle.data.get("filter", {"match_all":{}})), 
+                    "aggs": updated_bundle.data.get("aggs", {}),
+                    "query" : updated_bundle.data.get("query", {"match_all":{}}),
                     "sort": updated_bundle.data.get("sort", []),
                     "highlight": updated_bundle.data.get("highlight",{}),
                 },  
@@ -1518,7 +1593,7 @@ class DataPointClassificationPermissionResource(ModelResource):
         filtering = {
             "project": ALL_WITH_RELATIONS
         }
-        always_return_data = True
+        always_return_data = False
         queryset = DataPointClassificationPermission.objects.all()
         resource_name = 'cbh_datapoint_classification_permissions'
         #authorization = Authorization()
