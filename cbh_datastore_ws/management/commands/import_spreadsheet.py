@@ -63,7 +63,6 @@ class Command(BaseCommand):
                 data["resource_uri"] + "/save_temporary_data",
                 "{}",
                  content_type="application/json",
-                
             )
         request.user = User.objects.get(pk=1)
         ar.post_save_temp_data(request, pk=data["id"])

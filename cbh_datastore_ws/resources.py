@@ -54,7 +54,7 @@ class FlowFileResource(ModelResource):
 
     class Meta:
         detail_uri_name = 'identifier'
-        include_resource_uri = True
+        include_resource_uri = False #Must be false to not give secret key away
         allowed_methods = ['get',]
         resource_name = 'cbh_flowfiles'
         queryset = FlowFile.objects.all()
