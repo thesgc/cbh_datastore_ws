@@ -47,6 +47,7 @@ from django.http import HttpRequest
 from cbh_core_ws.parser import get_sheetnames, get_sheet
 
 from flowjs.models import FlowFile
+from django.conf import settings
 
 class FlowFileResource(ModelResource):
     sheet_names = fields.ListField()
@@ -61,6 +62,18 @@ class FlowFileResource(ModelResource):
 
     def dehydrate_sheet_names(self, bundle):
         return get_sheetnames(bundle.obj.path)
+
+
+    def obj_get(self, bundle, **applicable_filters):
+        """
+        An ORM-specific implementation of ``apply_filters``.
+        The default simply applies the ``applicable_filters`` as ``**kwargs``,
+        but should make it possible to do more advanced things.
+        """
+        if applicable_filters.get("identifier", None):
+            applicable_filters["identifier"] = "%s-%s" % (bundle.request.COOKIES[settings.SESSION_COOKIE_NAME], applicable_filters["identifier"])
+        return super(FlowFileResource,self).obj_get(bundle, **applicable_filters)
+
 
 
 class StandardisedForeignKey(fields.ForeignKey):
@@ -728,7 +741,9 @@ It has the following fields:
     project_data: The dictionary that contains the data - this should match the fields provided in the custom field schema but is NOT CURRENT VALIDATED on the backend
     supplementary data: A space to store other things about this item
 """}
-
+    def hydrate_project_data(self, bundle):
+        bundle.obj.project_data = {key:unicode(value) for key,value in bundle.data["project_data"].items()}
+        return bundle
 
     def hydrate_created_by(self, bundle):
         user = get_user_model().objects.get(pk=bundle.request.user.pk)
@@ -1259,8 +1274,11 @@ def index_filter_dict(filter_dict):
 
     bundle = res.build_bundle(request=request)
     dpcs = res.Meta.queryset.filter(**filter_dict)
+    print dpcs.count()
     bundle.data["objects"] = [res.full_dehydrate(res.build_bundle(obj=dpc, request=request)) for dpc in dpcs]
     resp = res.create_response(request, bundle)
+    print filter_dict
+    print resp.content
     elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
 
 
@@ -1369,6 +1387,7 @@ class AttachmentResource(ModelResource):
             dpc_template = attachment_json["data_point_classification"]
             dfc = attachment_json["chosen_data_form_config"]
             dpc_template["data_form_config"] = dfc["resource_uri"]
+            dpc_template["parent_id"] = deepcopy(dpc_template["id"])
             dpc_template["id"] = None
             dpc_template["resource_uri"] = None
             dpc_template["next_level"] = None
@@ -1394,7 +1413,8 @@ class AttachmentResource(ModelResource):
             results = chain(*result_lists)
             for result in results:
                 dpc = DataPointClassificationResource()
-
+                from pprint import pprint
+                pprint(result)
                 bundle = dpc.build_bundle(data=result, request=request)
                 updated_bundle = dpc.obj_create(bundle)
                 print updated_bundle.obj.id
