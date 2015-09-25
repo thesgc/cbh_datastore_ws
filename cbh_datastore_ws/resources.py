@@ -1305,7 +1305,7 @@ class AttachmentResource(ModelResource):
         resource_name = 'cbh_attachments'
         default_format = 'application/json'
         include_resource_uri = True
-        allowed_methods = [ 'post','get',]
+        allowed_methods = [ 'post','get']
         default_format = 'application/json'
         serializer = Serializer()
         authentication = SessionAuthentication()
@@ -1313,8 +1313,8 @@ class AttachmentResource(ModelResource):
 
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<pk>\d[\d]*)/save_temporary_data/$" % self._meta.resource_name,
-                self.wrap_view('save_temporary_data'), name="save_temporary_data"),
+            url(r"^(?P<resource_name>%s)/save_temporary_data$" % self._meta.resource_name,
+                self.wrap_view('post_save_temp_data'), name="save_temporary_data"),
             url(r"^(?P<resource_name>%s)/(?P<pk>\d[\d]*)/_search$" % self._meta.resource_name,
                 self.wrap_view('search_temp_data'), name="search_temp_data"),
         ]
@@ -1381,7 +1381,8 @@ class AttachmentResource(ModelResource):
 
 
     def post_save_temp_data(self, request, **kwargs):
-        attachment_pk = kwargs.get("pk",None)
+        #attachment_pk = kwargs.get("pk",None)
+        attachment_pk = request.GET.get("sheetId",None)
         if attachment_pk:
             attachment_json = json.loads(self.get_detail(request, pk=attachment_pk).content)
             dpc_template = attachment_json["data_point_classification"]
