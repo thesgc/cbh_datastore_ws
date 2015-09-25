@@ -17,7 +17,7 @@ from django.contrib.auth import get_user_model
 from cbh_core_ws.resources import get_field_name_from_key
 from cbh_core_ws.resources import get_key_from_field_name
 import time
-from copy import deepcopy
+from copy import deepcopy, copy
 from tastypie.exceptions import BadRequest
 
 from tastypie.authorization import Authorization
@@ -1287,7 +1287,7 @@ def index_filter_dict(filter_dict):
 
 def yield_dpcs(dfc, templ, hits):
     for hit in hits:
-        mytemp = deepcopy(templ)
+        mytemp = copy(templ)
         templ[dfc["last_level"]] = hit["_source"]["attachment_data"]
         templ[dfc["last_level"]]["custom_field_config"] = dfc[dfc["last_level"]]["resource_uri"]
         yield templ
@@ -1388,7 +1388,7 @@ class AttachmentResource(ModelResource):
             dpc_template = attachment_json["data_point_classification"]
             dfc = attachment_json["chosen_data_form_config"]
             dpc_template["data_form_config"] = dfc["resource_uri"]
-            dpc_template["parent_id"] = deepcopy(dpc_template["id"])
+            dpc_template["parent_id"] = copy(dpc_template["id"])
             dpc_template["id"] = None
             dpc_template["resource_uri"] = None
             dpc_template["next_level"] = None
@@ -1412,13 +1412,14 @@ class AttachmentResource(ModelResource):
                 result_lists.append(dpcs)
                 results_to_find = results_to_find - increment
             results = chain(*result_lists)
+            ids = []
             for result in results:
                 dpc = DataPointClassificationResource()
-                from pprint import pprint
-                pprint(result)
+
                 bundle = dpc.build_bundle(data=result, request=request)
                 updated_bundle = dpc.obj_create(bundle)
-                print updated_bundle.obj.id
+                ids.append(updated_bundle.obj.id)
+            index_filter_dict({"id__in": ids})
 
             return self.create_response(request, self.build_bundle(request), response_class=http.HttpAccepted)
 
