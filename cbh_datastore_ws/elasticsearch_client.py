@@ -39,7 +39,6 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
         data = json.loads(data)
     batches = [data]
     if data.get("objects", False):
-        print "!yes"
         batches = data["objects"]
 
     es = elasticsearch.Elasticsearch()
@@ -98,7 +97,6 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
                             })
         bulk_items.append(item)
     #Data is not refreshed!
-    print bulk_items
     print es.bulk(body=bulk_items, refresh=refresh)
 
 

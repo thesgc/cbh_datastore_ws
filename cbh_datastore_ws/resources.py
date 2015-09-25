@@ -71,6 +71,8 @@ class FlowFileResource(ModelResource):
         but should make it possible to do more advanced things.
         """
         if applicable_filters.get("identifier", None):
+            print "IIIIIIIIIIIIIIIIII"
+            print bundle.request.COOKIES[settings.SESSION_COOKIE_NAME]
             applicable_filters["identifier"] = "%s-%s" % (bundle.request.COOKIES[settings.SESSION_COOKIE_NAME], applicable_filters["identifier"])
         return super(FlowFileResource,self).obj_get(bundle, **applicable_filters)
 
@@ -1250,7 +1252,7 @@ def reindex_datapoint_classifications():
     req = HttpRequest()
     req.GET = req.GET.copy()
     req.GET["full"] = True
-    chunked = chunks(range(aggs["id__min"], aggs["id__max"]), 100)
+    chunked = chunks(range(aggs["id__min"], aggs["id__max"]), 200)
     for chunk in chunked:
 
         index_filter_dict({"id__in": chunk})
@@ -1277,8 +1279,6 @@ def index_filter_dict(filter_dict):
     print dpcs.count()
     bundle.data["objects"] = [res.full_dehydrate(res.build_bundle(obj=dpc, request=request)) for dpc in dpcs]
     resp = res.create_response(request, bundle)
-    print filter_dict
-    print resp.content
     elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
 
 
@@ -1327,9 +1327,11 @@ class AttachmentResource(ModelResource):
     def hydrate(self, bundle):
         bundle.obj.flowfile = self.flowfile.hydrate(bundle).obj
         flowfile = bundle.obj.flowfile
+        print "hydr"
         if bundle.obj.attachment_custom_field_config_id is None:
             data, names, data_types, widths = get_sheet(flowfile.path, bundle.data["sheet_name"])
-            custom_field_config, created = CustomFieldConfig.objects.get_or_create(created_by=bundle.request.user, name="%s>>%s" % (flowfile.path, bundle.data["sheet_name"]))
+            print "hydr2"
+            custom_field_config, created = CustomFieldConfig.objects.get_or_create(created_by=bundle.request.user, name="%d>>%s>>%s" % (flowfile.id, flowfile.path, bundle.data["sheet_name"]))
             for colindex, pandas_dtype in enumerate(data_types):
                 pcf = PinnedCustomField()
                 pcf.field_type = pcf.pandas_converter( widths[colindex], pandas_dtype)
@@ -1337,6 +1339,7 @@ class AttachmentResource(ModelResource):
                 pcf.position = colindex
                 pcf.custom_field_config = custom_field_config
                 custom_field_config.pinned_custom_field.add(pcf)
+                print pcf.name
             custom_field_config.save()
             bundle.obj.attachment_custom_field_config = custom_field_config
             tempobjects = [{
@@ -1354,19 +1357,19 @@ class AttachmentResource(ModelResource):
         fields_being_added_to = bundle.data["chosen_data_form_config"].data[last_level].data["project_data_fields"]
         # bundle.data["chosen_data_form_config"] = bundle.data["chosen_data_form_config"].data["resource_uri"]
         #Here we add the choices and defaults for the matched fields
-        for field in bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
+        # for field in bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
 
-            field.data["mapped_to_form"] = {
-                  "key": "attachment_field_mapped_to",
-                  "type": "checkboxes",
-                  "titleMap": [
-                    {
-                      "value": choice_of_field.data["resource_uri"],
-                      "name": choice_of_field.data["name"],
-                    }
-                    for choice_of_field in fields_being_added_to
-                  ]
-                }
+        #     field.data["mapped_to_form"] = {
+        #           "key": "attachment_field_mapped_to",
+        #           "type": "checkboxes",
+        #           "titleMap": [
+        #             {
+        #               "value": choice_of_field.data["resource_uri"],
+        #               "name": choice_of_field.data["name"],
+        #             }
+        #             for choice_of_field in fields_being_added_to
+        #           ]
+        #         }
             
         return bundle
 
@@ -1419,7 +1422,10 @@ class AttachmentResource(ModelResource):
                 bundle = dpc.build_bundle(data=result, request=request)
                 updated_bundle = dpc.obj_create(bundle)
                 ids.append(updated_bundle.obj.id)
-            index_filter_dict({"id__in": ids})
+                if len(ids)==20:
+                    index_filter_dict.delay({"id__in": ids})
+                    ids= []
+            index_filter_dict.delay({"id__in": ids})
 
             return self.create_response(request, self.build_bundle(request), response_class=http.HttpAccepted)
 
@@ -1442,12 +1448,12 @@ class AttachmentResource(ModelResource):
             #There has been a new object created - we must now index it
             for ob in bundle.data["tempobjects"]:
                 ob["l0_permitted_projects"] =  bundle.data["data_point_classification"].data["l0_permitted_projects"]
-            elasticsearch_client.index_datapoint_classification({"objects": bundle.data["tempobjects"][:9]}, 
+            elasticsearch_client.index_datapoint_classification({"objects": bundle.data["tempobjects"]}, 
                     index_name=elasticsearch_client.get_attachment_index_name(bundle.obj.id), 
                         refresh=True, 
                         decode_json=False)
-            if len(bundle.data["tempobjects"]) > 10:
-                elasticsearch_client.index_datapoint_classification.delay({"objects": bundle.data["tempobjects"][9:]}, index_name=elasticsearch_client.get_attachment_index_name(bundle.obj.id), refresh=False, decode_json=False)
+            # if len(bundle.data["tempobjects"]) > 10:
+            #     elasticsearch_client.index_datapoint_classification.delay({"objects": bundle.data["tempobjects"][9:]}, index_name=elasticsearch_client.get_attachment_index_name(bundle.obj.id), refresh=False, decode_json=False)
 
 
         desired_format = self.determine_format(request)
