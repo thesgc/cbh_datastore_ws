@@ -1315,7 +1315,7 @@ class AttachmentResource(ModelResource):
         return [
             url(r"^(?P<resource_name>%s)/save_temporary_data$" % self._meta.resource_name,
                 self.wrap_view('post_save_temp_data'), name="save_temporary_data"),
-            url(r"^(?P<resource_name>%s)/(?P<pk>\d[\d]*)/_search$" % self._meta.resource_name,
+            url(r"^(?P<resource_name>%s)__(?P<pk>\d[\d]*)/_search$" % self._meta.resource_name,
                 self.wrap_view('search_temp_data'), name="search_temp_data"),
         ]
 
@@ -1386,6 +1386,7 @@ class AttachmentResource(ModelResource):
     def post_save_temp_data(self, request, **kwargs):
         #attachment_pk = kwargs.get("pk",None)
         attachment_pk = request.GET.get("sheetId",None)
+
         if attachment_pk:
             attachment_json = json.loads(self.get_detail(request, pk=attachment_pk).content)
             dpc_template = attachment_json["data_point_classification"]
@@ -1418,9 +1419,12 @@ class AttachmentResource(ModelResource):
             ids = []
             for result in results:
                 dpc = DataPointClassificationResource()
-
+                t= time.time()
                 bundle = dpc.build_bundle(data=result, request=request)
+                print "t"
+                print t-time.time()
                 updated_bundle = dpc.obj_create(bundle)
+                print t-time.time()
                 ids.append(updated_bundle.obj.id)
                 if len(ids)==20:
                     index_filter_dict.delay({"id__in": ids})
