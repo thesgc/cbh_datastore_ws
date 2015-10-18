@@ -23,6 +23,7 @@ from tastypie.exceptions import BadRequest
 from tastypie.authorization import Authorization
 from itertools import chain
 from django.db.models import Prefetch
+from tastypie.resources import Bundle
 from tastypie.http import HttpConflict
 from tastypie.exceptions import ImmediateHttpResponse
 import inflection
@@ -49,6 +50,138 @@ from cbh_core_ws.parser import get_sheetnames, get_sheet
 from flowjs.models import FlowFile
 from django.conf import settings
 
+import importlib
+import six
+
+from django.core.cache import cache
+
+class SimpleResourceURIField(fields.ApiField):
+    """
+    Provide just the id field as a resource URI
+    """
+    dehydrated_type = 'string'
+    is_related = False
+    self_referential = False
+    help_text = 'A related resource. Can be either a URI or set of nested resource data.'
+
+    def __init__(self, to, attribute, full=False, related_name=None, default=fields.NOT_PROVIDED, null=False, blank=False, readonly=False,  unique=False, help_text=None, use_in='all', verbose_name=None):
+
+        """
+
+        """
+        super(SimpleResourceURIField, self).__init__(attribute=attribute, default=default, null=null, blank=blank, readonly=readonly, unique=unique, help_text=help_text, use_in=use_in, verbose_name=verbose_name)
+        self.related_name = related_name
+        self.to = to
+        self._to_class = None
+        self._rel_resources = {}
+
+        self.api_name = None
+        self.resource_name = None
+
+        if self.to == 'self':
+            self.self_referential = True
+
+
+
+    def convert(self, value):
+        """
+        Handles conversion between the data found and the type of the field.
+        Extending classes should override this method and provide correct
+        data coercion.
+        """
+        cls = self.to_class()
+        resource_uri = cls.get_resource_uri()
+        return "%s/%d" % (resource_uri, value)
+        
+
+
+    def hydrate(self, bundle):
+        """
+        Takes data stored in the bundle for the field and returns it. Used for
+        taking simple data and building a instance object.
+        """
+        if self.readonly:
+            return None
+        if self.instance_name not in bundle.data:
+            if self.is_related and not self.is_m2m:
+                # We've got an FK (or alike field) & a possible parent object.
+                # Check for it.
+                if bundle.related_obj and bundle.related_name in (self.attribute, self.instance_name):
+                    return bundle.related_obj
+            if self.blank:
+                return None
+            if self.attribute:
+                try:
+                    val = getattr(bundle.obj, self.attribute, None)
+
+                    if val is not None:
+                        return val
+                except ObjectDoesNotExist:
+                    pass
+            if self.instance_name:
+                try:
+                    if hasattr(bundle.obj, self.instance_name):
+                        return getattr(bundle.obj, self.instance_name)
+                except ObjectDoesNotExist:
+                    pass
+            if self.has_default():
+                if callable(self._default):
+                    return self._default()
+
+                return self._default
+            if self.null:
+                return None
+
+            raise ApiFieldError("The '%s' field has no data and doesn't allow a default or null value." % self.instance_name)
+        #New code to rerturn URI
+        value = bundle.data[self.instance_name]
+        if value.endswith("/"):
+            value = value[:-1]
+        data = value.split("/")
+        return int(data[len(data) -1])
+
+
+
+    @property
+    def to_class(self):
+        # We need to be lazy here, because when the metaclass constructs the
+        # Resources, other classes may not exist yet.
+        # That said, memoize this so we never have to relookup/reimport.
+        if self._to_class:
+            return self._to_class
+
+        if not isinstance(self.to, six.string_types):
+            self._to_class = self.to
+            return self._to_class
+
+        # It's a string. Let's figure it out.
+        if '.' in self.to:
+            # Try to import.
+            module_bits = self.to.split('.')
+            module_path, class_name = '.'.join(module_bits[:-1]), module_bits[-1]
+            module = importlib.import_module(module_path)
+        else:
+            # We've got a bare class name here, which won't work (No AppCache
+            # to rely on). Try to throw a useful error.
+            raise ImportError("Tastypie requires a Python-style path (<module.module.Class>) to lazy load related resources. Only given '%s'." % self.to)
+
+        self._to_class = getattr(module, class_name, None)
+
+        if self._to_class is None:
+            raise ImportError("Module '%s' does not appear to have a class called '%s'." % (module_path, class_name))
+
+        return self._to_class
+
+
+
+
+
+
+
+
+
+
+
 class FlowFileResource(ModelResource):
     sheet_names = fields.ListField()
 
@@ -71,8 +204,6 @@ class FlowFileResource(ModelResource):
         but should make it possible to do more advanced things.
         """
         if applicable_filters.get("identifier", None):
-            print "IIIIIIIIIIIIIIIIII"
-            print bundle.request.COOKIES[settings.SESSION_COOKIE_NAME]
             applicable_filters["identifier"] = "%s-%s" % (bundle.request.COOKIES[settings.SESSION_COOKIE_NAME], applicable_filters["identifier"])
         return super(FlowFileResource,self).obj_get(bundle, **applicable_filters)
 
@@ -90,22 +221,13 @@ class DataPointProjectFieldResource(ModelResource):
     edit_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     edit_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
     elasticsearch_fieldname = fields.CharField(null=True, blank=False, readonly=False, help_text=None)
-    standardised_alias = StandardisedForeignKey("self", attribute="standardised_alias", null=True, blank=False, readonly=False, help_text=None)
-    attachment_field_mapped_to = fields.ForeignKey("self", attribute="attachment_field_mapped_to", null=True, blank=False, readonly=False, help_text=None)
-    # filter_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    # filter_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)   
-    # exclude_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    # exclude_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    # sort_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    # sort_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    # hide_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    # hide_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    # actions_form = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-    # actions_schema = fields.DictField(null=True, blank=False, readonly=False, help_text=None)
-
+    standardised_alias_id = fields.IntegerField( attribute="standardised_alias_id", null=True, blank=False, readonly=False, help_text=None)
+    attachment_field_mapped_to_id = fields.IntegerField( attribute="attachment_field_mapped_to_id", null=True, blank=False, readonly=False, help_text=None)
+    
+   
 
     class Meta:
-        queryset = PinnedCustomField.objects.all().select_related("standardised_alias")
+        queryset = PinnedCustomField.objects.all()
         resource_name = 'cbh_datapoint_fields'
         #authorization = Authorization()
         include_resource_uri = True
@@ -194,32 +316,12 @@ autocomplete urls
 
 
 
-    def dehydrate_hide_form(self, bundle):
-        hide_form = { 
-            "key" : self.get_namespace_for_action_key(bundle, "hide"),
-            "type": "radiobuttons",
-            "titleMap": [
-                { "value": "show", "name": "Show" },
-                { "value": "hide", "name": "Hide" }
-            ]
-        }
-        return {"form" : hide_form}
-
-
-    def dehydrate_hide_schema(self, bundle):
-        hide_schema = {
-            self.get_namespace_for_action_key(bundle, "hide"): {
-                "type": "string",
-                "enum": ["hide","show"]
-              }
-        }
-        return {"properties" : hide_schema}
 
 
 
     def get_field_values(self,  bundle):
         obj = bundle.obj
-        data =  deepcopy(obj.FIELD_TYPE_CHOICES[obj.field_type]["data"])
+        data =  copy(obj.FIELD_TYPE_CHOICES[obj.field_type]["data"])
 
         data["title"] = obj.name
         data["placeholder"] = obj.description
@@ -270,6 +372,22 @@ autocomplete urls
         return bundle.obj.get_space_replaced_name()
 
 
+  
+
+    def dehydrate_edit_form(self, bundle):
+        '''          '''
+        if bundle.request.GET.get("empty", False):
+            return {}
+        return {"form" : [self.get_field_values(bundle)[1]]}
+
+    def dehydrate_edit_schema(self, bundle):
+        '''          '''
+        if bundle.request.GET.get("empty", False):
+            return {}
+        return {"properties" :{bundle.obj.get_space_replaced_name() : self.get_field_values(bundle)[0]}}
+
+
+
     def dehydrate_handsontable_column(self, bundle):
 
         hotobj = { "title": bundle.obj.name, 
@@ -279,36 +397,21 @@ autocomplete urls
 
         return hotobj
 
-    def dehydrate_edit_form(self, bundle):
-        '''          '''
-        return {"form" : [self.get_field_values(bundle)[1]]}
-
-    def dehydrate_edit_schema(self, bundle):
-        '''          '''
-        return {"properties" :{bundle.obj.get_space_replaced_name() : self.get_field_values(bundle)[0]}}
-
-
-    def dehydrate_actions_form(self, bundle):
-        '''          '''
-        return None
-
-    def dehydrate_actions_schema(self, bundle):
-        '''          '''
-        return None
-
-
 
 
 
 class SimpleCustomFieldConfigResource(ModelResource):
     '''Return only the project type and custom field config name as returning the full field list would be '''
-    data_type = fields.ForeignKey("cbh_core_ws.resources.DataTypeResource", 'data_type', null=True, blank=False, default=None, full=True)
-    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.DataPointProjectFieldResource", "pinned_custom_field", null=True, blank=False, default=None, full=True)
+    data_type = fields.ForeignKey("cbh_core_ws.resources.DataTypeResource", 'data_type', readonly=True, null=True, blank=False, default=None, full=True)
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.DataPointProjectFieldResource", "pinned_custom_field", readonly=True, null=True, blank=False, default=None, full=True)
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by')
+
+
+
 
     class Meta:
         object_class = CustomFieldConfig
-        queryset = CustomFieldConfig.objects.prefetch_related("created_by", "data_type", "pinned_custom_field", "pinned_custom_field__standardised_alias")
+        queryset = CustomFieldConfig.objects.select_related("created_by", "data_type", "pinned_custom_field",)
         excludes  = ("schemaform")
         include_resource_uri = False
         resource_name = 'cbh_custom_field_config'
@@ -411,11 +514,11 @@ The fields that are in this particular custom field config:
 class DataFormConfigResource(ModelResource):
     name = fields.CharField(null=True,blank=True)
     last_level = fields.CharField(null=True,blank=True)
-    l0 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l0', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l1 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l1', null=True, blank=False, readonly=False, help_text=None,full=True)
-    l2 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l2', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l3 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l3', null=True, blank=False, readonly=False, help_text=None, full=True)
-    l4 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l4', null=True, blank=False, readonly=False, help_text=None,full=True)
+    l0 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l0', readonly=True, null=True, blank=False, help_text=None, full=True)
+    l1 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l1', readonly=True, null=True, blank=False, help_text=None,full=True)
+    l2 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l2', readonly=True, null=True, blank=False, help_text=None, full=True)
+    l3 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l3', readonly=True,  null=True, blank=False, help_text=None, full=True)
+    l4 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'l4', readonly=True, null=True, blank=False,  help_text=None,full=True)
 
     
     class Meta:
@@ -423,19 +526,17 @@ class DataFormConfigResource(ModelResource):
            "id" : ALL
         }
         always_return_data = True
-        queryset = DataFormConfig.objects.prefetch_related(
-            "l0__pinned_custom_field", 
+        queryset = DataFormConfig.objects.select_related(
+"l0__pinned_custom_field", 
 "l1__pinned_custom_field", 
 "l2__pinned_custom_field",
  "l3__pinned_custom_field",
 "l4__pinned_custom_field",
-
-            ).select_related("l0__created_by", 
+"l0__created_by", 
 "l1__created_by", 
 "l2__created_by",
  "l3__created_by",
 "l4__created_by",
-
 "l0__data_type", 
 "l1__data_type", 
 "l2__data_type",
@@ -558,18 +659,6 @@ The fields that are in this particular custom field config:
         # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
         return self.create_response(request, self.build_schema())
 
-    # def alter_list_data_to_serialize(self, request, data):
-    #     """Add the level name to each of the fields that need a level name in them"""
-    #     for level in ["l1", "l2", "l3", "l4", "l0"]:
-    #         for item in data["objects"]:
-    #             if item.data[level]:
-    #                 for field in item.data[level].data["project_data_fields"]:
-    #                     if field.data["handsontable_column"]["data"]:
-    #                         field.data["handsontable_column"]["data"] = field.data["handsontable_column"]["data"].format(**{"level": level})
-    #                     if field.data["elasticsearch_fieldname"]:
-    #                         field.data["elasticsearch_fieldname"] = field.data["elasticsearch_fieldname"].format(**{"level": level})
-    #     return data
-
 
 
     def dehydrate(self, bundle):
@@ -590,7 +679,7 @@ class ProjectWithDataFormResource(ModelResource):
     class Meta:
 
         excludes  = ("schemaform", "custom_field_config")
-        queryset = Project.objects.prefetch_related("enabled_forms", "created_by", "project_type")
+        queryset = Project.objects.select_related("enabled_forms", "created_by", "project_type")
         authentication = SessionAuthentication()
         allowed_methods = ['get', 'post', 'put']        
         resource_name = 'cbh_projects_with_forms'
@@ -710,8 +799,8 @@ project_type : For assay registration project type is not very important - it is
 
 
 class DataPointResource(ModelResource):
-    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, default=None)
-    custom_field_config = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'custom_field_config')
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, default=None,)
+    custom_field_config = SimpleResourceURIField("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",'custom_field_config_id')
     project_data = fields.DictField(attribute='project_data', null=True, blank=False, readonly=False, help_text=None)
     supplementary_data = fields.DictField(attribute='supplementary_data', null=True, blank=False, readonly=False, help_text=None)
     class Meta:
@@ -778,10 +867,13 @@ class MyForeignKey(fields.ForeignKey):
 
 
 
+
+
+
 class DataPointClassificationResource(ModelResource):
     '''Returns individual rows in the object graph - note that the rows returned are denormalized data points '''
-    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True,  default=None)
-    data_form_config = StandardisedForeignKey("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config')
+    created_by = SimpleResourceURIField("cbh_core_ws.resources.UserResource", 'created_by_id', null=True, blank=True,  default=None)
+    data_form_config = SimpleResourceURIField("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config_id',)
     l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects", full=False)
     level_from = fields.CharField( null=True, blank=False, default=None)
     next_level = fields.CharField( null=True, blank=False, default=None)
@@ -791,6 +883,10 @@ class DataPointClassificationResource(ModelResource):
     l3 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l3',null=True, blank=False, default=None, )
     l4 = MyForeignKey("cbh_datastore_ws.resources.DataPointResource", 'l4',null=True, blank=False, default=None,)
     parent_id = fields.IntegerField( attribute="parent_id", null=True)
+
+
+
+
 
     class Meta:
         filtering = {
@@ -803,7 +899,7 @@ class DataPointClassificationResource(ModelResource):
             "l4" : ALL_WITH_RELATIONS,
         }
         always_return_data = True  #Must be true so that the hook for elasticsearch indexing works
-        queryset = DataPointClassification.objects.prefetch_related("created_by", 
+        queryset = DataPointClassification.objects.all().select_related("created_by", 
 "l0__created_by", 
 "l1__created_by", 
 "l2__created_by",
@@ -842,11 +938,6 @@ class DataPointClassificationResource(ModelResource):
  "data_form_config__l3__data_type",
 "data_form_config__l4__data_type",
 
-"data_form_config__l0__pinned_custom_field__standardised_alias", 
-"data_form_config__l1__pinned_custom_field__standardised_alias", 
-"data_form_config__l2__pinned_custom_field__standardised_alias",
- "data_form_config__l3__pinned_custom_field__standardised_alias",
-"data_form_config__l4__pinned_custom_field__standardised_alias",
 )
         resource_name = 'cbh_datapoint_classifications'
         #authorization = Authorization()
@@ -1040,12 +1131,23 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
 }
     
 
-
+    def obj_create(self, bundle, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_create``.
+        """
+        bundle.obj = self._meta.object_class()
+        for key, value in kwargs.items():
+            setattr(bundle.obj, key, value)
+        #print "hydrate"
+        t = time.time()
+        bundle = self.full_hydrate(bundle)
+        #print t - time.time()
+        return self.save(bundle,)
 
 
 
     def get_object_list(self, request):
-        return super(DataPointClassificationResource, self).get_object_list(request).prefetch_related(Prefetch("data_form_config")).prefetch_related(Prefetch("l0_permitted_projects"))
+        return super(DataPointClassificationResource, self).get_object_list(request)
 
 
     def apply_filters(self, request, applicable_filters):
@@ -1055,11 +1157,8 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
 
 
 
-
     def hydrate_created_by(self, bundle):
-        user = get_user_model().objects.get(pk=bundle.request.user.pk)
-        bundle.obj.created_by = user
-        
+        bundle.obj.created_by_id = bundle.request.user.pk
         return bundle
 
     def dehydrate_level_from(self, bundle):
@@ -1080,35 +1179,41 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         return next_level
 
 
-
-
     def save(self, bundle, skip_errors=False):
-        ''' Moved the hydrate_m2m call to earlier in the method to ensure that there is a consistent readout for the project authorization '''
+        mt = time.time()
+        if bundle.via_uri:
+            return bundle
         self.is_valid(bundle)
 
         if bundle.errors and not skip_errors:
             raise ImmediateHttpResponse(response=self.error_response(bundle.request, bundle.errors))
-        
         m2m_bundle = self.hydrate_m2m(bundle)
-
         # Check if they're authorized.
+
         if bundle.obj.pk:
             self.authorized_update_detail(self.get_object_list(bundle.request), bundle)
         else:
             self.authorized_create_detail(self.get_object_list(bundle.request), bundle)
-
         # Save FKs just in case.
         self.save_related(bundle)
-        level_from = self.dehydrate_level_from(bundle)
-        bundle.obj.save()
-        bundle.objects_saved.add(self.create_identifier(bundle.obj))
-        bundle.request.GET = bundle.request.GET.copy()
-        #Set the full parameter in the request GET object when saving stuff
-        bundle.request.GET["full"] = True
+        # Save the main object.
+        obj_id = self.create_identifier(bundle.obj)
+        #print "pre save stuff"
+        #print mt - time.time()
+        if obj_id not in bundle.objects_saved or bundle.obj._state.adding:
+            #print "saving"
+            t = time.time()
+            bundle.obj.save()
+            #print t - time.time()
+            bundle.objects_saved.add(obj_id)
+        # bundle.request.GET = bundle.request.GET.copy()
+        # #Set the full parameter in the request GET object when saving stuff
+        # bundle.request.GET["full"] = True
         # Now pick up the M2M bits.
         self.save_m2m(m2m_bundle)
-
         return bundle
+
+
 
 
     def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
@@ -1124,7 +1229,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
             #There has been a new object created - we must now index it
             elasticsearch_client.index_datapoint_classification(serialized)
             filters = data.obj.all_child_generations_filter_dict()
-            index_filter_dict.delay(filters)
+            index_filter_dict(filters)
         # 
         #     #Standardise the output data
         return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
@@ -1200,7 +1305,11 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
                     objects_saved=bundle.objects_saved
                 )
                 related_resource.full_hydrate(related_bundle)
+                t = time.time()
                 related_resource.save(related_bundle)
+                #print "saving related"
+                #print t-time.time()
+                #print field_name
                 related_obj = related_bundle.obj
 
             if related_obj:
@@ -1262,7 +1371,7 @@ def reindex_datapoint_classifications():
 
 
 @job
-def index_filter_dict(filter_dict):
+def index_filter_dict(filter_dict, dpcs=None):
     """When a datapointclassification is updated we know that the front end only targets the 
     level_from datapoint. The specific datapoint will be updated in realtime however 
     we also need to update any references to that datapoint in its children. To find all children, we simply 
@@ -1276,11 +1385,28 @@ def index_filter_dict(filter_dict):
 
     bundle = res.build_bundle(request=request)
     dpcs = res.Meta.queryset.filter(**filter_dict)
-    print dpcs.count()
+    dfc_ids = set([dpc.data_form_config_id for dpc in dpcs]) 
+    another_req = HttpRequest()
+    another_req.GET = another_req.GET.copy()
+    another_req.GET["id__in"] = ",".join([str(id) for id in list(dfc_ids)])
+    #print "form time"
+    t = time.time()
+    dfcr = DataFormConfigResource()
+    forms = dfcr.get_list(another_req)
+    dataset = json.loads(forms.content)
+    #print t - time.time()
+    #print "dehydrate time"
+    t = time.time()
     bundle.data["objects"] = [res.full_dehydrate(res.build_bundle(obj=dpc, request=request)) for dpc in dpcs]
-    resp = res.create_response(request, bundle)
-    elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
 
+    t = time.time()
+    bundle.data["forms"] = {frm["resource_uri"]: frm for frm in  dataset["objects"]}
+    resp = res.create_response(request, bundle)
+    #print t - time.time()
+    t = time.time()
+    #print "indexer"
+    elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
+    #print t - time.time()
 
 # def file_to_data_point_classifications(sheetname, dpc_bundle, flowfile ):
 #     data, names, elastisearch_fieldnames = get_sheet(flowfile.path, sheetname)
@@ -1295,12 +1421,34 @@ def yield_dpcs(dfc, templ, hits):
 class AttachmentResource(ModelResource):
     data_point_classification = fields.ForeignKey("cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification", full=True)
     flowfile = fields.ForeignKey("cbh_datastore_ws.resources.FlowFileResource", attribute="flowfile")
-    attachment_custom_field_config = fields.ForeignKey(SimpleCustomFieldConfigResource, attribute="attachment_custom_field_config", full=True)
+    attachment_custom_field_config = fields.ForeignKey(SimpleCustomFieldConfigResource, readonly=True, attribute="attachment_custom_field_config", full=True)
     chosen_data_form_config = fields.ForeignKey(DataFormConfigResource, attribute="chosen_data_form_config", full=True)
     created_by = fields.ForeignKey(UserResource, "created_by")
 
     class Meta:
-        queryset = Attachment.objects.all()
+        queryset = Attachment.objects.all().select_related(
+"chosen_data_form_config__l0__pinned_custom_field", 
+"chosen_data_form_config__l1__pinned_custom_field", 
+"chosen_data_form_config__l2__pinned_custom_field",
+"chosen_data_form_config__l3__pinned_custom_field",
+"chosen_data_form_config__l4__pinned_custom_field",
+"chosen_data_form_config__l0__created_by", 
+"chosen_data_form_config__l1__created_by", 
+"chosen_data_form_config__l2__created_by",
+"chosen_data_form_config__l3__created_by",
+"chosen_data_form_config__l4__created_by",
+"chosen_data_form_config__l0__data_type", 
+"chosen_data_form_config__l1__data_type", 
+"chosen_data_form_config__l2__data_type",
+"chosen_data_form_config__l3__data_type",
+"chosen_data_form_config__l4__data_type",
+"chosen_data_form_config__created_by",
+"created_by",
+"flowfile",
+"attachment_custom_field_config__created_by", 
+"attachment_custom_field_config__data_type", 
+"attachment_custom_field_config__pinned_custom_field",
+)
         always_return_data=True #required to add the elasticsearch data
         resource_name = 'cbh_attachments'
         default_format = 'application/json'
@@ -1319,6 +1467,49 @@ class AttachmentResource(ModelResource):
                 self.wrap_view('search_temp_data'), name="search_temp_data"),
         ]
 
+
+    def full_dehydrate(self, bundle, for_list=False):
+        """
+        Given a bundle with an object instance, extract the information from it
+        to populate the resource.
+        """
+        data = bundle.data
+
+        api_name = self._meta.api_name
+        resource_name = self._meta.resource_name
+
+        # Dehydrate each field.
+        print "dehyd"
+        print time.time()
+        for field_name, field_object in self.fields.items():
+            # If it's not for use in this mode, skip
+            print field_name
+            field_use_in = field_object.use_in
+            if callable(field_use_in):
+                if not field_use_in(bundle):
+                    continue
+            else:
+                if field_use_in not in ['all', 'list' if for_list else 'detail']:
+                    continue
+
+            # A touch leaky but it makes URI resolution work.
+            if field_object.dehydrated_type == 'related':
+                field_object.api_name = api_name
+                field_object.resource_name = resource_name
+            #print time.time()
+            data[field_name] = field_object.dehydrate(bundle, for_list=for_list)
+            #print time.time()
+            # Check for an optional method to do further dehydration.
+            method = getattr(self, "dehydrate_%s" % field_name, None)
+
+            if method:
+                data[field_name] = method(bundle)
+            print time.time()
+        bundle = self.dehydrate(bundle)
+        print time.time()
+        return bundle
+
+
     def hydrate_created_by(self, bundle):
         user = get_user_model().objects.get(pk=bundle.request.user.pk)
         bundle.obj.created_by = user
@@ -1327,10 +1518,8 @@ class AttachmentResource(ModelResource):
     def hydrate(self, bundle):
         bundle.obj.flowfile = self.flowfile.hydrate(bundle).obj
         flowfile = bundle.obj.flowfile
-        print "hydr"
         if bundle.obj.attachment_custom_field_config_id is None:
             data, names, data_types, widths = get_sheet(flowfile.path, bundle.data["sheet_name"])
-            print "hydr2"
             custom_field_config, created = CustomFieldConfig.objects.get_or_create(created_by=bundle.request.user, name="%d>>%s>>%s" % (flowfile.id, flowfile.path, bundle.data["sheet_name"]))
             for colindex, pandas_dtype in enumerate(data_types):
                 pcf = PinnedCustomField()
@@ -1339,12 +1528,14 @@ class AttachmentResource(ModelResource):
                 pcf.position = colindex
                 pcf.custom_field_config = custom_field_config
                 custom_field_config.pinned_custom_field.add(pcf)
-                print pcf.name
             custom_field_config.save()
             bundle.obj.attachment_custom_field_config = custom_field_config
             tempobjects = [{
              "id" : index, 
-            "attachment_data" :{ "project_data" : item}} for index, item in enumerate( data)]
+             "created_by_id": bundle.obj.created_by_id,
+            "attachment_data" :{ "project_data" : item}, 
+            "created_by_id": bundle.obj.created_by_id,
+            } for index, item in enumerate( data)]
             bundle.data["tempobjects"] = tempobjects
             bundle.obj.number_of_rows = len(tempobjects)        
         return bundle
@@ -1385,52 +1576,50 @@ class AttachmentResource(ModelResource):
 
     def post_save_temp_data(self, request, **kwargs):
         #attachment_pk = kwargs.get("pk",None)
+        print time.time()
         attachment_pk = request.GET.get("sheetId",None)
-
+        request.GET = request.GET.copy()
+        request.GET["empty"] = True
         if attachment_pk:
+            print time.time()
             attachment_json = json.loads(self.get_detail(request, pk=attachment_pk).content)
-            dpc_template = attachment_json["data_point_classification"]
-            dfc = attachment_json["chosen_data_form_config"]
-            dpc_template["data_form_config"] = dfc["resource_uri"]
-            dpc_template["parent_id"] = copy(dpc_template["id"])
-            dpc_template["id"] = None
-            dpc_template["resource_uri"] = None
-            dpc_template["next_level"] = None
-            dpc_template["level_from"] = None
-            
-
+            #print time.time()
+            dpc_obj_template = DataPointClassification.objects.get(pk=attachment_json["data_point_classification"]["id"])
             results_to_find = attachment_json["number_of_rows"]
             frompoint = 0
             increment = 1000
             result_lists = []
+            ids = []
             while results_to_find > 0:
-                
+                print time.time()
                 request.GET = request.GET.copy()
                 request.GET["from"] = frompoint
                 request.GET["size"] = increment
                 request.GET["index_name"] = elasticsearch_client.get_attachment_index_name(int(attachment_pk))
                 qr = QueryResource()
+                #print "building bundle"
+                print time.time()
                 resp = qr.alter_detail_data_to_serialize(request, self.build_bundle())
-                dpcs = yield_dpcs(dfc, dpc_template, resp.data["hits"]["hits"])
-
-                result_lists.append(dpcs)
+                print time.time()
+                #print "yield"
+                
+                last_level = attachment_json["chosen_data_form_config"]["last_level"]
+                for hit in resp.data["hits"]["hits"]:
+                    dp = DataPoint(**hit["_source"]["attachment_data"])
+                    dp.created_by_id = request.user.pk
+                    dp.custom_field_config_id = attachment_json["chosen_data_form_config"][last_level]["id"]
+                    dp.save()
+                    dpc_obj_template.created_by_id = request.user.pk
+                    dpc_obj_template.id=None
+                    dpc_obj_template.pk=None
+                    dpc_obj_template.parent_id = attachment_json["data_point_classification"]["id"]
+                    setattr(dpc_obj_template, attachment_json["chosen_data_form_config"]["last_level"] + "_id", dp.id)
+                    dpc_obj_template.save()
+                    ids.append(dpc_obj_template.id)
                 results_to_find = results_to_find - increment
-            results = chain(*result_lists)
-            ids = []
-            for result in results:
-                dpc = DataPointClassificationResource()
-                t= time.time()
-                bundle = dpc.build_bundle(data=result, request=request)
-                print "t"
-                print t-time.time()
-                updated_bundle = dpc.obj_create(bundle)
-                print t-time.time()
-                ids.append(updated_bundle.obj.id)
-                if len(ids)==20:
-                    index_filter_dict.delay({"id__in": ids})
-                    ids= []
-            index_filter_dict.delay({"id__in": ids})
-
+            print time.time()
+            index_filter_dict({"id__in": ids})
+            print time.time()
             return self.create_response(request, self.build_bundle(request), response_class=http.HttpAccepted)
 
         else:
@@ -1456,9 +1645,6 @@ class AttachmentResource(ModelResource):
                     index_name=elasticsearch_client.get_attachment_index_name(bundle.obj.id), 
                         refresh=True, 
                         decode_json=False)
-            # if len(bundle.data["tempobjects"]) > 10:
-            #     elasticsearch_client.index_datapoint_classification.delay({"objects": bundle.data["tempobjects"][9:]}, index_name=elasticsearch_client.get_attachment_index_name(bundle.obj.id), refresh=False, decode_json=False)
-
 
         desired_format = self.determine_format(request)
 
@@ -1471,7 +1657,7 @@ class AttachmentResource(ModelResource):
 
 class QueryResource(ModelResource):
     """ A resource which saves a query for elasticsearch and then returns the result of the query"""
-    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True,  default=None)
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by')
     query = fields.DictField(attribute='query')
     aggs = fields.DictField(attribute='aggs')
     filter = fields.DictField(attribute='filter')
@@ -1585,25 +1771,48 @@ class MyToManyField(fields.ToManyField):
 
 
 
-
-class NestedDataPointClassificationResource(DataPointClassificationResource):
-    children = MyToManyField("self", attribute="children", full=True,  )
-
+class NestedDataPointClassificationResource(Resource):
+    
     class Meta(DataPointClassificationResource.Meta):
         resource_name = 'cbh_datapoint_classifications_nested'
         allowed_methods = ['get']
-        include_resource_uri = False
-        filtering = {
-            "parent_id": ALL_WITH_RELATIONS,
-            "data_form_config": ALL_WITH_RELATIONS,
-            "l0_permitted_projects" : ALL_WITH_RELATIONS,
-            "l0" : ALL_WITH_RELATIONS,
-            "l1" : ALL_WITH_RELATIONS,
-            "l2" : ALL_WITH_RELATIONS,
-            "l3" : ALL_WITH_RELATIONS,
-            "l4" : ALL_WITH_RELATIONS,
-            "parent" : ALL_WITH_RELATIONS
-        }
+        
+    def get_list(self, request, **kwargs):
+        #pull out a nested list from elasticsearch
+        request.GET = request.GET.copy()
+        request.GET["from"] = 0
+        request.GET["size"] = 10000
+        objects = {}
+        l0_objects = []
+        for level in ["l0", "l1", "l2"]:
+            post_data = {"query" :
+                            {
+                            "bool" : 
+                                {"must" : [
+                                    {"term": {"l0_permitted_projects.raw" :request.GET.get("l0_permitted_projects")}},
+                                    {"term": {"level_from.raw" : level}}
+                            ]
+                        },
+                        
+                        },
+                        "sort" : {"created":{"order": "desc"}}}
+
+            qr = QueryResource()
+
+            resp = qr.alter_detail_data_to_serialize(request, qr.build_bundle(request=request, data=post_data))
+            for hit in resp.data["hits"]["hits"]:
+                hit["_source"]["children"] = []
+                objects[hit["_source"]["id"]] = hit["_source"]
+                if level == "l0":
+                    l0_objects.append(hit["_source"])
+
+        for key, obj in objects.items():
+            if obj["parent_id"]:
+                parent = objects.get(obj["parent_id"], None)
+                if parent:
+                    parent["children"].append(obj)
+
+        return HttpResponse(json.dumps({"objects": l0_objects}))
 
 
 
@@ -1612,43 +1821,6 @@ class NestedDataPointClassificationResource(DataPointClassificationResource):
 
 
 
-class DataPointClassificationPermissionResource(ModelResource):
-    data_point_classification = fields.ForeignKey("cbh_datastore_ws.resources.DataPointClassificationResource",'data_point_classification')
-    project = fields.ForeignKey("cbh_datastore_ws.resources.ProjectWithDataFormResource",'project')
 
-    def hydrate_created_by(self, bundle):
-        user = get_user_model().objects.get(pk=bundle.request.user.pk)
-        bundle.obj.created_by = user
-        return bundle
 
-    class Meta:
-        filtering = {
-            "project": ALL_WITH_RELATIONS
-        }
-        always_return_data = False
-        queryset = DataPointClassificationPermission.objects.all()
-        resource_name = 'cbh_datapoint_classification_permissions'
-        #authorization = Authorization()
-        default_format = 'application/json'
-        include_resource_uri = True
-        allowed_methods = ['get', 'post', 'put']
-        default_format = 'application/json'
-        serializer = Serializer()
-        authentication = SessionAuthentication()
-        authorization = Authorization()
-
-    def get_schema(self, request, **kwargs):
-        """
-        Returns a serialized form of the schema of the resource.
-        Calls ``build_schema`` to generate the data. This method only responds
-        to HTTP GET.
-        Should return a HttpResponse (200 OK).
-        """
-        # self.method_check(request, allowed=['get'])
-        # self.is_authenticated(request)
-        # self.throttle_check(request)
-        # self.log_throttled_access(request)
-        # bundle = self.build_bundle(request=request)
-        # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
-        return self.create_response(request, self.build_schema())
 

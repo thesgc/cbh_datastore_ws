@@ -97,7 +97,7 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
                             })
         bulk_items.append(item)
     #Data is not refreshed!
-    print es.bulk(body=bulk_items, refresh=refresh)
+    es.bulk(body=bulk_items, refresh=refresh)
 
 
 
