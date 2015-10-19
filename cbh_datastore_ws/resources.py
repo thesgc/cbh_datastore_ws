@@ -1789,6 +1789,7 @@ class NestedDataPointClassificationResource(Resource):
         
     def get_list(self, request, **kwargs):
         #pull out a nested list from elasticsearch
+        pr = ProjectWithDataFormResource()
         request.GET = request.GET.copy()
         request.GET["from"] = 0
         request.GET["size"] = 10000
@@ -1799,7 +1800,7 @@ class NestedDataPointClassificationResource(Resource):
                             {
                             "bool" : 
                                 {"must" : [
-                                    {"term": {"l0_permitted_projects.raw" :request.GET.get("l0_permitted_projects")}},
+                                    {"term": {"l0_permitted_projects.raw" : pr.get_resource_uri() + "/" + request.GET.get("l0_permitted_projects")}},
                                     {"term": {"level_from.raw" : level}}
                             ]
                         },
