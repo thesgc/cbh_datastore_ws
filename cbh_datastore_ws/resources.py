@@ -9,7 +9,7 @@ from tastypie.serializers import Serializer
 from cbh_core_ws.resources import CoreProjectResource, CustomFieldConfigResource, DataTypeResource, UserResource, CoreProjectResource, ProjectTypeResource
 from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission, Query, Attachment
 from cbh_core_model.models import PinnedCustomField, ProjectType, DataFormConfig, Project, CustomFieldConfig
-from cbh_core_ws.serializers import CustomFieldXLSSerializer
+from cbh_core_ws.serializers import CustomFieldXLSSerializer, ResultsExportXLSSerializer
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from django.contrib.auth import get_user_model
@@ -1638,6 +1638,7 @@ class AttachmentResource(ModelResource):
         Mostly a useful shortcut/hook.
         """
         if response_class == http.HttpCreated:
+            print('response_class is httpCreated')
             #There has been a new object created - we must now index it
             for ob in bundle.data["tempobjects"]:
                 ob["l0_permitted_projects"] =  bundle.data["data_point_classification"].data["l0_permitted_projects"]
@@ -1665,6 +1666,10 @@ class QueryResource(ModelResource):
 
     class Meta:
         queryset = Query.objects.all()
+        filtering = {
+            "filter": ALL_WITH_RELATIONS,
+            "query": ALL_WITH_RELATIONS,
+        }
         always_return_data=True #required to add the elasticsearch data
         resource_name = 'cbh_queries/_search'
         #authorization = Authorization()
@@ -1672,7 +1677,7 @@ class QueryResource(ModelResource):
         include_resource_uri = True
         allowed_methods = [ 'post','get',]
         default_format = 'application/json'
-        serializer = Serializer()
+        serializer = ResultsExportXLSSerializer()
         authentication = SessionAuthentication()
         authorization = Authorization()
 
@@ -1732,8 +1737,9 @@ class QueryResource(ModelResource):
        
         
         # Save FKs just in case.
-       
-        bundle.obj.id = randint(1,1000000000)
+        #revert to using saved search - it's the only way we can access the search params in the correct way for the various export methods
+        #bundle.obj.id = randint(1,1000000000)
+        bundle.obj.save()
         bundle.objects_saved.add(self.create_identifier(bundle.obj))
         bundle.request.GET = bundle.request.GET.copy()
         #Set the full parameter in the request GET object when saving stuff
@@ -1757,6 +1763,20 @@ class QueryResource(ModelResource):
         # bundle = self.build_bundle(request=request)
         # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
         return self.create_response(request, self.build_schema())
+
+    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+        Mostly a useful shortcut/hook.
+        """
+
+        desired_format = self.determine_format(request)
+        serialized = self.serialize(request, data, desired_format)
+        rc = response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
+
+        if(desired_format == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'):
+            rc['Content-Disposition'] = 'attachment; filename=results_export.xlsx'
+        return rc
 
 
 
