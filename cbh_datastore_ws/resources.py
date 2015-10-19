@@ -54,6 +54,7 @@ import importlib
 import six
 
 from django.core.cache import cache
+from cbh_core_ws.cache import CachedResource
 
 class SimpleResourceURIField(fields.ApiField):
     """
@@ -308,7 +309,7 @@ autocomplete urls
             Hook to return the dotted path to this field based on the level and the name of the field
             The level name is formatted in the dehydrate method of the DataFormConfigResource
         '''
-        return "{level}.project_data.%s" % ( bundle.obj.get_space_replaced_name())
+        return "{level}.project_data.%s" % ( bundle.obj.get_space_replaced_name)
 
     def get_namespace_for_action_key(self, bundle, action_type):
         return action_type
@@ -316,60 +317,8 @@ autocomplete urls
 
 
 
-
-
-
-    def get_field_values(self,  bundle):
-        obj = bundle.obj
-        data =  copy(obj.FIELD_TYPE_CHOICES[obj.field_type]["data"])
-
-        data["title"] = obj.name
-        data["placeholder"] = obj.description
-        form = {}
-        form["position"] = obj.position
-        form["key"] = obj.get_space_replaced_name()
-        form["title"] = obj.name
-        form["description"] = obj.description
-        form["disableSuccessState"] = True
-        form["feedback"] = False
-        # form["allowed_values"] = obj.allowed_values
-        # form["part_of_blinded_key"] = obj.part_of_blinded_key
-        searchitems = []
-        data['default'] = obj.default
-        if data["type"] == "array":
-            data['default'] = obj.default.split(",")
-        if obj.UISELECT in data.get("format", ""):
-            
-            form["placeholder"] = "Choose..."
-            form["help"] = obj.description
-            data['items'] = obj.get_items_simple()
-            
-
-
-        if data.get("format", False) == obj.DATE:
-            maxdate = time.strftime("%Y-%m-%d")
-            form.update( {
-                "minDate": "2000-01-01",
-                "maxDate": maxdate,
-                'type': 'datepicker',
-                "format": "yyyy-mm-dd",
-                'pickadate': {
-                  'selectYears': True, 
-                  'selectMonths': True,
-                },
-            })
-
-        else:
-            for item in ["options"]:
-                stuff = data.pop(item, None)
-                if stuff:
-                    form[item] = stuff
-        return (data, form)
-
-
-
     def dehydrate_elasticsearch_fieldname(self, bundle):
-        return bundle.obj.get_space_replaced_name()
+        return bundle.obj.get_space_replaced_name
 
 
   
@@ -378,13 +327,13 @@ autocomplete urls
         '''          '''
         if bundle.request.GET.get("empty", False):
             return {}
-        return {"form" : [self.get_field_values(bundle)[1]]}
+        return {"form" : [bundle.obj.field_values[1]]}
 
     def dehydrate_edit_schema(self, bundle):
         '''          '''
         if bundle.request.GET.get("empty", False):
             return {}
-        return {"properties" :{bundle.obj.get_space_replaced_name() : self.get_field_values(bundle)[0]}}
+        return {"properties" :{bundle.obj.get_space_replaced_name : bundle.obj.field_values[0]}}
 
 
 
@@ -403,15 +352,14 @@ autocomplete urls
 class SimpleCustomFieldConfigResource(ModelResource):
     '''Return only the project type and custom field config name as returning the full field list would be '''
     data_type = fields.ForeignKey("cbh_core_ws.resources.DataTypeResource", 'data_type', readonly=True, null=True, blank=False, default=None, full=True)
-    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.DataPointProjectFieldResource", "pinned_custom_field", readonly=True, null=True, blank=False, default=None, full=True)
+    project_data_fields = fields.ToManyField("cbh_datastore_ws.resources.DataPointProjectFieldResource",  lambda bundle: PinnedCustomField.objects.filter(
+         custom_field_config_id=bundle.obj.id
+     ), readonly=True, null=True, blank=False, default=None,full=True)
     created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by')
-
-
-
 
     class Meta:
         object_class = CustomFieldConfig
-        queryset = CustomFieldConfig.objects.select_related("created_by", "data_type", "pinned_custom_field",)
+        queryset = CustomFieldConfig.objects.select_related("created_by", "data_type",)
         excludes  = ("schemaform")
         include_resource_uri = False
         resource_name = 'cbh_custom_field_config'
@@ -419,7 +367,8 @@ class SimpleCustomFieldConfigResource(ModelResource):
         authorization = Authorization()
         include_resource_uri = True
         default_format = 'application/json'
-        serializer = CustomFieldXLSSerializer()
+        #serializer = CustomFieldXLSSerializer()
+        serializer = Serializer()
         filtering = {"id" : ALL}
         allowed_methods = ['get', 'post', 'put', 'patch']
         description = {'api_dispatch_detail' : '''
@@ -527,11 +476,7 @@ class DataFormConfigResource(ModelResource):
         }
         always_return_data = True
         queryset = DataFormConfig.objects.select_related(
-"l0__pinned_custom_field", 
-"l1__pinned_custom_field", 
-"l2__pinned_custom_field",
- "l3__pinned_custom_field",
-"l4__pinned_custom_field",
+
 "l0__created_by", 
 "l1__created_by", 
 "l2__created_by",
@@ -672,9 +617,11 @@ The fields that are in this particular custom field config:
                             field.data["elasticsearch_fieldname"] = field.data["elasticsearch_fieldname"].format(**{"level": level})
         return bundle
 
-class ProjectWithDataFormResource(ModelResource):
+class ProjectWithDataFormResource(CachedResource, ModelResource):
     project_type = fields.ForeignKey("cbh_datastore_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
     data_form_configs = fields.ListField(null=True)
+
+    valid_cache_get_keys = ['format', 'limit','project_key']
 
     class Meta:
 
@@ -753,7 +700,6 @@ project_type : For assay registration project type is not very important - it is
                 bun.data["permitted_children"] = []
                 tree_builder[key][i] = bun.data["resource_uri"]
                 full_dataset["form_lookup"][bun.data["resource_uri"]] = bun.data
-                
 
         root_obj = tree_builder.pop("root", None)
         full_dataset["permitted_routes_tree"] = tree_builder
@@ -770,7 +716,6 @@ project_type : For assay registration project type is not very important - it is
                         "l0_permitted_projects" : [self.get_resource_uri(bundle.obj)]
                     }
 
-                
         real_forms_list = [value for key, value in full_dataset["form_lookup"].iteritems()]
 
 
@@ -1696,15 +1641,21 @@ class QueryResource(ModelResource):
         index_name = elasticsearch_client.get_index_name()
         if  request.GET.get("index_name", None):
             index_name = request.GET.get("index_name")
-        data = es.search(
-                index_name, 
-                body={
+        bod = {
                     "filter": self.authorization_filter(request, updated_bundle.data.get("filter", {"match_all":{}})), 
                     "aggs": updated_bundle.data.get("aggs", {}),
                     "query" : updated_bundle.data.get("query", {"match_all":{}}),
                     "sort": updated_bundle.data.get("sort", []),
                     "highlight": updated_bundle.data.get("highlight",{}),
-                },  
+                }
+        if updated_bundle.data.get("_source", False):
+            bod["_source"] = updated_bundle.data.get("_source", False)
+        else:
+            bod["_source"] = {"include" : ["l3.*","attachment_data.*", "id","level_from", "next_level","modified","data_form_config", "*.custom_field_config","resource_uri", "parent_id","*.Title","*.resource_uri", "*.id"]}
+
+        data = es.search(
+                index_name, 
+                body=bod,  
                 from_=request.GET.get("from"),  
                 size=request.GET.get("size")
             )
@@ -1795,12 +1746,18 @@ class NestedDataPointClassificationResource(Resource):
         request.GET["size"] = 10000
         objects = {}
         l0_objects = []
-        for level in ["l0", "l1", "l2"]:
-            post_data = {"query" :
+        levels = ["l0", "l1", "l2"]
+        project = Project.objects.get(project_key=request.GET.get("project_key"))
+        for level in levels:
+            post_data = {
+                            "_source" : {
+                                "include": ["id","level_from", "next_level","modified","data_form_config", "*.custom_field_config","resource_uri", "parent_id","*.Title","*.resource_uri", "*.id"],
+                            },
+                            "query" :
                             {
                             "bool" : 
                                 {"must" : [
-                                    {"term": {"l0_permitted_projects.raw" : pr.get_resource_uri() + "/" + request.GET.get("l0_permitted_projects")}},
+                                    {"term": {"l0_permitted_projects.raw" : pr.get_resource_uri(bundle_or_obj=project) }},
                                     {"term": {"level_from.raw" : level}}
                             ]
                         },
