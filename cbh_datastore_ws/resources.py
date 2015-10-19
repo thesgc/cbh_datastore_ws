@@ -872,7 +872,7 @@ class MyForeignKey(fields.ForeignKey):
 
 class DataPointClassificationResource(ModelResource):
     '''Returns individual rows in the object graph - note that the rows returned are denormalized data points '''
-    created_by = SimpleResourceURIField("cbh_core_ws.resources.UserResource", 'created_by_id', null=True, blank=True,  default=None)
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True,  default=None)
     data_form_config = SimpleResourceURIField("cbh_datastore_ws.resources.DataFormConfigResource",'data_form_config_id',)
     l0_permitted_projects = fields.ToManyField("cbh_datastore_ws.resources.ProjectWithDataFormResource", attribute="l0_permitted_projects", full=False)
     level_from = fields.CharField( null=True, blank=False, default=None)
@@ -1158,7 +1158,8 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
 
 
     def hydrate_created_by(self, bundle):
-        bundle.obj.created_by_id = bundle.request.user.pk
+        user = get_user_model().objects.get(pk=bundle.request.user.pk)
+        bundle.obj.created_by = user
         return bundle
 
     def dehydrate_level_from(self, bundle):
@@ -1361,11 +1362,15 @@ def reindex_datapoint_classifications():
     req = HttpRequest()
     req.GET = req.GET.copy()
     req.GET["full"] = True
-    chunked = chunks(range(aggs["id__min"], aggs["id__max"]), 200)
-    for chunk in chunked:
+    try:
+        chunked = chunks(range(aggs["id__min"], aggs["id__max"]), 100)
+        for chunk in chunked:
 
-        index_filter_dict({"id__in": chunk})
-           
+            index_filter_dict({"id__in": chunk})
+    except TypeError:
+        #Nonetype found therefore dpcs are empty
+        elasticsearch_client.index_datapoint_classification('{"objects" :[]}', refresh=False)
+
 
     time.sleep(1)
 
@@ -1396,27 +1401,14 @@ def index_filter_dict(filter_dict, dpcs=None):
     dataset = json.loads(forms.content)
     #print t - time.time()
     #print "dehydrate time"
-    t = time.time()
     bundle.data["objects"] = [res.full_dehydrate(res.build_bundle(obj=dpc, request=request)) for dpc in dpcs]
 
-    t = time.time()
     bundle.data["forms"] = {frm["resource_uri"]: frm for frm in  dataset["objects"]}
     resp = res.create_response(request, bundle)
-    #print t - time.time()
-    t = time.time()
-    #print "indexer"
+
     elasticsearch_client.index_datapoint_classification(resp.content, refresh=False)
-    #print t - time.time()
 
-# def file_to_data_point_classifications(sheetname, dpc_bundle, flowfile ):
-#     data, names, elastisearch_fieldnames = get_sheet(flowfile.path, sheetname)
 
-def yield_dpcs(dfc, templ, hits):
-    for hit in hits:
-        mytemp = copy(templ)
-        templ[dfc["last_level"]] = hit["_source"]["attachment_data"]
-        templ[dfc["last_level"]]["custom_field_config"] = dfc[dfc["last_level"]]["resource_uri"]
-        yield templ
 
 class AttachmentResource(ModelResource):
     data_point_classification = fields.ForeignKey("cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification", full=True)
@@ -1576,31 +1568,27 @@ class AttachmentResource(ModelResource):
 
     def post_save_temp_data(self, request, **kwargs):
         #attachment_pk = kwargs.get("pk",None)
-        print time.time()
         attachment_pk = request.GET.get("sheetId",None)
         request.GET = request.GET.copy()
         request.GET["empty"] = True
         if attachment_pk:
-            print time.time()
             attachment_json = json.loads(self.get_detail(request, pk=attachment_pk).content)
             #print time.time()
             dpc_obj_template = DataPointClassification.objects.get(pk=attachment_json["data_point_classification"]["id"])
             results_to_find = attachment_json["number_of_rows"]
+            projects = [proj for proj in dpc_obj_template.l0_permitted_projects.all()]
             frompoint = 0
             increment = 1000
             result_lists = []
             ids = []
             while results_to_find > 0:
-                print time.time()
                 request.GET = request.GET.copy()
                 request.GET["from"] = frompoint
                 request.GET["size"] = increment
                 request.GET["index_name"] = elasticsearch_client.get_attachment_index_name(int(attachment_pk))
                 qr = QueryResource()
                 #print "building bundle"
-                print time.time()
                 resp = qr.alter_detail_data_to_serialize(request, self.build_bundle())
-                print time.time()
                 #print "yield"
                 
                 last_level = attachment_json["chosen_data_form_config"]["last_level"]
@@ -1614,12 +1602,14 @@ class AttachmentResource(ModelResource):
                     dpc_obj_template.pk=None
                     dpc_obj_template.parent_id = attachment_json["data_point_classification"]["id"]
                     setattr(dpc_obj_template, attachment_json["chosen_data_form_config"]["last_level"] + "_id", dp.id)
+
+                    dpc_obj_template.data_form_config_id = attachment_json["chosen_data_form_config"]["id"]
                     dpc_obj_template.save()
+                    for proj in projects:
+                        DataPointClassificationPermission.objects.create(project=proj, data_point_classification=dpc_obj_template)
                     ids.append(dpc_obj_template.id)
                 results_to_find = results_to_find - increment
-            print time.time()
             index_filter_dict({"id__in": ids})
-            print time.time()
             return self.create_response(request, self.build_bundle(request), response_class=http.HttpAccepted)
 
         else:
@@ -1815,7 +1805,7 @@ class NestedDataPointClassificationResource(Resource):
                         },
                         
                         },
-                        "sort" : {"created":{"order": "desc"}}}
+                        "sort" : {"created":{"order": "desc", "ignore_unmapped": True}}}
 
             qr = QueryResource()
 

@@ -3,7 +3,7 @@ from django.conf import settings
 import elasticsearch
 from django.core.exceptions import ImproperlyConfigured
 from django_rq import job
-
+from elasticsearch import helpers
 
 import time
 try:
@@ -38,10 +38,10 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
     if decode_json:
         data = json.loads(data)
     batches = [data]
-    if data.get("objects", False):
+    if data.get("objects", "False") != "False":
         batches = data["objects"]
 
-    es = elasticsearch.Elasticsearch()
+    es = elasticsearch.Elasticsearch(timeout=60)
     
     store_type = "niofs"
     create_body = {
@@ -59,7 +59,7 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
                     ]
                   },
                "dynamic_templates" : [ 
-
+                
                 {
                  "string_fields" : {
                    "match" : "*",
@@ -97,7 +97,7 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
                             })
         bulk_items.append(item)
     #Data is not refreshed!
-    es.bulk(body=bulk_items, refresh=refresh)
+    print es.bulk(body=bulk_items, refresh=refresh)
 
 
 
