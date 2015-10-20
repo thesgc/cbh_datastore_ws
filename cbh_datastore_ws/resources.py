@@ -1142,12 +1142,17 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         desired_format = self.determine_format(request)
         if request.GET.get("standardised", None):
             data.data["standardised"] = True
-        serialized = self.serialize(request, data, desired_format)
+        
         if response_class == http.HttpCreated or response_class == http.HttpAccepted:
+            request.GET = request.GET.copy()
+            request.GET["full"] = True
+            serialized = self.serialize(request, data, desired_format)
             # There has been a new object created - we must now index it
-            elasticsearch_client.index_datapoint_classification(serialized)
+            # elasticsearch_client.index_datapoint_classification(serialized)
             filters = data.obj.all_child_generations_filter_dict()
             index_filter_dict(filters)
+        else:
+            serialized = self.serialize(request, data, desired_format)
         #
         #     #Standardise the output data
         return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
@@ -1326,7 +1331,7 @@ def index_filter_dict(filter_dict, dpcs=None):
     resp = res.create_response(request, bundle)
 
     elasticsearch_client.index_datapoint_classification(
-        resp.content, refresh=False)
+        resp.content, refresh=True)
 
 
 class AttachmentResource(ModelResource):
