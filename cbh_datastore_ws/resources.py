@@ -1634,9 +1634,9 @@ class QueryResource(ModelResource):
         }
         if updated_bundle.data.get("_source", False):
             bod["_source"] = updated_bundle.data.get("_source", False)
-        else:
-            bod["_source"] = {"include": ["l3.*", "attachment_data.*", "id", "level_from", "next_level", "modified",
-                                          "data_form_config", "*.custom_field_config", "resource_uri", "parent_id", "*.Title", "*.resource_uri", "*.id"]}
+        # else:
+        #     bod["_source"] = {"include": ["l3.*", "attachment_data.*", "id", "level_from", "next_level", "modified",
+        #                                   "data_form_config", "*.custom_field_config", "resource_uri", "parent_id", "*.Title", "*.resource_uri", "*.id"]}
 
         data = es.search(
             index_name,
@@ -1732,7 +1732,7 @@ class NestedDataPointClassificationResource(Resource):
         for level in levels:
             post_data = {
                 "_source": {
-                    "include": ["id", "level_from", "next_level", "modified", "data_form_config", "*.custom_field_config", "resource_uri", "parent_id", "*.Title", "*.resource_uri", "*.id"],
+                    "include": [level + ".*", "id", "level_from", "next_level", "modified", "data_form_config", "*.custom_field_config", "resource_uri", "parent_id", "*.Title", "*.resource_uri", "*.id"],
                 },
                 "query":
                 {
