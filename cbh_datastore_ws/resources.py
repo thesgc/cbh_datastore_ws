@@ -1637,7 +1637,6 @@ class QueryResource(ModelResource):
         # else:
         #     bod["_source"] = {"include": ["l3.*", "attachment_data.*", "id", "level_from", "next_level", "modified",
         #                                   "data_form_config", "*.custom_field_config", "resource_uri", "parent_id", "*.Title", "*.resource_uri", "*.id"]}
-
         data = es.search(
             index_name,
             body=bod,
@@ -1726,13 +1725,13 @@ class NestedDataPointClassificationResource(Resource):
         request.GET["size"] = 10000
         objects = {}
         l0_objects = []
-        levels = ["l0", "l1", "l2"]
+        
         project = Project.objects.get(
             project_key=request.GET.get("project_key"))
-        for level in levels:
+        for lev in [0,1,2]:
             post_data = {
                 "_source": {
-                    "include": [level + ".*", "id", "level_from", "next_level", "modified", "data_form_config", "*.custom_field_config", "resource_uri", "parent_id", "*.Title", "*.resource_uri", "*.id"],
+                    "include": [ "id", "level_from", "next_level", "modified", "data_form_config", "*.custom_field_config", "resource_uri", "parent_id", "*.resource_uri", "*.id",  "l%d" % lev+ ".project_data.*",],
                 },
                 "query":
                 {
@@ -1740,7 +1739,7 @@ class NestedDataPointClassificationResource(Resource):
                     {"must": [
                         {"term": {
                             "l0_permitted_projects.raw": pr.get_resource_uri(bundle_or_obj=project)}},
-                        {"term": {"level_from.raw": level}}
+                        {"term": {"level_from.raw": "l%d" % lev}}
                     ]
                     },
 
@@ -1754,13 +1753,13 @@ class NestedDataPointClassificationResource(Resource):
             for hit in resp.data["hits"]["hits"]:
                 hit["_source"]["children"] = []
                 objects[hit["_source"]["id"]] = hit["_source"]
-                if level == "l0":
-                    l0_objects.append(hit["_source"])
+                
 
         for key, obj in objects.items():
             if obj["parent_id"]:
                 parent = objects.get(obj["parent_id"], None)
                 if parent:
                     parent["children"].append(obj)
-
+            else:
+                l0_objects.append(obj)
         return HttpResponse(json.dumps({"objects": l0_objects}))
