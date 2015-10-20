@@ -3,9 +3,7 @@ from django.conf import settings
 import elasticsearch
 from django.core.exceptions import ImproperlyConfigured
 from django_rq import job
-from elasticsearch import helpers
 
-import time
 try:
     ES_PREFIX = settings.ES_PREFIX
 except AttributeError:

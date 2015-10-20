@@ -1,9 +1,9 @@
 from tastypie.authorization import Authorization
-from tastypie.exceptions import TastypieError, Unauthorized, BadRequest
+from tastypie.exceptions import BadRequest
+from tastypie.exceptions import Unauthorized
 import logging
 logger = logging.getLogger(__name__)
 logger_debug = logging.getLogger(__name__)
-from cbh_core_model.models import Project
 from cbh_core_ws.authorization import get_all_project_ids_for_user_perms
 
 

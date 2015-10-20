@@ -1,42 +1,36 @@
 # -*- coding: utf-8 -*-
 from django_rq import job
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url
 import json
-from random import randint
 from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from tastypie.serializers import Serializer
-from cbh_core_ws.resources import CoreProjectResource, CustomFieldConfigResource, DataTypeResource, UserResource, CoreProjectResource, ProjectTypeResource
+from cbh_core_ws.resources import UserResource
 from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission, Query, Attachment
-from cbh_core_model.models import PinnedCustomField, ProjectType, DataFormConfig, Project, CustomFieldConfig
-from cbh_core_ws.serializers import CustomFieldXLSSerializer, ResultsExportXLSSerializer
+from cbh_core_model.models import CustomFieldConfig
+from cbh_core_model.models import DataFormConfig
+from cbh_core_model.models import PinnedCustomField
+from cbh_core_model.models import Project
+from cbh_core_ws.serializers import ResultsExportXLSSerializer
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from django.contrib.auth import get_user_model
 
-from cbh_core_ws.resources import get_field_name_from_key
-from cbh_core_ws.resources import get_key_from_field_name
 import time
-from copy import deepcopy, copy
 from tastypie.exceptions import BadRequest
 
 from tastypie.authorization import Authorization
-from itertools import chain
-from django.db.models import Prefetch
-from tastypie.resources import Bundle
 from tastypie.http import HttpConflict
 from tastypie.exceptions import ImmediateHttpResponse
-import inflection
 
 from cbh_datastore_ws.authorization import DataClassificationProjectAuthorization
 
-from cbh_core_ws.authorization import ProjectAuthorization, ProjectListAuthorization
-from django.http import HttpResponse, HttpResponseNotFound, Http404
+from cbh_core_ws.authorization import ProjectListAuthorization
+from django.http import HttpResponse
 
 
-from django.db.models import Prefetch
 
-from tastypie.utils.mime import determine_format, build_content_type
+from tastypie.utils.mime import build_content_type
 
 from tastypie import http
 
@@ -53,7 +47,6 @@ from django.conf import settings
 import importlib
 import six
 
-from django.core.cache import cache
 from cbh_core_ws.cache import CachedResource
 
 
@@ -602,7 +595,7 @@ The fields that are in this particular custom field config:
 
 class ProjectWithDataFormResource(CachedResource, ModelResource):
     project_type = fields.ForeignKey(
-        "cbh_datastore_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
+        "cbh_core_ws.resources.ProjectTypeResource", 'project_type', blank=False, null=False, full=True)
     data_form_configs = fields.ListField(null=True)
 
     valid_cache_get_keys = ['format', 'limit', 'project_key']
