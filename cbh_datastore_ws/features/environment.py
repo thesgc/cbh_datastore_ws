@@ -100,10 +100,11 @@ created = api_client.post("/dev/datastore/cbh_datapoint_classifications",
 """
 
 
-import os, django
+import os
+import django
 import urlparse
 # This is necessary for all installed apps to be recognized, for some reason.
-#Already set this on vagrant
+# Already set this on vagrant
 #os.environ['DJANGO_SETTINGS_MODULE'] = 'myproject.settings'
 from tastypie.test import TestApiClient
 from tastypie.serializers import Serializer
@@ -120,6 +121,7 @@ try:
 except ImportError:
     from urlparse import urlparse
 import unittest
+
 
 class Tester(unittest.TestCase):
     # def assertEqual(a,b):
@@ -235,7 +237,8 @@ class Tester(unittest.TestCase):
         Given the provided ``data`` as a string, ensures that it is valid JSON &
         can be loaded properly.
         """
-        # Just try the load. If it throws an exception, the test case will fail.
+        # Just try the load. If it throws an exception, the test case will
+        # fail.
         import json
         json.loads(data)
 
@@ -244,7 +247,8 @@ class Tester(unittest.TestCase):
         Given the provided ``data`` as a string, ensures that it is valid XML &
         can be loaded properly.
         """
-        # Just try the load. If it throws an exception, the test case will fail.
+        # Just try the load. If it throws an exception, the test case will
+        # fail.
         self.serializer.from_xml(data)
 
     def assertValidYAML(self, data):
@@ -252,7 +256,8 @@ class Tester(unittest.TestCase):
         Given the provided ``data`` as a string, ensures that it is valid YAML &
         can be loaded properly.
         """
-        # Just try the load. If it throws an exception, the test case will fail.
+        # Just try the load. If it throws an exception, the test case will
+        # fail.
         self.serializer.from_yaml(data)
 
     def assertValidPlist(self, data):
@@ -260,7 +265,8 @@ class Tester(unittest.TestCase):
         Given the provided ``data`` as a string, ensures that it is valid
         binary plist & can be loaded properly.
         """
-        # Just try the load. If it throws an exception, the test case will fail.
+        # Just try the load. If it throws an exception, the test case will
+        # fail.
         self.serializer.from_plist(data)
 
     def assertValidJSONResponse(self, resp):
@@ -310,8 +316,9 @@ class Tester(unittest.TestCase):
         self.assertHttpOK(resp)
         self.assertTrue(resp['Content-Type'].startswith('application/x-plist'))
         self.assertValidPlist(force_text(resp.content))
- 
+
 import os
+
 
 def before_all(context):
     from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
@@ -337,13 +344,14 @@ def before_all(context):
     # call_command("loaddata", "/home/vagrant/chembiohub_ws/src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/newtestfixture.json")
 
 
-
 def before_scenario(context, scenario):
     # Set up the scenario test environment
     from subprocess import Popen, PIPE, call
 
-    call("echo 'drop database if exists tester_cbh_chembl;create database tester_cbh_chembl;'  | psql template1 >/dev/null", shell=True)
-    call("psql -Uchembl tester_cbh_chembl < features/fixtures/testreg.sql >/dev/null", shell=True)
+    call(
+        "echo 'drop database if exists tester_cbh_chembl;create database tester_cbh_chembl;'  | psql template1 >/dev/null", shell=True)
+    call(
+        "psql -Uchembl tester_cbh_chembl < features/fixtures/testreg.sql >/dev/null", shell=True)
 
     django.setup()
     from cbh_datastore_ws.elasticsearch_client import delete_main_index
@@ -351,21 +359,20 @@ def before_scenario(context, scenario):
 
     # django.setup()
 
-    ### Take a TestRunner hostage.
+    # Take a TestRunner hostage.
     from django.test.simple import DjangoTestSuiteRunner
     context.runner = DjangoTestSuiteRunner(interactive=False)
-    
-    ## If you use South for migrations, uncomment this to monkeypatch
-    ## syncdb to get migrations to run.
-    #from south.management.commands import patch_for_test_db_setup
-    #patch_for_test_db_setup()
 
-    
+    # If you use South for migrations, uncomment this to monkeypatch
+    # syncdb to get migrations to run.
+    #from south.management.commands import patch_for_test_db_setup
+    # patch_for_test_db_setup()
+
     # context.runner.setup_test_environment()
-    ### Set up the WSGI intercept "port".
+    # Set up the WSGI intercept "port".
     context.api_client = TestApiClient()
-    context.test_case =  Tester()
-    
+    context.test_case = Tester()
+
     from cbh_chembl_model_extension.models import CBHCompoundBatch
     from cbh_core_model.models import Project, CustomFieldConfig
     from cbh_datastore_model.models import DataPoint, DataPointClassification
@@ -377,12 +384,9 @@ def before_scenario(context, scenario):
     context.runner.setup_test_environment()
 
 
-
-
 def after_scenario(context, scenario):
     # Tear down the scenario test environment.
-    #context.runner.teardown_databases(context.old_db_config)
-
+    # context.runner.teardown_databases(context.old_db_config)
 
     context.api_client.client.logout()
     from django import db
@@ -399,8 +403,9 @@ def after_scenario(context, scenario):
     # context.runner.teardown_test_environment()
     # Bob's your uncle.
 
+
 def after_all(context):
-    from cbh_datastore_model.models import      DataPointClassificationPermission, DataPointClassification
+    from cbh_datastore_model.models import DataPointClassificationPermission, DataPointClassification
     from cbh_datastore_ws.resources import reindex_datapoint_classifications
     from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
     from cbh_datastore_ws.features.steps.permissions import logintestuser

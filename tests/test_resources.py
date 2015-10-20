@@ -1,4 +1,4 @@
-#Tests to implement
+# Tests to implement
 
 '''
 
@@ -14,6 +14,7 @@ from cbh_core_model.models import Project
 from django.db import connection
 import json
 
+
 class DataStoreResourceTest(ResourceTestCase):
     # Use ``fixtures`` & ``urls`` as normal. See Django's ``TestCase``
     # documentation for the gory details.
@@ -25,15 +26,9 @@ class DataStoreResourceTest(ResourceTestCase):
         self.username = 'tester'
         self.password = 'tester'
         from django.core.management import call_command
-        call_command("loaddata", "src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/test_fixtures.json")
+        call_command(
+            "loaddata", "src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/test_fixtures.json")
 
-
-
- 
     def setup_session(self):
-        self.api_client.client.login(username=self.username, password=self.password)
-        
-
-
-
-
+        self.api_client.client.login(
+            username=self.username, password=self.password)

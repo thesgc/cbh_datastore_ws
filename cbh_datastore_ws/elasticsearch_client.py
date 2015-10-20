@@ -9,9 +9,11 @@ import time
 try:
     ES_PREFIX = settings.ES_PREFIX
 except AttributeError:
-    raise ImproperlyConfigured("You must set the index prefix for cbh datastore")
+    raise ImproperlyConfigured(
+        "You must set the index prefix for cbh datastore")
 import json
 ES_MAIN_INDEX_NAME = "cbh_datastore_index"
+
 
 def get_attachment_index_name(aid):
     return "temp_attachment_sheet__%d" % aid
@@ -20,6 +22,7 @@ def get_attachment_index_name(aid):
 def get_index_name():
     return ES_PREFIX + "__" + ES_MAIN_INDEX_NAME
 
+
 def delete_main_index():
     es = elasticsearch.Elasticsearch()
     try:
@@ -27,10 +30,10 @@ def delete_main_index():
     except:
         pass
 
+
 def get_client():
     es = elasticsearch.Elasticsearch()
     return es
-
 
 
 @job
@@ -42,62 +45,59 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
         batches = data["objects"]
 
     es = elasticsearch.Elasticsearch(timeout=60)
-    
+
     store_type = "niofs"
     create_body = {
         "settings": {
             "index.store.type": store_type
         },
-        
-         "mappings" : {
-            "_default_" : {
-               "_all" : {"enabled" : True},
-               
+
+        "mappings": {
+            "_default_": {
+                "_all": {"enabled": True},
+
                 "_source": {
                     "excludes": [
-                      "*.project_data_all",
+                        "*.project_data_all",
                     ]
-                  },
-               "dynamic_templates" : [ 
-                
-                {
-                 "string_fields" : {
-                   "match" : "*",
-                   "match_mapping_type" : "string",
-                   "mapping" : {
-                     "type" : "string","store" : "no", "index_options": "docs","index" : "analyzed", "omit_norms" : True,
-                       "fields" : {
-                         "raw" : {"type": "string","store" : "no", "index" : "not_analyzed", "ignore_above" : 256}
-                       }
-                   }
-                 }
-               } 
-            ]
-        }
+                },
+                "dynamic_templates": [
+
+                    {
+                        "string_fields": {
+                            "match": "*",
+                            "match_mapping_type": "string",
+                            "mapping": {
+                                "type": "string", "store": "no", "index_options": "docs", "index": "analyzed", "omit_norms": True,
+                                "fields": {
+                                    "raw": {"type": "string", "store": "no", "index": "not_analyzed", "ignore_above": 256}
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
         }
     }
     # if(index_name == get_main_index_name()):
     #     create_body['mappings']['_source'] = { 'enabled':False }
     #index_name = get_temp_index_name(request, multi_batch_id)
-    
+
     es.indices.create(
-            index_name,
-            body=create_body,
-            ignore=400)
-    
+        index_name,
+        body=create_body,
+        ignore=400)
+
     bulk_items = []
     for item in batches:
         bulk_items.append({
-                            "index" :
-                                {
-                                    "_id": str(item["id"]), 
-                                    "_index": index_name,
-                                    "_type": "data_point_classifications"
-                                }
-                            })
+            "index":
+            {
+                "_id": str(item["id"]),
+                "_index": index_name,
+                "_type": "data_point_classifications"
+            }
+        })
         bulk_items.append(item)
-    #Data is not refreshed!
+    # Data is not refreshed!
     print es.bulk(body=bulk_items, refresh=refresh)
-
-
-
