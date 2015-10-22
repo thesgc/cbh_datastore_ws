@@ -15,7 +15,7 @@ from cbh_core_ws.serializers import ResultsExportXLSSerializer
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from django.contrib.auth import get_user_model
-
+from fuzzywuzzy import fuzz
 import time
 from tastypie.exceptions import BadRequest
 
@@ -1387,47 +1387,7 @@ class AttachmentResource(ModelResource):
                 self.wrap_view('search_temp_data'), name="search_temp_data"),
         ]
 
-    def full_dehydrate(self, bundle, for_list=False):
-        """
-        Given a bundle with an object instance, extract the information from it
-        to populate the resource.
-        """
-        data = bundle.data
 
-        api_name = self._meta.api_name
-        resource_name = self._meta.resource_name
-
-        # Dehydrate each field.
-        print "dehyd"
-        print time.time()
-        for field_name, field_object in self.fields.items():
-            # If it's not for use in this mode, skip
-            print field_name
-            field_use_in = field_object.use_in
-            if callable(field_use_in):
-                if not field_use_in(bundle):
-                    continue
-            else:
-                if field_use_in not in ['all', 'list' if for_list else 'detail']:
-                    continue
-
-            # A touch leaky but it makes URI resolution work.
-            if field_object.dehydrated_type == 'related':
-                field_object.api_name = api_name
-                field_object.resource_name = resource_name
-            # print time.time()
-            data[field_name] = field_object.dehydrate(
-                bundle, for_list=for_list)
-            # print time.time()
-            # Check for an optional method to do further dehydration.
-            method = getattr(self, "dehydrate_%s" % field_name, None)
-
-            if method:
-                data[field_name] = method(bundle)
-            print time.time()
-        bundle = self.dehydrate(bundle)
-        print time.time()
-        return bundle
 
     def hydrate_created_by(self, bundle):
         user = get_user_model().objects.get(pk=bundle.request.user.pk)
@@ -1442,15 +1402,17 @@ class AttachmentResource(ModelResource):
                 flowfile.path, bundle.data["sheet_name"])
             custom_field_config, created = CustomFieldConfig.objects.get_or_create(
                 created_by=bundle.request.user, name="%d>>%s>>%s" % (flowfile.id, flowfile.path, bundle.data["sheet_name"]))
-            for colindex, pandas_dtype in enumerate(data_types):
-                pcf = PinnedCustomField()
-                pcf.field_type = pcf.pandas_converter(
-                    widths[colindex], pandas_dtype)
-                pcf.name = names[colindex]
-                pcf.position = colindex
-                pcf.custom_field_config = custom_field_config
-                custom_field_config.pinned_custom_field.add(pcf)
-            custom_field_config.save()
+            if  created:
+                
+                for colindex, pandas_dtype in enumerate(data_types):
+                    pcf = PinnedCustomField()
+                    pcf.field_type = pcf.pandas_converter(
+                        widths[colindex], pandas_dtype)
+                    pcf.name = names[colindex]
+                    pcf.position = colindex
+                    pcf.custom_field_config = custom_field_config
+                    custom_field_config.pinned_custom_field.add(pcf)
+                custom_field_config.save()
             bundle.obj.attachment_custom_field_config = custom_field_config
             tempobjects = [{
                 "id": index,
@@ -1468,22 +1430,41 @@ class AttachmentResource(ModelResource):
         last_level = bundle.data["chosen_data_form_config"].data["last_level"]
         fields_being_added_to = bundle.data["chosen_data_form_config"].data[
             last_level].data["project_data_fields"]
-        # bundle.data["chosen_data_form_config"] = bundle.data["chosen_data_form_config"].data["resource_uri"]
-        # Here we add the choices and defaults for the matched fields
-        # for field in
-        # bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
+        bundle.data["chosen_data_form_config"] = bundle.data["chosen_data_form_config"].data["resource_uri"]
+        bundle.data["titleMap"] = [{
+                          "value": choice_of_field.data["resource_uri"],
+                          "name": choice_of_field.data["name"],
+                        } for choice_of_field in fields_being_added_to]
+        bundle.data["enum"] = [choice_of_field.data["resource_uri"]  for choice_of_field in fields_being_added_to]
+        for field in  bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
 
-        #     field.data["mapped_to_form"] = {
-        #           "key": "attachment_field_mapped_to",
-        #           "type": "checkboxes",
-        #           "titleMap": [
-        #             {
-        #               "value": choice_of_field.data["resource_uri"],
-        #               "name": choice_of_field.data["name"],
-        #             }
-        #             for choice_of_field in fields_being_added_to
-        #           ]
-        #         }
+            field.data["mapped_to_form"] = {
+                  "key": "attachment_field_mapped_to",
+                  "type": "radio"
+                }
+
+            max_fuzzy_ratio = 0.9
+            default_set = False
+            field.data["mapped_to_schema"] = {"properties" : {"type": "string", }}
+            for index, choice_of_field in enumerate(fields_being_added_to):
+                # field.data["mapped_to_schema"]["properties"]["enum"].append(
+                #     choice_of_field.data["resource_uri"])
+                
+                if choice_of_field.data["name"].strip() == field.data["name"].strip():
+                    #Exact match case
+                    if not default_set :
+                        field.data["mapped_to_schema"]["properties"]["default"] = choice_of_field.data["resource_uri"]
+                        field.data["mapped_to_schema"]["exact_match"] = True
+                    default_set = True
+                fuzz_ratio =  fuzz.ratio(choice_of_field.data["name"].lower(),field.data["name"].lower())
+                if not default_set and fuzz_ratio > max_fuzzy_ratio:
+                    #Fuzzy match case
+                    field.data["mapped_to_schema"]["properties"]["default"] = choice_of_field.data["resource_uri"]
+                    field.data["mapped_to_schema"]["exact_match"] = False
+                    max_fuzzy_ratio = fuzz_ratio
+
+                    
+                
 
         return bundle
 
@@ -1573,6 +1554,7 @@ class AttachmentResource(ModelResource):
                                                                     bundle.obj.id),
                                                                 refresh=True,
                                                                 decode_json=False)
+            bundle.data["tempobjects"] = []
 
         desired_format = self.determine_format(request)
 
