@@ -2,7 +2,8 @@ from tastypie.serializers import Serializer
 import json
 import dpath
 from cbh_core_model.models import PinnedCustomField
-
+from django.conf import settings
+from django.db import models
 
 class DataPointClassificationSerializer(Serializer):
 
@@ -19,6 +20,11 @@ class DataPointClassificationSerializer(Serializer):
                         cfc = dfc_json[level]
                         if cfc:
                             for field in cfc["project_data_fields"]:
+                                if "uox" in field["name"].lower():
+                                    if "cbh_chembl_ws_extension" in settings.INSTALLED_APPS:
+                                        CBHCompoundBatch = models.get_model("cbh_chembl_model_extension", "cbhcompoundbatch")
+                                        image = CBHCompoundBatch.objects.get_image_for_assayreg(field, dpc, level)
+                                        dpc["imgSrc"] = image
                                 if field["standardised_alias_id"]:
                                     if not key_cache.get(field["standardised_alias_id"], None):
                                         key_cache[field["standardised_alias_id"]] = PinnedCustomField.objects.get(
