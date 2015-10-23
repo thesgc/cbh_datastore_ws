@@ -380,7 +380,15 @@ def before_scenario(context, scenario):
     from django.contrib.auth.models import User, Group
 
     context.response = None
-    context.user = User.objects.get(username="testuser")
+    context.user = User.objects.create(username="testuser")
+    context.user.set_password("testuser")
+    context.superuser = User.objects.create(username="superuser")
+    context.superuser.set_password("superuser")
+    Project.objects.create(created_by=context.superuser, name="AssaysWithoutPermission", id=4)
+    p = Project.objects.create(created_by=context.superuser, name="AssaysReadOnly", id=5)
+    p.make_viewer(context.user)
+    Project.objects.create(created_by=context.user, name="AssaysReadOnly", id=3)
+    
     context.runner.setup_test_environment()
 
 

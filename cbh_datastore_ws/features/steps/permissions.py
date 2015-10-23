@@ -3,7 +3,7 @@ import json
 from cbh_core_model.models import Project, CustomFieldConfig, PinnedCustomField, ProjectType
 from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission
 from django.db import IntegrityError
-
+from django.contrib.auth.models import User
 
 @given("testuser")
 def step(context):

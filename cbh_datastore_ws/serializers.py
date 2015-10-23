@@ -42,5 +42,7 @@ class DataPointClassificationSerializer(Serializer):
                                             dpc, path_to_copy[1:], field_value)
                                 dpc[level]["project_data_all"] = " ".join(
                                     [unicode(value) for key, value in dpc[level]["project_data"].items()])
+                                dpc[level]["project_data_fields_all"] = [
+                                    unicode(key) for key, value in dpc[level]["project_data"].items() if value]
 
         return json.dumps(simple_data)
