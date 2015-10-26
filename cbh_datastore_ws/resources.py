@@ -1350,6 +1350,23 @@ def index_filter_dict(filter_dict, dpcs=None):
         resp.content, refresh=True)
 
 
+def test_fields(bundles_lists, objects):
+    for dictionary in objects:
+        for bundle_list in bundles_lists:
+            value = dictionary["attachment_data"]["project_data"].get(bundle_list[0].data["elasticsearch_fieldname"])
+            test_function = PinnedCustomField.FIELD_TYPE_CHOICES[bundle_list[1].data["field_type"]]["test_datatype"]
+            if test_function(value):
+                pass
+            else:
+                bundle_list[0].data["unmappable_rows"].append(dictionary["id"])
+    for bundle_list in bundles_lists:
+        if len(bundle_list[0].data["unmappable_rows"]) > 0:
+            bundle_list[0].data["attachment_field_mapped_to"] = None
+            bundle_list[0].obj.attachment_field_mapped_to_id = None
+
+
+
+
 class AttachmentResource(ModelResource):
     data_point_classification = fields.ForeignKey(
         "cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification", full=True)
@@ -1454,8 +1471,9 @@ class AttachmentResource(ModelResource):
         bundle.data["enum"] = [choice_of_field.data["resource_uri"]  for choice_of_field in fields_being_added_to]
         
         already_mapped = {}
+        fuzzy_choices = {}
         for field in  bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
-
+            field.data["unmappable_rows"] = []
             field.data["mapped_to_form"] = {
                   "key": "attachment_field_mapped_to",
                   "type": "select"
@@ -1471,32 +1489,36 @@ class AttachmentResource(ModelResource):
                 #     choice_of_field.data["resource_uri"])
                 
                 if choice_of_field.data["name"].strip() == field.data["name"].strip():
-                    print choice_of_field.data["name"]
                     #Exact match case
                     if not choice_of_field.obj.id in  already_mapped:
-                        field.obj.attachment_field_mapped_to_id = choice_of_field.data["id"]
-                        field.obj.save()
+                        fuzzy_choices[choice_of_field.data["resource_uri"]] = (field, choice_of_field, True)
                         already_mapped[choice_of_field.obj.id] = 1
-                        field.data["attachment_field_mapped_to"] = choice_of_field.data["resource_uri"]
-                        field.data["mapped_to_schema"]["exact_match"] = True
+                        
 
-        fuzzy_choices = {}
+        
         for field in  bundle.data["attachment_custom_field_config"].data["project_data_fields"]: 
             for index, choice_of_field in enumerate(fields_being_added_to):
                 fuzz_ratio =  fuzz.ratio(choice_of_field.data["name"].lower(),field.data["name"].lower())
                 if  fuzz_ratio > already_mapped.get(choice_of_field.obj.id, 0.9):
                     #Fuzzy match case - better fuzzy match than any other assigned to this field
                     #We priorities fields earlier in the column headers but replace them if there is a better fuzzy match later
-                    fuzzy_choices[choice_of_field.data["resource_uri"]] = (field, choice_of_field.data["id"])
+                    fuzzy_choices[choice_of_field.data["resource_uri"]] = (field, choice_of_field, False)
                     already_mapped[choice_of_field.obj.id] = fuzz_ratio
                     
         for uri, fieldbits in fuzzy_choices.items():
             fieldbits[0].data["attachment_field_mapped_to"] = uri
-            fieldbits[0].obj.attachment_field_mapped_to_id = fieldbits[1]
+            fieldbits[0].obj.attachment_field_mapped_to_id = fieldbits[1].data["id"]
             fieldbits[0].obj.save()
-            fieldbits[0].data["mapped_to_schema"]["exact_match"] = False
-
+            fieldbits[0].data["mapped_to_schema"]["exact_match"] = fieldbits[2]
+        choices = [(fieldbits[0], fieldbits[1]) for key, fieldbits in fuzzy_choices.items()]
+        test_fields(choices, bundle.data["tempobjects"])
+        for uri, fieldbits in fuzzy_choices.items():
+            fieldbits[0].obj.save()
         return bundle
+
+
+
+
 
     def search_temp_data(self, request, **kwargs):
         attachment_pk = kwargs.get("pk", None)
@@ -1579,6 +1601,7 @@ class AttachmentResource(ModelResource):
             for ob in bundle.data["tempobjects"]:
                 ob["l0_permitted_projects"] = bundle.data[
                     "data_point_classification"].data["l0_permitted_projects"]
+
             elasticsearch_client.index_datapoint_classification({"objects": bundle.data["tempobjects"]},
                                                                 index_name=elasticsearch_client.get_attachment_index_name(
                                                                     bundle.obj.id),
