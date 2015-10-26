@@ -1464,7 +1464,8 @@ class AttachmentResource(ModelResource):
         fields_being_added_to = bundle.data["chosen_data_form_config"].data[
             last_level].data["project_data_fields"]
         bundle.data["chosen_data_form_config"] = bundle.data["chosen_data_form_config"].data["resource_uri"]
-        bundle.data["titleMap"] = [{
+        bundle.data["titleMap"] = [{"value": None, "name": "Pick a field"}]
+        bundle.data["titleMap"] += [{
                           "value": choice_of_field.data["resource_uri"],
                           "name": choice_of_field.data["name"],
                         } for choice_of_field in fields_being_added_to]
