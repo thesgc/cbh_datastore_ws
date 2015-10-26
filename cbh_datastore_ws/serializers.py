@@ -8,6 +8,7 @@ from django.db import models
 class DataPointClassificationSerializer(Serializer):
 
     def to_json(self, data, options=None):
+        '''Prepares the JSON document for indexing in Elasticsearch by adding derived fields to help with the way we search'''
         simple_data = self.to_simple(data, options)
         key_cache = {}
         if simple_data.get("standardised", None):

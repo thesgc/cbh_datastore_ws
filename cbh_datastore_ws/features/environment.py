@@ -378,19 +378,19 @@ def before_scenario(context, scenario):
     from cbh_datastore_model.models import DataPoint, DataPointClassification
 
     from django.contrib.auth.models import User, Group
-
+    context.dfc =None
     context.response = None
     context.user = User.objects.create(username="testuser")
     context.user.set_password("testuser")
+    context.user.save()
     context.superuser = User.objects.create(username="superuser")
     context.superuser.set_password("superuser")
-    Project.objects.create(created_by=context.superuser, name="AssaysWithoutPermission", id=4)
-    p = Project.objects.create(created_by=context.superuser, name="AssaysReadOnly", id=5)
-    p.make_viewer(context.user)
-    Project.objects.create(created_by=context.user, name="AssaysReadOnly", id=3)
+    context.superuser.save()
+    from django.test import Client
+    context.dclient = Client()
+    context.dclient.login(username="testuser", password="testuser")
     
     context.runner.setup_test_environment()
-
 
 def after_scenario(context, scenario):
     # Tear down the scenario test environment.
@@ -413,19 +413,20 @@ def after_scenario(context, scenario):
 
 
 def after_all(context):
-    from cbh_datastore_model.models import DataPointClassificationPermission, DataPointClassification
+    # from cbh_datastore_model.models import DataPointClassificationPermission, DataPointClassification
     from cbh_datastore_ws.resources import reindex_datapoint_classifications
-    from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
-    from cbh_datastore_ws.features.steps.permissions import logintestuser
-    before_scenario(context, None)
-    logintestuser(context)
-    create_realdata(context)
-    project(context)
+    # from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
+    # from cbh_datastore_ws.features.steps.permissions import logintestuser
+    # before_scenario(context, None)
+    # logintestuser(context)
+    # create_realdata(context)
+    # project(context)
 
-    from cbh_chembl_ws_extension.parser import ChemblAPIConverter
-
-    ChemblAPIConverter().write_schema()
+    # from cbh_chembl_ws_extension.parser import ChemblAPIConverter
+    from cbh_core_model.models import SkinningConfig
+    SkinningConfig.objects.create()
+    # ChemblAPIConverter().write_schema()
     reindex_datapoint_classifications()
-    context.api_client.client.logout()
+    # context.api_client.client.logout()
     from django import db
     db.close_connection()

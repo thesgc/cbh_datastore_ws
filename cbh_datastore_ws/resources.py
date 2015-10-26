@@ -77,12 +77,25 @@ class SimpleResourceURIField(fields.ApiField):
         if self.to == 'self':
             self.self_referential = True
 
+
+
+    def contribute_to_class(self, cls, name):
+        super(SimpleResourceURIField, self).contribute_to_class(cls, name)
+
+        # Check if we're self-referential and hook it up.
+        # We can't do this quite like Django because there's no ``AppCache``
+        # here (which I think we should avoid as long as possible).
+        if self.self_referential or self.to == 'self':
+            self._to_class = cls
+
     def convert(self, value):
         """
         Handles conversion between the data found and the type of the field.
         Extending classes should override this method and provide correct
         data coercion.
         """
+        if value is None:
+            return None
         cls = self.to_class()
         resource_uri = cls.get_resource_uri()
         return "%s/%d" % (resource_uri, value)
@@ -167,6 +180,9 @@ class SimpleResourceURIField(fields.ApiField):
         return self._to_class
 
 
+
+
+
 class FlowFileResource(ModelResource):
     sheet_names = fields.ListField()
 
@@ -190,7 +206,7 @@ class FlowFileResource(ModelResource):
         """
         if applicable_filters.get("identifier", None):
             applicable_filters["identifier"] = "%s-%s" % (
-                bundle.request.COOKIES[settings.SESSION_COOKIE_NAME], applicable_filters["identifier"])
+                bundle.request.COOKIES.get(settings.SESSION_COOKIE_NAME, "None"), applicable_filters["identifier"])
         return super(FlowFileResource, self).obj_get(bundle, **applicable_filters)
 
 
@@ -211,9 +227,9 @@ class DataPointProjectFieldResource(ModelResource):
         null=True, blank=False, readonly=False, help_text=None)
     elasticsearch_fieldname = fields.CharField(
         null=True, blank=False, readonly=False, help_text=None)
-    standardised_alias_id = fields.IntegerField(
+    standardised_alias = SimpleResourceURIField('self',
         attribute="standardised_alias_id", null=True, blank=False, readonly=False, help_text=None)
-    attachment_field_mapped_to_id = fields.IntegerField(
+    attachment_field_mapped_to = SimpleResourceURIField('self',
         attribute="attachment_field_mapped_to_id", null=True, blank=False, readonly=False, help_text=None)
 
     class Meta:
@@ -1190,7 +1206,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
                 # Django 1.8: unset related objects default to None, no error
                 related_obj = None
 
-            # We didn't get it, so maybe we created it but haven't saved it
+            # We didn't get it, so maybe we created it but haven't saved itfield.obj.save()
             if related_obj is None:
                 related_obj = bundle.related_objects_to_save.get(
                     field_object.attribute, None)
@@ -1401,9 +1417,9 @@ class AttachmentResource(ModelResource):
             data, names, data_types, widths = get_sheet(
                 flowfile.path, bundle.data["sheet_name"])
             custom_field_config, created = CustomFieldConfig.objects.get_or_create(
-                created_by=bundle.request.user, name="%d>>%s>>%s" % (flowfile.id, flowfile.path, bundle.data["sheet_name"]))
+                created_by=bundle.request.user, name="%s>>%d>>%s>>%s" % (bundle.obj.created, flowfile.id, flowfile.path, bundle.data["sheet_name"]))
             if  created:
-                
+
                 for colindex, pandas_dtype in enumerate(data_types):
                     pcf = PinnedCustomField()
                     pcf.field_type = pcf.pandas_converter(
@@ -1436,35 +1452,49 @@ class AttachmentResource(ModelResource):
                           "name": choice_of_field.data["name"],
                         } for choice_of_field in fields_being_added_to]
         bundle.data["enum"] = [choice_of_field.data["resource_uri"]  for choice_of_field in fields_being_added_to]
+        
+        already_mapped = {}
         for field in  bundle.data["attachment_custom_field_config"].data["project_data_fields"]:
 
             field.data["mapped_to_form"] = {
                   "key": "attachment_field_mapped_to",
-                  "type": "radio"
+                  "type": "select"
                 }
 
-            max_fuzzy_ratio = 0.9
+            
             default_set = False
-            field.data["mapped_to_schema"] = {"properties" : {"type": "string", }}
+            field.data["mapped_to_schema"] = {"properties" : {"type": "string", }, }
+
+            
             for index, choice_of_field in enumerate(fields_being_added_to):
                 # field.data["mapped_to_schema"]["properties"]["enum"].append(
                 #     choice_of_field.data["resource_uri"])
                 
                 if choice_of_field.data["name"].strip() == field.data["name"].strip():
+                    print choice_of_field.data["name"]
                     #Exact match case
-                    if not default_set :
-                        field.data["mapped_to_schema"]["properties"]["default"] = choice_of_field.data["resource_uri"]
+                    if not choice_of_field.obj.id in  already_mapped:
+                        field.obj.attachment_field_mapped_to_id = choice_of_field.data["id"]
+                        field.obj.save()
+                        already_mapped[choice_of_field.obj.id] = 1
+                        field.data["attachment_field_mapped_to"] = choice_of_field.data["resource_uri"]
                         field.data["mapped_to_schema"]["exact_match"] = True
-                    default_set = True
-                fuzz_ratio =  fuzz.ratio(choice_of_field.data["name"].lower(),field.data["name"].lower())
-                if not default_set and fuzz_ratio > max_fuzzy_ratio:
-                    #Fuzzy match case
-                    field.data["mapped_to_schema"]["properties"]["default"] = choice_of_field.data["resource_uri"]
-                    field.data["mapped_to_schema"]["exact_match"] = False
-                    max_fuzzy_ratio = fuzz_ratio
 
+        fuzzy_choices = {}
+        for field in  bundle.data["attachment_custom_field_config"].data["project_data_fields"]: 
+            for index, choice_of_field in enumerate(fields_being_added_to):
+                fuzz_ratio =  fuzz.ratio(choice_of_field.data["name"].lower(),field.data["name"].lower())
+                if  fuzz_ratio > already_mapped.get(choice_of_field.obj.id, 0.9):
+                    #Fuzzy match case - better fuzzy match than any other assigned to this field
+                    #We priorities fields earlier in the column headers but replace them if there is a better fuzzy match later
+                    fuzzy_choices[choice_of_field.data["resource_uri"]] = (field, choice_of_field.data["id"])
+                    already_mapped[choice_of_field.obj.id] = fuzz_ratio
                     
-                
+        for uri, fieldbits in fuzzy_choices.items():
+            fieldbits[0].data["attachment_field_mapped_to"] = uri
+            fieldbits[0].obj.attachment_field_mapped_to_id = fieldbits[1]
+            fieldbits[0].obj.save()
+            fieldbits[0].data["mapped_to_schema"]["exact_match"] = False
 
         return bundle
 

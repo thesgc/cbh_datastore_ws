@@ -3875,7 +3875,7 @@ COPY cbh_datastore_model_datapoint (id, created, modified, project_data, supplem
 -- Name: cbh_datastore_model_datapoint_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chembl
 --
 
-SELECT pg_catalog.setval('cbh_datastore_model_datapoint_id_seq', 1, false);
+SELECT pg_catalog.setval('cbh_datastore_model_datapoint_id_seq', 2, false);
 
 
 --

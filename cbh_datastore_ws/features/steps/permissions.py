@@ -31,10 +31,10 @@ def step(context):
         context.test_case.assertTrue(True)
 
 
-@then("I add permissions for datapointclassification with id 1")
+@then("I add permissions for the root datapointclassification")
 def step(context):
     DataPointClassificationPermission.objects.create(
-        project_id=3, data_point_classification_id=1)
+        project_id=3, data_point_classification=context.l0_dpc)
 
 
 @then("I GET data point classifications with nesting and see the new l1 datapoint as a child")
