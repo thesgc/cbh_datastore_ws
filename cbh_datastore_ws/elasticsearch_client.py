@@ -77,9 +77,6 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
             }
         }
     }
-    # if(index_name == get_main_index_name()):
-    #     create_body['mappings']['_source'] = { 'enabled':False }
-    #index_name = get_temp_index_name(request, multi_batch_id)
 
     es.indices.create(
         index_name,
@@ -97,5 +94,4 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
             }
         })
         bulk_items.append(item)
-    # Data is not refreshed!
-    print es.bulk(body=bulk_items, refresh=refresh)
+        es.bulk(body=bulk_items, refresh=refresh)

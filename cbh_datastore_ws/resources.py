@@ -1153,10 +1153,8 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         bundle.obj = self._meta.object_class()
         for key, value in kwargs.items():
             setattr(bundle.obj, key, value)
-        # print "hydrate"
         t = time.time()
         bundle = self.full_hydrate(bundle)
-        # print t - time.time()
         return self.save(bundle,)
 
     def get_object_list(self, request):
@@ -1212,18 +1210,12 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         self.save_related(bundle)
         # Save the main object.
         obj_id = self.create_identifier(bundle.obj)
-        # print "pre save stuff"
-        # print mt - time.time()
+
         if obj_id not in bundle.objects_saved or bundle.obj._state.adding:
-            # print "saving"
-            t = time.time()
+           
             bundle.obj.save()
-            # print t - time.time()
             bundle.objects_saved.add(obj_id)
-        # bundle.request.GET = bundle.request.GET.copy()
-        # #Set the full parameter in the request GET object when saving stuff
-        # bundle.request.GET["full"] = True
-        # Now pick up the M2M bits.
+       
         self.save_m2m(m2m_bundle)
         return bundle
 
