@@ -1314,9 +1314,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
                 related_resource.full_hydrate(related_bundle)
                 t = time.time()
                 related_resource.save(related_bundle)
-                # print "saving related"
-                # print t-time.time()
-                # print field_name
+
                 related_obj = related_bundle.obj
 
             if related_obj:
@@ -1402,13 +1400,10 @@ def index_filter_dict(filter_dict, dpcs=None):
     another_req = HttpRequest()
     another_req.GET = another_req.GET.copy()
     another_req.GET["id__in"] = ",".join([str(id) for id in list(dfc_ids)])
-    # print "form time"
-    t = time.time()
     dfcr = DataFormConfigResource()
     forms = dfcr.get_list(another_req)
     dataset = json.loads(forms.content)
-    # print t - time.time()
-    # print "dehydrate time"
+
     bundle.data["objects"] = [
         res.full_dehydrate(res.build_bundle(obj=dpc, request=request)) for dpc in dpcs]
 
@@ -1426,7 +1421,6 @@ def test_fields(bundles_lists, objects):
             value = dictionary["project_data"].get(bundle_list[0].data["elasticsearch_fieldname"], "")
             is_valid = bundle_list[1].obj.validate_field(value)
             if not is_valid:
-                print dictionary
                 bundle_list[0].data["unmappable_rows"].append(dictionary["id"])
     for bundle_list in bundles_lists:
         if len(bundle_list[0].data["unmappable_rows"]) > 0:
@@ -1518,10 +1512,11 @@ class AttachmentResource(ModelResource):
                     custom_field_config.pinned_custom_field.add(pcf)
                 custom_field_config.save()
             bundle.obj.attachment_custom_field_config = custom_field_config
+            #Add 2 to the index number in order to make the row number in Excel
             tempobjects = [{
-                "id": index,
+                "id": index +2,
                 
-                "attachment_data": {"project_data": item, "created_by_id": bundle.obj.created_by_id,"id": index, },
+                "attachment_data": {"project_data": item, "created_by_id": bundle.obj.created_by_id,"id": index +2, },
                 "created_by_id": bundle.obj.created_by_id,
             } for index, item in enumerate(data)]
             bundle.data["tempobjects"] = tempobjects
@@ -1600,10 +1595,8 @@ class AttachmentResource(ModelResource):
             request.GET["index_name"] = elasticsearch_client.get_attachment_index_name(
                 int(attachment_json["id"]))
             qr = QueryResource()
-            # print "building bundle"
             resp = qr.alter_detail_data_to_serialize(
                 request, self.build_bundle())
-            # print "yield"
 
             last_level = attachment_json[
                 "chosen_data_form_config"]["last_level"]
@@ -1631,7 +1624,6 @@ class AttachmentResource(ModelResource):
         if attachment_pk:
             attachment_json = json.loads(
                 self.get_detail(request, pk=attachment_pk).content)
-            # print time.time()
             dpc_obj_template = DataPointClassification.objects.get(
                 pk=attachment_json["data_point_classification"]["id"])
             last_level = attachment_json[
