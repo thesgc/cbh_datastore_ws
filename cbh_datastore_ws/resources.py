@@ -28,7 +28,7 @@ from cbh_datastore_ws.authorization import DataClassificationProjectAuthorizatio
 from cbh_core_ws.authorization import ProjectListAuthorization
 from django.http import HttpResponse
 
-
+from copy import copy
 
 from tastypie.utils.mime import build_content_type
 
@@ -48,7 +48,7 @@ import importlib
 import six
 
 from cbh_core_ws.cache import CachedResource
-
+from cbh_core_ws.serializers import CustomFieldXLSSerializer
 
 class SimpleResourceURIField(fields.ApiField):
 
@@ -141,11 +141,14 @@ class SimpleResourceURIField(fields.ApiField):
                 "The '%s' field has no data and doesn't allow a default or null value." % self.instance_name)
         # New code to rerturn URI
         value = bundle.data[self.instance_name]
-        if value.endswith("/"):
+        if value is None:
+            return value
+        if str(value).endswith("/"):
             value = value[:-1]
-        data = value.split("/")
+        data = str(value).split("/")
+        
         return int(data[len(data) - 1])
-
+        
     @property
     def to_class(self):
         # We need to be lazy here, because when the metaclass constructs the
@@ -220,22 +223,22 @@ class DataPointProjectFieldResource(ModelResource):
 
     """Provides the schema information about a field that is required by front end apps"""
     handsontable_column = fields.DictField(
-        null=True, blank=False, readonly=False, help_text=None)
+        null=True, blank=False, help_text=None)
     edit_form = fields.DictField(
-        null=True, blank=False, readonly=False, help_text=None)
+        null=True, blank=False,  help_text=None)
     edit_schema = fields.DictField(
-        null=True, blank=False, readonly=False, help_text=None)
+        null=True, blank=False,  help_text=None)
     elasticsearch_fieldname = fields.CharField(
-        null=True, blank=False, readonly=False, help_text=None)
+        null=True, blank=False,  help_text=None)
     standardised_alias = SimpleResourceURIField('self',
-        attribute="standardised_alias_id", null=True, blank=False, readonly=False, help_text=None)
+        attribute="standardised_alias_id", null=True, blank=False,  help_text=None)
     attachment_field_mapped_to = SimpleResourceURIField('self',
-        attribute="attachment_field_mapped_to_id", null=True, blank=False, readonly=False, help_text=None)
+        attribute="attachment_field_mapped_to_id", null=True, blank=False,  help_text=None)
 
     class Meta:
         queryset = PinnedCustomField.objects.all()
+        always_return_data = True
         resource_name = 'cbh_datapoint_fields'
-        #authorization = Authorization()
         include_resource_uri = True
         allowed_methods = ['get', 'post', 'patch', 'put']
         default_format = 'application/json'
@@ -285,7 +288,66 @@ Things still to be implemented:
 actions form - would be used for mapping functions etc
 autocomplete urls
         '''
-                       }
+         }
+
+
+
+    def is_authenticated(self, request):
+        """
+        Handles checking if the user is authenticated and dealing with
+        unauthenticated users.
+
+        Mostly a hook, this uses class assigned to ``authentication`` from
+        ``Resource._meta``.
+        """
+        # Authenticate the request as needed.
+        return True
+
+  
+    def hydrate_attachment_field_mapped_to(self, bundle):
+        '''Preprocess the attachment custom field config to check that the chosen field matches properly'''
+        if bundle.data["attachment_field_mapped_to"]:
+            related_bundle = self.build_bundle(request=bundle.request,obj=self.get_via_uri(bundle.data["attachment_field_mapped_to"]))
+            dehydr = self.full_dehydrate(related_bundle) 
+            bundles = ((bundle, dehydr),)
+            attachment = Attachment.objects.filter(attachment_custom_field_config_id=bundle.obj.custom_field_config_id)[0]
+            ar = AttachmentResource()
+            attachment_json = json.loads(
+                ar.get_detail(bundle.request, pk=attachment.id).content)
+            hits = ar.retrieve_temp_data(  bundle.request, attachment_json)
+            test_fields(bundles, [dictionary for dictionary in hits])
+        return bundle
+
+
+    def save(self, bundle, skip_errors=False):
+        if bundle.via_uri:
+            return bundle
+
+        self.is_valid(bundle)
+
+        if bundle.errors and not skip_errors:
+            raise ImmediateHttpResponse(response=self.error_response(bundle.request, bundle.errors))
+
+        # Check if they're authorized.
+        # if bundle.obj.pk:
+        #     self.authorized_update_detail(self.get_object_list(bundle.request), bundle)
+        # else:
+        #     self.authorized_create_detail(self.get_object_list(bundle.request), bundle)
+
+        # Save FKs just in case.
+        self.save_related(bundle)
+
+        # Save the main object.
+        obj_id = self.create_identifier(bundle.obj)
+       
+        if obj_id not in bundle.objects_saved or bundle.obj._state.adding:
+            bundle.obj.save()
+            bundle.objects_saved.add(obj_id)
+
+        # Now pick up the M2M bits.
+        m2m_bundle = self.hydrate_m2m(bundle)
+        self.save_m2m(m2m_bundle)
+        return bundle
 
     def get_schema(self, request, **kwargs):
         """
@@ -336,6 +398,21 @@ autocomplete urls
 
         return hotobj
 
+    def authorized_update_detail(self, object_list, bundle):
+        """
+        Handles checking of permissions to see if the user has authorization
+        to PUT this resource.
+        """
+
+        return True
+
+    def authorized_create_detail(self, object_list, bundle):
+        """
+        Handles checking of permissions to see if the user has authorization
+        to PUT this resource.
+        """
+
+        return True
 
 class SimpleCustomFieldConfigResource(ModelResource):
 
@@ -359,8 +436,8 @@ class SimpleCustomFieldConfigResource(ModelResource):
         authorization = Authorization()
         include_resource_uri = True
         default_format = 'application/json'
-        #serializer = CustomFieldXLSSerializer()
-        serializer = Serializer()
+        serializer = CustomFieldXLSSerializer()
+        # serializer = Serializer()
         filtering = {"id": ALL}
         allowed_methods = ['get', 'post', 'put', 'patch']
         description = {'api_dispatch_detail' : '''
@@ -482,7 +559,7 @@ class DataFormConfigResource(ModelResource):
             "l4__data_type",
             "created_by",)
         resource_name = 'cbh_data_form_config'
-        #authorization = Authorization()
+        authorization = Authorization()
         include_resource_uri = True
         allowed_methods = ['get', 'post', 'put']
         default_format = 'application/json'
@@ -1352,17 +1429,19 @@ def index_filter_dict(filter_dict, dpcs=None):
 
 def test_fields(bundles_lists, objects):
     for dictionary in objects:
+
         for bundle_list in bundles_lists:
-            value = dictionary["attachment_data"]["project_data"].get(bundle_list[0].data["elasticsearch_fieldname"])
-            test_function = PinnedCustomField.FIELD_TYPE_CHOICES[bundle_list[1].data["field_type"]]["test_datatype"]
-            if test_function(value):
-                pass
-            else:
+            value = dictionary["project_data"].get(bundle_list[0].data["elasticsearch_fieldname"], "")
+            is_valid = bundle_list[1].obj.validate_field(value)
+            if not is_valid:
+                print dictionary
                 bundle_list[0].data["unmappable_rows"].append(dictionary["id"])
     for bundle_list in bundles_lists:
         if len(bundle_list[0].data["unmappable_rows"]) > 0:
+            bundle_list[0].data["attachment_field_unmappable_to"] = copy(bundle_list[0].data["attachment_field_mapped_to"])
             bundle_list[0].data["attachment_field_mapped_to"] = None
             bundle_list[0].obj.attachment_field_mapped_to_id = None
+
 
 
 
@@ -1449,15 +1528,15 @@ class AttachmentResource(ModelResource):
             bundle.obj.attachment_custom_field_config = custom_field_config
             tempobjects = [{
                 "id": index,
-                "created_by_id": bundle.obj.created_by_id,
-                "attachment_data": {"project_data": item},
+                
+                "attachment_data": {"project_data": item, "created_by_id": bundle.obj.created_by_id,"id": index, },
                 "created_by_id": bundle.obj.created_by_id,
             } for index, item in enumerate(data)]
             bundle.data["tempobjects"] = tempobjects
             bundle.obj.number_of_rows = len(tempobjects)
         return bundle
 
-    def dehydrate(self, bundle):
+    def prepare_newly_saved_data(self, bundle):
         """Get the related fields and make them into a list of possibilities"""
 
         last_level = bundle.data["chosen_data_form_config"].data["last_level"]
@@ -1469,7 +1548,6 @@ class AttachmentResource(ModelResource):
                           "value": choice_of_field.data["resource_uri"],
                           "name": choice_of_field.data["name"],
                         } for choice_of_field in fields_being_added_to]
-        bundle.data["enum"] = [choice_of_field.data["resource_uri"]  for choice_of_field in fields_being_added_to]
         
         already_mapped = {}
         fuzzy_choices = {}
@@ -1493,14 +1571,14 @@ class AttachmentResource(ModelResource):
                     #Exact match case
                     if not choice_of_field.obj.id in  already_mapped:
                         fuzzy_choices[choice_of_field.data["resource_uri"]] = (field, choice_of_field, True)
-                        already_mapped[choice_of_field.obj.id] = 1
+                        already_mapped[choice_of_field.obj.id] = 100
                         
 
         
         for field in  bundle.data["attachment_custom_field_config"].data["project_data_fields"]: 
             for index, choice_of_field in enumerate(fields_being_added_to):
                 fuzz_ratio =  fuzz.ratio(choice_of_field.data["name"].lower(),field.data["name"].lower())
-                if  fuzz_ratio > already_mapped.get(choice_of_field.obj.id, 0.9):
+                if  fuzz_ratio > already_mapped.get(choice_of_field.obj.id, 85):
                     #Fuzzy match case - better fuzzy match than any other assigned to this field
                     #We priorities fields earlier in the column headers but replace them if there is a better fuzzy match later
                     fuzzy_choices[choice_of_field.data["resource_uri"]] = (field, choice_of_field, False)
@@ -1512,13 +1590,35 @@ class AttachmentResource(ModelResource):
             fieldbits[0].obj.save()
             fieldbits[0].data["mapped_to_schema"]["exact_match"] = fieldbits[2]
         choices = [(fieldbits[0], fieldbits[1]) for key, fieldbits in fuzzy_choices.items()]
-        test_fields(choices, bundle.data["tempobjects"])
+        test_fields(choices, [dictionary["attachment_data"] for dictionary in bundle.data["tempobjects"]])
         for uri, fieldbits in fuzzy_choices.items():
             fieldbits[0].obj.save()
         return bundle
 
 
+    def retrieve_temp_data(self,  request, attachment_json):
+        results_to_find = attachment_json["number_of_rows"]
+        frompoint = 0
+        increment = 1000
+        
+        while results_to_find > 0:
+            request.GET = request.GET.copy()
+            request.GET["from"] = frompoint
+            request.GET["size"] = increment
+            request.GET["index_name"] = elasticsearch_client.get_attachment_index_name(
+                int(attachment_json["id"]))
+            qr = QueryResource()
+            # print "building bundle"
+            resp = qr.alter_detail_data_to_serialize(
+                request, self.build_bundle())
+            # print "yield"
 
+            last_level = attachment_json[
+                "chosen_data_form_config"]["last_level"]
+            for hit in resp.data["hits"]["hits"]:
+                yield hit["_source"]["attachment_data"]
+                
+            results_to_find = results_to_find - increment
 
 
     def search_temp_data(self, request, **kwargs):
@@ -1542,49 +1642,35 @@ class AttachmentResource(ModelResource):
             # print time.time()
             dpc_obj_template = DataPointClassification.objects.get(
                 pk=attachment_json["data_point_classification"]["id"])
-            results_to_find = attachment_json["number_of_rows"]
+            last_level = attachment_json[
+                "chosen_data_form_config"]["last_level"]
             projects = [
-                proj for proj in dpc_obj_template.l0_permitted_projects.all()]
-            frompoint = 0
-            increment = 1000
-            result_lists = []
+                proj for proj in dpc_obj_template.l0_permitted_projects.all()
+                ]
+            hits = self.retrieve_temp_data(request, attachment_json)
             ids = []
-            while results_to_find > 0:
-                request.GET = request.GET.copy()
-                request.GET["from"] = frompoint
-                request.GET["size"] = increment
-                request.GET["index_name"] = elasticsearch_client.get_attachment_index_name(
-                    int(attachment_pk))
-                qr = QueryResource()
-                # print "building bundle"
-                resp = qr.alter_detail_data_to_serialize(
-                    request, self.build_bundle())
-                # print "yield"
+            for hitsource in hits:
+                dp = DataPoint(**hitsource)
+                dp.id = None
+                dp.custom_field_config_id = attachment_json[
+                    "chosen_data_form_config"][last_level]["id"]
+                dp.save()
+                dpc_obj_template.created_by_id = request.user.pk
+                dpc_obj_template.id = None
+                dpc_obj_template.pk = None
+                dpc_obj_template.parent_id = attachment_json[
+                    "data_point_classification"]["id"]
+                setattr(dpc_obj_template, attachment_json[
+                        "chosen_data_form_config"]["last_level"] + "_id", dp.id)
 
-                last_level = attachment_json[
-                    "chosen_data_form_config"]["last_level"]
-                for hit in resp.data["hits"]["hits"]:
-                    dp = DataPoint(**hit["_source"]["attachment_data"])
-                    dp.created_by_id = request.user.pk
-                    dp.custom_field_config_id = attachment_json[
-                        "chosen_data_form_config"][last_level]["id"]
-                    dp.save()
-                    dpc_obj_template.created_by_id = request.user.pk
-                    dpc_obj_template.id = None
-                    dpc_obj_template.pk = None
-                    dpc_obj_template.parent_id = attachment_json[
-                        "data_point_classification"]["id"]
-                    setattr(dpc_obj_template, attachment_json[
-                            "chosen_data_form_config"]["last_level"] + "_id", dp.id)
+                dpc_obj_template.data_form_config_id = attachment_json[
+                    "chosen_data_form_config"]["id"]
+                dpc_obj_template.save()
+                for proj in projects:
+                    DataPointClassificationPermission.objects.create(
+                        project=proj, data_point_classification=dpc_obj_template)
+                ids.append(dpc_obj_template.id)
 
-                    dpc_obj_template.data_form_config_id = attachment_json[
-                        "chosen_data_form_config"]["id"]
-                    dpc_obj_template.save()
-                    for proj in projects:
-                        DataPointClassificationPermission.objects.create(
-                            project=proj, data_point_classification=dpc_obj_template)
-                    ids.append(dpc_obj_template.id)
-                results_to_find = results_to_find - increment
             index_filter_dict({"id__in": ids})
             return self.create_response(request, self.build_bundle(request), response_class=http.HttpAccepted)
 
@@ -1597,7 +1683,7 @@ class AttachmentResource(ModelResource):
         Mostly a useful shortcut/hook.
         """
         if response_class == http.HttpCreated:
-            print('response_class is httpCreated')
+            bundle = self.prepare_newly_saved_data(bundle)
             # There has been a new object created - we must now index it
             for ob in bundle.data["tempobjects"]:
                 ob["l0_permitted_projects"] = bundle.data[

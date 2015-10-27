@@ -27,76 +27,6 @@ runner.setup_databases()
 
 
 
-api_client.client.login(username="tester",password="tester")
-
-
-#Feature new project adding first assay
-
-# @step("List the forms that are configured for proja")
-
-import json
-
-result = api_client.client.get("/dev/datastore/cbh_projects_with_forms")
-
-data = json.loads(result.content)
-
-#Select the first project and the first of the enabled forms from that project then check that the form URI is as expected
-assertEquals(data["objects"][0]["enabled_forms"][0], u"/dev/datastore/cbh_data_form_config/4")
-
-
-#@step("User picks a form (e.g. ic50 study) and sees that there is no data for that study")
-
-
-#Assume that the user has picked the uri of the data form
-#Search the data point classifications for those that have been registered for this project
-classif = api_client.client.get("/dev/datastore/cbh_datapoint_classifications?data_form_config_id=4")
-classif = json.loads(classif.content)
-assertEquals(classif["meta"]["total_count"], 0)
-
-#@step("User fills in the first top level form and submits it")
-#System selects the custom field config information for the datapoint that will be connected to l0
-
-
-cf_config_for_l0 = data["objects"][0]["enabled_forms"][0]["l0"]
-
-#Submit a DataPoint (we don't need to do this)
-
-post_data = {"project_data": {}, "supplementary_data" : {}, "custom_field_config" : cf_config_for_l0 }
-
-
-#Submit a full datapoint classification
-
-post_data = {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
-    "l0": {"custom_field_config":{"pk":577},"project_data":{"some_test":"project_data"}},
-    "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] }
-created = api_client.post("/dev/datastore/cbh_datapoint_classifications",
-    format="json", 
-    data= post_data)
-
-#Get the id from the submitted data 
-
-
-#@step("system now lists the new study")
-
-#@step - user tries to submit the same study again
-created = api_client.post("/dev/datastore/cbh_datapoint_classifications",
-    format="json", 
-    data= {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
-    "l0": "/dev/datastore/cbh_datapoints/37",  
-    "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] })
-
-#@step("user now uses the second level form to submit two child objects to the new study")
-
-#We submit 
-
-created = api_client.post("/dev/datastore/cbh_datapoint_classifications",
-    format="json", 
-    data= {"data_form_config":"/dev/datastore/cbh_data_form_config/4", 
-    "l0": {"custom_field_config":{"pk":577}},
-    "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"] })
-
-
-
 """
 
 
@@ -374,9 +304,9 @@ def before_scenario(context, scenario):
     context.test_case = Tester()
 
     from cbh_chembl_model_extension.models import CBHCompoundBatch
-    from cbh_core_model.models import Project, CustomFieldConfig
+    from cbh_core_model.models import Project, CustomFieldConfig, SkinningConfig
     from cbh_datastore_model.models import DataPoint, DataPointClassification
-
+    SkinningConfig.objects.create()
     from django.contrib.auth.models import User, Group
     context.dfc =None
     context.response = None
@@ -385,6 +315,8 @@ def before_scenario(context, scenario):
     context.user.save()
     context.superuser = User.objects.create(username="superuser")
     context.superuser.set_password("superuser")
+    context.superuser.is_superuser = True
+    context.superuser.is_staff = True
     context.superuser.save()
     from django.test import Client
     context.dclient = Client()
@@ -423,8 +355,7 @@ def after_all(context):
     # project(context)
 
     # from cbh_chembl_ws_extension.parser import ChemblAPIConverter
-    from cbh_core_model.models import SkinningConfig
-    SkinningConfig.objects.create()
+    
     # ChemblAPIConverter().write_schema()
     reindex_datapoint_classifications()
     # context.api_client.client.logout()

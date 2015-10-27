@@ -26,12 +26,17 @@ class DataPointClassificationSerializer(Serializer):
                                         CBHCompoundBatch = models.get_model("cbh_chembl_model_extension", "cbhcompoundbatch")
                                         image = CBHCompoundBatch.objects.get_image_for_assayreg(field, dpc, level)
                                         dpc["imgSrc"] = image
-                                if field["standardised_alias_id"]:
-                                    if not key_cache.get(field["standardised_alias_id"], None):
-                                        key_cache[field["standardised_alias_id"]] = PinnedCustomField.objects.get(
-                                            pk=field["standardised_alias_id"])
+                                if field["standardised_alias"]:
+                                    if not key_cache.get(field["standardised_alias"], None):
+                                        value = field["standardised_alias"]
+                                        if value.endswith("/"):
+                                            value = value[:-1]
+                                        data = value.split("/")
+                                        field_id = int(data[len(data) - 1])
+                                        key_cache[field["standardised_alias"]] = PinnedCustomField.objects.get(
+                                            pk=field_id)
                                     path_to_copy = key_cache[
-                                        field["standardised_alias_id"]].field_key
+                                        field["standardised_alias"]].field_key
                                     field_value = dpc[level]["project_data"].get(
                                         field["elasticsearch_fieldname"], None)
                                     if field_value:
