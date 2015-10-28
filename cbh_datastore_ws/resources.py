@@ -1534,7 +1534,7 @@ class AttachmentResource(ModelResource):
         bundle.data["titleMap"] += [{
                           "value": choice_of_field.data["resource_uri"],
                           "name": choice_of_field.data["name"],
-                          "required": choice_of_field["required"]
+                          "required": choice_of_field.data["required"]
                         } for choice_of_field in fields_being_added_to]
         
         already_mapped = {}
@@ -1634,10 +1634,10 @@ class AttachmentResource(ModelResource):
                 ]
             hits = self.retrieve_temp_data(request, attachment_json)
             ids = []
-            # field_mappings = get_field_mappings(attachment_json["attachment_custom_field_config"]["project_data_fields"]
-            #     ,attachment_json["chosen_data_form_config"][last_level]["project_data_fields"])
+            field_mappings = get_field_mappings(attachment_json["attachment_custom_field_config"]["project_data_fields"]
+                ,attachment_json["chosen_data_form_config"][last_level]["project_data_fields"])
             for hitsource in hits:
-                # hitsource["project_data"] = { mapping[1]: hitsource.get(mapping[0]) for mapping in field_mappings }
+                hitsource["project_data"] = { mapping[1]: hitsource.get(mapping[0]) for mapping in field_mappings }
                 dp = DataPoint(**hitsource)
                 dp.id = None
                 dp.custom_field_config_id = attachment_json[
