@@ -1512,7 +1512,7 @@ class AttachmentResource(ModelResource):
                     custom_field_config.pinned_custom_field.add(pcf)
                 custom_field_config.save()
             bundle.obj.attachment_custom_field_config = custom_field_config
-            #Add 2 to the index number in order to make the row number in Excel
+            #Add 2 to the index number in order to make the row number in Excels
             tempobjects = [{
                 "id": index +2,
                 
@@ -1534,6 +1534,7 @@ class AttachmentResource(ModelResource):
         bundle.data["titleMap"] += [{
                           "value": choice_of_field.data["resource_uri"],
                           "name": choice_of_field.data["name"],
+                          "required": choice_of_field["required"]
                         } for choice_of_field in fields_being_added_to]
         
         already_mapped = {}
@@ -1633,7 +1634,10 @@ class AttachmentResource(ModelResource):
                 ]
             hits = self.retrieve_temp_data(request, attachment_json)
             ids = []
+            field_mappings = get_field_mappings(attachment_json["attachment_custom_field_config"]["project_data_fields"]
+                ,attachment_json["chosen_data_form_config"][last_level]["project_data_fields"])
             for hitsource in hits:
+                hitsource["project_data"] = { mapping[1]: hitsource.get(mapping[0]) for mapping in field_mappings }
                 dp = DataPoint(**hitsource)
                 dp.id = None
                 dp.custom_field_config_id = attachment_json[
@@ -1686,6 +1690,14 @@ class AttachmentResource(ModelResource):
 
         return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
+def get_field_mappings(attachment_fields, project_fields):
+    project_fields_dict = {field["resource_uri"] : field["elasticsearch_fieldname"] for field in project_fields}
+    mappings = []
+    for afield in attachment_fields:
+        field_mapped_to_uri = afield.get("attachment_field_mapped_to", None)
+        if field_mapped_to_uri:
+            mappings.append((afield["elasticsearch_fieldname"], project_fields_dict[field_mapped_to_uri]))
+    return mappings
 
 class QueryResource(ModelResource):
 
