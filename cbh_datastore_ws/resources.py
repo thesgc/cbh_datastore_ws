@@ -1637,10 +1637,10 @@ class AttachmentResource(ModelResource):
             field_mappings = get_field_mappings(attachment_json["attachment_custom_field_config"]["project_data_fields"]
                 ,attachment_json["chosen_data_form_config"][last_level]["project_data_fields"])
             for hitsource in hits:
-                hitsource["project_data"] = { mapping[1]: hitsource["project_data"].get(mapping[0], "") for mapping in field_mappings }
-                hitsource["created_by_id"] = request.user.pk
-                dp = DataPoint(**hitsource)
-                dp.id = None
+                defaults = {}
+                defaults["project_data"] = { mapping[1]: hitsource["project_data"].get(mapping[0], "") for mapping in field_mappings }
+                defaults["created_by_id"] = request.user.pk
+                dp = DataPoint(**defaults)
                 dp.custom_field_config_id = attachment_json[
                     "chosen_data_form_config"][last_level]["id"]
                 dp.save()
