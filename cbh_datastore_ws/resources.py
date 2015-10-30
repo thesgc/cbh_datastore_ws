@@ -49,7 +49,7 @@ import six
 
 from cbh_core_ws.cache import CachedResource
 from cbh_core_ws.serializers import CustomFieldXLSSerializer
-
+from xlrd.biffh import XLRDError
 class SimpleResourceURIField(fields.ApiField):
 
     """
@@ -199,7 +199,11 @@ class FlowFileResource(ModelResource):
         filtering = {"identifier": ALL_WITH_RELATIONS}
 
     def dehydrate_sheet_names(self, bundle):
-        return get_sheetnames(bundle.obj.path)
+        try:
+            sheetnames = get_sheetnames(bundle.obj.path)
+            return sheetnames
+        except XLRDError:
+            raise BadRequest("Incorrect format or corrupt file")
 
     def obj_get(self, bundle, **applicable_filters):
         """
