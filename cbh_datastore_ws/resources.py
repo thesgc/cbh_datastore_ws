@@ -1415,7 +1415,7 @@ def index_filter_dict(filter_dict, dpcs=None):
     resp = res.create_response(request, bundle)
 
     elasticsearch_client.index_datapoint_classification(
-        resp.content, refresh=True)
+        resp.content, refresh=False)
 
 
 def test_fields(bundles_lists, objects):
