@@ -3,6 +3,8 @@ from django.conf import settings
 import elasticsearch
 from django.core.exceptions import ImproperlyConfigured
 from django_rq import job
+import json
+from tastypie.exceptions import BadRequest
 
 try:
     ES_PREFIX = settings.ES_PREFIX
@@ -94,4 +96,6 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
             }
         })
         bulk_items.append(item)
-        es.bulk(body=bulk_items, refresh=refresh)
+    data = es.bulk(body=bulk_items, refresh=refresh)
+    if data["errors"]:
+        raise BadRequest(data)

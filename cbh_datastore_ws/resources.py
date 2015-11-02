@@ -1380,7 +1380,7 @@ def reindex_datapoint_classifications():
     except TypeError:
         # Nonetype found therefore dpcs are empty
         elasticsearch_client.index_datapoint_classification(
-            '{"objects" :[]}', refresh=False)
+            '{"objects" :[]}', refresh=True)
 
     time.sleep(1)
 
@@ -1415,7 +1415,7 @@ def index_filter_dict(filter_dict, dpcs=None):
     resp = res.create_response(request, bundle)
 
     elasticsearch_client.index_datapoint_classification(
-        resp.content, refresh=False)
+        resp.content, refresh=True)
 
 
 def test_fields(bundles_lists, objects):
