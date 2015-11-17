@@ -16,7 +16,7 @@ ES_MAIN_INDEX_NAME = "cbh_datastore_index"
 
 
 def get_attachment_index_name(aid):
-    return "temp_attachment_sheet__%d" % aid
+    return "%s__temp_attachment_sheet__%d" % (ES_PREFIX, aid)
 
 
 def get_index_name():
