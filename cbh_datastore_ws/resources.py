@@ -1467,6 +1467,7 @@ class AttachmentResource(ModelResource):
             request.GET["size"] = increment
             request.GET["index_name"] = elasticsearch_client.get_attachment_index_name(
                 int(attachment_json["id"]))
+            request.GET["sort"] = '_id:desc'
             qr = QueryResource()
             resp = qr.alter_detail_data_to_serialize(
                 request, self.build_bundle())
@@ -1474,6 +1475,8 @@ class AttachmentResource(ModelResource):
             last_level = attachment_json[
                 "chosen_data_form_config"]["last_level"]
             for hit in resp.data["hits"]["hits"]:
+            # hits_to_use = resp.data["hits"]["hits"]
+            # for hit in sorted(hits_to_use, key=hits_to_use._source.id, reverse=True):
                 yield hit["_source"]["attachment_data"]
                 
             results_to_find = results_to_find - increment
@@ -1639,7 +1642,7 @@ class QueryResource(ModelResource):
                                         ]
                             }
                     },
-            "sort": updated_bundle.data.get("sort", []),
+            "sort": updated_bundle.data.get("sort", [{"id": {"order": "desc"}}]),
             "highlight": updated_bundle.data.get("highlight", {}),
         }
         if updated_bundle.data.get("_source", False):
