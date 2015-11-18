@@ -1621,18 +1621,30 @@ class QueryResource(ModelResource):
         index_name = elasticsearch_client.get_index_name()
         if request.GET.get("index_name", None):
             index_name = request.GET.get("index_name")
+        query_filter = self.authorization_filter(request, updated_bundle.data.get("filter", {"match_all": {}}))
+
         bod = {
-            "filter": self.authorization_filter(request, updated_bundle.data.get("filter", {"match_all": {}})),
             "aggs": updated_bundle.data.get("aggs", {}),
-            "query": updated_bundle.data.get("query", {"match_all": {}}),
+            "query": {
+                        "bool": 
+                            {
+                                "must" : 
+                                        [
+                                            updated_bundle.data.get("query", {"match_all": {}}),
+                                            {
+                                                "filtered": {
+                                                        "filter": query_filter
+                                                 }
+                                            },
+                                        ]
+                            }
+                    },
             "sort": updated_bundle.data.get("sort", []),
             "highlight": updated_bundle.data.get("highlight", {}),
         }
         if updated_bundle.data.get("_source", False):
             bod["_source"] = updated_bundle.data.get("_source", False)
-        # else:
-        #     bod["_source"] = {"include": ["l3.*", "attachment_data.*", "id", "level_from", "next_level", "modified",
-        #                                   "data_form_config", "*.custom_field_config", "resource_uri", "parent_id", "*.Title", "*.resource_uri", "*.id"]}
+       
         data = es.search(
             index_name,
             body=bod,
