@@ -1755,7 +1755,7 @@ class NestedDataPointClassificationResource(Resource):
                     },
 
                 },
-                "sort": {"created": {"order": "desc", "ignore_unmapped": True}}}
+                "sort": {"created": {"order": "desc", "unmapped_type": "long"}}}
 
             qr = QueryResource()
 
