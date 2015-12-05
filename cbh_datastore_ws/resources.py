@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+
 from django_rq import job
 from django.conf.urls import url
 import json
