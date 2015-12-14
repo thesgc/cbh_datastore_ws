@@ -1,4 +1,3 @@
-
 from django.conf import settings
 import elasticsearch
 from django.core.exceptions import ImproperlyConfigured
@@ -10,8 +9,9 @@ try:
     ES_PREFIX = settings.ES_PREFIX
 except AttributeError:
     raise ImproperlyConfigured(
-        "You must set the index prefix for cbh datastore")
+            "You must set the index prefix for cbh datastore")
 import json
+
 ES_MAIN_INDEX_NAME = "cbh_datastore_index"
 
 
@@ -68,9 +68,11 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
                             "match": "*",
                             "match_mapping_type": "string",
                             "mapping": {
-                                "type": "string", "store": "no", "index_options": "docs", "index": "analyzed", "omit_norms": True,
+                                "type": "string", "store": "no", "index_options": "docs", "index": "analyzed",
+                                "omit_norms": True,
                                 "fields": {
-                                    "raw": {"type": "string", "store": "no", "index": "not_analyzed", "ignore_above": 256}
+                                    "raw": {"type": "string", "store": "no", "index": "not_analyzed",
+                                            "ignore_above": 256}
                                 }
                             }
                         }
@@ -81,19 +83,19 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
     }
 
     es.indices.create(
-        index_name,
-        body=create_body,
-        ignore=400)
+            index_name,
+            body=create_body,
+            ignore=400)
 
     bulk_items = []
     for item in batches:
         bulk_items.append({
             "index":
-            {
-                "_id": str(item["id"]),
-                "_index": index_name,
-                "_type": "data_point_classifications"
-            }
+                {
+                    "_id": str(item["id"]),
+                    "_index": index_name,
+                    "_type": "data_point_classifications"
+                }
         })
         bulk_items.append(item)
     data = es.bulk(body=bulk_items, refresh=refresh)
