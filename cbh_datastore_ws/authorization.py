@@ -4,7 +4,7 @@ from tastypie.exceptions import Unauthorized
 import logging
 logger = logging.getLogger(__name__)
 logger_debug = logging.getLogger(__name__)
-from cbh_core_ws.authorization import get_all_project_ids_for_user_perms
+from cbh_core_ws.authorization import editor_projects, viewer_projects
 
 
 class DataClassificationProjectAuthorization(Authorization):
@@ -32,8 +32,7 @@ class DataClassificationProjectAuthorization(Authorization):
     def read_detail(self, object_list, bundle):
 
         self.login_checks(bundle.request, bundle.obj.__class__)
-        pids = get_all_project_ids_for_user_perms(
-            bundle.request.user.get_all_permissions(), ["editor", "viewer"])
+        pids = editor_projects(bundle.request.user)
         allowed = False
         if bundle.obj.l0_permitted_projects.count() == 0:
             raise BadRequest("You must specify at least one project")
@@ -55,14 +54,12 @@ class DataClassificationProjectAuthorization(Authorization):
         raise BadRequest("Creating a list is not yet authorized")
 
     def project_ids(self, request, ):
-        pids = get_all_project_ids_for_user_perms(
-            request.user.get_all_permissions(), ["editor", "viewer", ])
+        pids = viewer_projects(bundle.request.user)
         return pids
 
     def create_detail(self, object_list, bundle):
         self.login_checks(bundle.request, bundle.obj.__class__)
-        pids = get_all_project_ids_for_user_perms(
-            bundle.request.user.get_all_permissions(), ["editor", ])
+        pids = editor_projects(bundle.request.user)
         allowed = False
         if len(bundle.data["l0_permitted_projects"]) == 0:
             raise BadRequest("You must specify at least one project")
@@ -79,8 +76,7 @@ class DataClassificationProjectAuthorization(Authorization):
 
     def update_detail(self, object_list, bundle):
         self.login_checks(bundle.request, bundle.obj.__class__)
-        pids = get_all_project_ids_for_user_perms(
-            bundle.request.user.get_all_permissions(), ["editor", ])
+        pids = editor_projects(bundle.request.user)
         allowed = False
         if len(bundle.data["l0_permitted_projects"]) == 0:
             raise BadRequest("You must specify at least one project")
