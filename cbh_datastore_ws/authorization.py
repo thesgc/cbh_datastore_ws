@@ -54,7 +54,7 @@ class DataClassificationProjectAuthorization(Authorization):
         raise BadRequest("Creating a list is not yet authorized")
 
     def project_ids(self, request, ):
-        pids = viewer_projects(bundle.request.user)
+        pids = viewer_projects(request.user)
         return pids
 
     def create_detail(self, object_list, bundle):
