@@ -198,8 +198,8 @@ autocomplete urls
 
 
     def save(self, bundle, skip_errors=False):
-        if bundle.via_uri:
-            return bundle
+        # if bundle.via_uri:
+        #     return bundle
 
         self.is_valid(bundle)
 
