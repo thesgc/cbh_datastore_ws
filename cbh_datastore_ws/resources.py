@@ -56,7 +56,7 @@ import six
 from cbh_core_ws.cache import CachedResource
 from cbh_core_ws.serializers import CustomFieldXLSSerializer
 from xlrd.biffh import XLRDError
-from cbh_core_ws.resources import SimpleResourceURIField
+from cbh_core_ws.resources import SimpleResourceURIField, UserHydrate
 
 
 
@@ -292,7 +292,7 @@ autocomplete urls
 
         return True
 
-class SimpleCustomFieldConfigResource(ModelResource):
+class SimpleCustomFieldConfigResource(UserHydrate, ModelResource):
 
     '''Return only the project type and custom field config name as returning the full field list would be '''
     data_type = fields.ForeignKey("cbh_core_ws.resources.DataTypeResource",
@@ -373,11 +373,6 @@ The fields that are in this particular custom field config:
         '''
                        }
 
-    def hydrate_created_by(self, bundle):
-        user = get_user_model().objects.get(pk=bundle.request.user.pk)
-        bundle.obj.created_by = user
-
-        return bundle
 
     def get_schema(self, request, **kwargs):
         """
@@ -686,7 +681,7 @@ project_type : For assay registration project type is not very important - it is
         return self.create_response(request, self.build_schema())
 
 
-class DataPointResource(ModelResource):
+class DataPointResource(UserHydrate, ModelResource):
     created_by = fields.ForeignKey(
         "cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, default=None,)
     custom_field_config = SimpleResourceURIField(
@@ -730,11 +725,7 @@ It has the following fields:
         bundle.obj.project_data = {key: unicode(value) for key, value in bundle.data["project_data"].items()}
         return bundle
 
-    def hydrate_created_by(self, bundle):
-        user = get_user_model().objects.get(pk=bundle.request.user.pk)
-        bundle.obj.created_by = user
 
-        return bundle
 
     def get_schema(self, request, **kwargs):
         """
@@ -758,7 +749,7 @@ class MyForeignKey(fields.ForeignKey):
         return bundle.request.GET.get("full", None)
 
 
-class DataPointClassificationResource(ModelResource):
+class DataPointClassificationResource(UserHydrate, ModelResource):
 
     '''Returns individual rows in the object graph - note that the rows returned are denormalized data points '''
     created_by = fields.ForeignKey(
@@ -1044,10 +1035,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
             **applicable_filters).filter(l0_permitted_projects__id__in=set(pids))
         return dataset.order_by("-modified")
 
-    def hydrate_created_by(self, bundle):
-        user = get_user_model().objects.get(pk=bundle.request.user.pk)
-        bundle.obj.created_by = user
-        return bundle
+
 
     def dehydrate_level_from(self, bundle):
         return bundle.obj.level_from()
@@ -1068,8 +1056,8 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
 
     def save(self, bundle, skip_errors=False):
         mt = time.time()
-        if bundle.via_uri:
-            return bundle
+        # if bundle.via_uri:
+        #     return bundle
         self.is_valid(bundle)
 
         if bundle.errors and not skip_errors:
@@ -1310,7 +1298,7 @@ def test_fields(bundles_lists, objects):
 
 
 
-class AttachmentResource(ModelResource):
+class AttachmentResource(UserHydrate, ModelResource):
     data_point_classification = fields.ForeignKey(
         "cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification", full=True)
     flowfile = fields.ForeignKey(
@@ -1365,10 +1353,6 @@ class AttachmentResource(ModelResource):
 
 
 
-    def hydrate_created_by(self, bundle):
-        user = get_user_model().objects.get(pk=bundle.request.user.pk)
-        bundle.obj.created_by = user
-        return bundle
 
     def hydrate(self, bundle):
         bundle.obj.flowfile = self.flowfile.hydrate(bundle).obj
@@ -1581,7 +1565,7 @@ def get_field_mappings(attachment_fields, project_fields):
             mappings.append((afield["elasticsearch_fieldname"], project_fields_dict[field_mapped_to_uri]))
     return mappings
 
-class QueryResource(ModelResource):
+class QueryResource(UserHydrate, ModelResource):
 
     """ A resource which saves a query for elasticsearch and then returns the result of the query"""
     created_by = fields.ForeignKey(
@@ -1663,10 +1647,6 @@ class QueryResource(ModelResource):
         updated_bundle.data.update(data)
         return updated_bundle
 
-    def hydrate_created_by(self, bundle):
-        user = get_user_model().objects.get(pk=bundle.request.user.pk)
-        bundle.obj.created_by = user
-        return bundle
 
     def save(self, bundle, skip_errors=False):
         ''' Add a random ID for now as we dont need to save the object '''
