@@ -18,6 +18,6 @@ def step(context):
             "flowIdentifier": "137227-newtestxlsx",
             "flowRelativePath": "newtest.xlsx",
             "flowTotalChunks": 1})
-    resp = context.api_client.get("/dev/datastore/cbh_flowfiles/137227-newtestxlsx", 
+    resp = context.api_client.get("/dev/api/datastore/cbh_flowfiles/137227-newtestxlsx", 
         format="json", 
         follow=True)
