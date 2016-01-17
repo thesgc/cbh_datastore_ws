@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import time
+import os
 
 """environment -- environmental setup for Django+Behave+Mechanize
 
@@ -248,7 +249,8 @@ class Tester(unittest.TestCase):
         self.assertValidPlist(force_text(resp.content))
 
 import os
-
+CONDA_ENV_PATH = os.getenv("CONDA_ENV_PATH")
+host = CONDA_ENV_PATH + "/var/postgressocket/"
 
 def before_all(context):
     from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
@@ -277,29 +279,23 @@ def before_all(context):
 def before_scenario(context, scenario):
     # Set up the scenario test environment
     from subprocess import Popen, PIPE, call
-
+    
     call(
-        "echo 'drop database if exists tester_cbh_chembl;create database tester_cbh_chembl;'  | psql template1 >/dev/null", shell=True)
+        "dropdb tester_cbh_chembl --if-exists -h %s" % host , shell=True)
     call(
-        "psql -Uchembl tester_cbh_chembl < features/fixtures/testreg.sql >/dev/null", shell=True)
+        "createdb tester_cbh_chembl -h %s" % host, shell=True)
+    call(
+        "psql -h %s tester_cbh_chembl < features/fixtures/testreg.sql" % host, shell=True)
 
     django.setup()
     from cbh_datastore_ws.elasticsearch_client import delete_main_index
     delete_main_index()
 
-    # django.setup()
 
-    # Take a TestRunner hostage.
     from django.test.simple import DjangoTestSuiteRunner
     context.runner = DjangoTestSuiteRunner(interactive=False)
 
-    # If you use South for migrations, uncomment this to monkeypatch
-    # syncdb to get migrations to run.
-    #from south.management.commands import patch_for_test_db_setup
-    # patch_for_test_db_setup()
 
-    # context.runner.setup_test_environment()
-    # Set up the WSGI intercept "port".
     context.api_client = TestApiClient()
     context.test_case = Tester()
 
@@ -332,31 +328,13 @@ def after_scenario(context, scenario):
     from django import db
     db.close_connection()
     from subprocess import call
-    # call("echo 'drop database if exists tester_cbh_chembl;'  | psql template1 >/dev/null", shell=True)
 
-    # User.objects.all().exclude(id=-1).delete()
-    # CustomFieldConfig.objects.exclude(id=-1).all().delete()
-    # Group.objects.all().delete()
-    # CBHCompoundBatch.objects.all().delete()
-    # DataPointClassification.objects.all().delete()
-    # DataPoint.objects.exclude(id=1).delete()
-    # context.runner.teardown_test_environment()
-    # Bob's your uncle.
 
 
 def after_all(context):
     # from cbh_datastore_model.models import DataPointClassificationPermission, DataPointClassification
     from cbh_datastore_ws.resources import reindex_datapoint_classifications
-    # from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
-    # from cbh_datastore_ws.features.steps.permissions import logintestuser
-    # before_scenario(context, None)
-    # logintestuser(context)
-    # create_realdata(context)
-    # project(context)
 
-    # from cbh_chembl_ws_extension.parser import ChemblAPIConverter
-    
-    # ChemblAPIConverter().write_schema()
     reindex_datapoint_classifications()
     # context.api_client.client.logout()
     from django import db
