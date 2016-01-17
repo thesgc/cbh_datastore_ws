@@ -10,7 +10,7 @@ from django.db import IntegrityError
 @given("I upload a file to flowfiles")
 def step(context):
     with open("src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/sample_data.xlsx") as f:
-        resp = context.dclient.post("/dev/flow/upload/", {"file": f, "flowChunkNumber": 1, 
+        resp = context.dclient.post("/dev/api/flow/upload/", {"file": f, "flowChunkNumber": 1, 
             "flowChunkSize": 22222222, 
             "flowCurrentChunkSize": 137227,
             "flowTotalSize": 137227,
