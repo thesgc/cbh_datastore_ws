@@ -30,3 +30,5 @@ api.register(AttachmentResource())
 
 
 urlpatterns = api.urls
+
+print(urlpatterns)
