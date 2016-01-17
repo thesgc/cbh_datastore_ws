@@ -302,7 +302,7 @@ def before_scenario(context, scenario):
     from cbh_chembl_model_extension.models import CBHCompoundBatch
     from cbh_core_model.models import Project, CustomFieldConfig, SkinningConfig
     from cbh_datastore_model.models import DataPoint, DataPointClassification
-    SkinningConfig.objects.create()
+    SkinningConfig.objects.get_or_create(id=1)
     from django.contrib.auth.models import User, Group
     context.dfc =None
     context.response = None
