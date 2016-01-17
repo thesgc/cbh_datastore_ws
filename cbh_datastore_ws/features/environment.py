@@ -287,7 +287,6 @@ def before_scenario(context, scenario):
         "dropdb dev_db --if-exists -h %s" % host , shell=True)
     call(
         "createdb dev_db -h %s" % host, shell=True)
-        psql  -h $CONDA_ENV_PATH/var/postgressocket -c "create extension hstore;create extension rdkit;" ${ENV_NAME}_db
 
     call('psql -h %s -c "create extension hstore;create extension rdkit;" dev_db' % host, shell=True)
 
