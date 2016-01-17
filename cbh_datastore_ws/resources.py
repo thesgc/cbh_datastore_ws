@@ -100,11 +100,11 @@ class StandardisedForeignKey(fields.ForeignKey):
 class DataPointProjectFieldResource(ModelResource):
 
     """Provides the schema information about a field that is required by front end apps"""
-    handsontable_column = fields.CBHDictField(
+    handsontable_column = CBHDictField(
         null=True, blank=False, help_text=None)
-    edit_form = fields.CBHDictField(
+    edit_form = CBHDictField(
         null=True, blank=False,  help_text=None)
-    edit_schema = fields.CBHDictField(
+    edit_schema = CBHDictField(
         null=True, blank=False,  help_text=None)
     elasticsearch_fieldname = fields.CharField(
         null=True, blank=False,  help_text=None)
@@ -686,9 +686,9 @@ class DataPointResource(UserHydrate, ModelResource):
         "cbh_core_ws.resources.UserResource", 'created_by', null=True, blank=True, default=None,)
     custom_field_config = SimpleResourceURIField(
         "cbh_datastore_ws.resources.SimpleCustomFieldConfigResource", 'custom_field_config_id')
-    project_data = fields.CBHDictField(
+    project_data = CBHDictField(
         attribute='project_data', null=True, blank=False, readonly=False, help_text=None)
-    supplementary_data = fields.CBHDictField(
+    supplementary_data = CBHDictField(
         attribute='supplementary_data', null=True, blank=False, readonly=False, help_text=None)
 
     class Meta:
@@ -1570,9 +1570,9 @@ class QueryResource(UserHydrate, ModelResource):
     """ A resource which saves a query for elasticsearch and then returns the result of the query"""
     created_by = fields.ForeignKey(
         "cbh_core_ws.resources.UserResource", 'created_by')
-    query = fields.CBHDictField(attribute='query')
-    aggs = fields.CBHDictField(attribute='aggs')
-    filter = fields.CBHDictField(attribute='filter')
+    query = CBHDictField(attribute='query')
+    aggs = CBHDictField(attribute='aggs')
+    filter = CBHDictField(attribute='filter')
 
     class Meta:
         queryset = Query.objects.all()
