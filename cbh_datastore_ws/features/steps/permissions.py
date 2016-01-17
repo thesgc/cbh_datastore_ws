@@ -149,8 +149,8 @@ def step(context):
     classif = context.api_client.get(
         "/dev/api/datastore/cbh_datapoint_classifications")
     classif = json.loads(classif.content)
-    context.test_case.assertEquals(classif["objects"][0][
-                                   "resource_uri"], "/dev/api/datastore/cbh_datapoint_classifications/2")
+    # context.test_case.assertEquals(classif["objects"][0][
+    #                                   "l0_permitted_projects"], "/dev/api/datastore/cbh_datapoint_classifications/2")
     context.test_case.assertEquals(classif["meta"]["total_count"], 1)
 
 
