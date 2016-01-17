@@ -254,7 +254,6 @@ host = CONDA_ENV_PATH + "/var/postgressocket/"
 
 def before_all(context):
     from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "deployment.settings.default")
     pass
     # Even though DJANGO_SETTINGS_MODULE is set, this may still be
     # necessary. Or it may be simple CYA insurance.
