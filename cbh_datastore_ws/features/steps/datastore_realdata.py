@@ -86,7 +86,7 @@ def project(context):
     tree_builder = {}
     context.dfc.get_all_ancestor_objects(context,tree_builder=tree_builder)
 
-    l0_data = parser.get_sheet("features/fixtures/sample_data.xlsx", "Project")
+    l0_data = parser.get_sheet("src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/sample_data.xlsx", "Project")
     l0_datapoint, created = DataPoint.objects.get_or_create(
         custom_field_config=context.dfc.l0, project_data=l0_data[0][0], created_by=context.user, )
     context.l0_dpc = DataPointClassification.objects.create(
