@@ -22,13 +22,10 @@ api.register(NestedDataPointClassificationResource())
 api.register(ProjectWithDataFormResource())
 api.register(DataFormConfigResource())
 api.register(DataPointProjectFieldResource())
-# api.register(DataPointClassificationPermissionResource())
 api.register(DataPointResource())
 api.register(SimpleCustomFieldConfigResource())
 api.register(FlowFileResource())
-
 api.register(QueryResource())
-
 api.register(AttachmentResource())
 
 
