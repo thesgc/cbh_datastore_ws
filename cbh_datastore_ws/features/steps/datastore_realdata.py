@@ -10,6 +10,7 @@ from collections import OrderedDict
 def create_realdata(context):
     from cbh_core_model.models import Project, CustomFieldConfig, PinnedCustomField, ProjectType, DataType, DataFormConfig
     from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission
+    from django.conf.settings import BASE_DIR
     setup = OrderedDict(
         [("l0", {"dtype": "Project", }),
          ("l1", {"dtype": "Sub-project", }),
@@ -22,7 +23,7 @@ def create_realdata(context):
             name=setup[level]["dtype"],)
         defname = "%s data def" % setup[level]["dtype"]
         data = parser.get_custom_field_config(
-            "features/fixtures/sample_data.xlsx", defname)
+            BASE_DIR + "/src/cbh_datastore_ws/cbh_datastore_ws/features/fixtures/sample_data.xlsx", defname)
         setup[level]["cfc"] = CustomFieldConfig.objects.create(
             name=defname, created_by=context.user, data_type=setup[level]["dtypeobj"][0])
         for index, d in enumerate(data):
