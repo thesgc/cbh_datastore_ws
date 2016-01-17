@@ -254,6 +254,10 @@ host = CONDA_ENV_PATH + "/var/postgressocket/"
 
 def before_all(context):
     from cbh_datastore_ws.features.steps.datastore_realdata import create_realdata, project
+    from subprocess import Popen, PIPE, call
+    call(
+        "pg_dump dev_db -Fc -h %s > /tmp/mydevdb.dump" % host , shell=True)    
+    
     pass
     # Even though DJANGO_SETTINGS_MODULE is set, this may still be
     # necessary. Or it may be simple CYA insurance.
@@ -278,14 +282,13 @@ def before_all(context):
 def before_scenario(context, scenario):
     # Set up the scenario test environment
     from subprocess import Popen, PIPE, call
+
     call(
-        "pg_dump dev_db -Fc -h %s > /tmp/mydevdb.dump" % host , shell=True)
+        "dropdb dev_db --if-exists -h %s" % host , shell=True)
     call(
-        "dropdb tester_cbh_chembl --if-exists -h %s" % host , shell=True)
+        "createdb dev_db -h %s" % host, shell=True)
     call(
-        "createdb tester_cbh_chembl -h %s" % host, shell=True)
-    call(
-        "pg_restore -Fc -h %s tester_cbh_chembl < /tmp/mydevdb.dump" % host, shell=True)
+        "pg_restore -Fc -h %s -d dev_db < /tmp/mydevdb.dump" % host, shell=True)
 
     django.setup()
     from cbh_datastore_ws.elasticsearch_client import delete_main_index
