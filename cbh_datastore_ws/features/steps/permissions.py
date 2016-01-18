@@ -137,7 +137,7 @@ def step(context):
 
 @given("a datapointclassification is linked to a project I do not have access to and another is in readonly")
 def step(context):
-
+    
     DataPointClassificationPermission.objects.create(
         project_id=3, data_point_classification_id=2)
     DataPointClassificationPermission.objects.create(
