@@ -1379,7 +1379,6 @@ class BaseAttachmentResource(ModelResource):
     attachment_custom_field_config = fields.ForeignKey(
         SimpleCustomFieldConfigResource, readonly=True, attribute="attachment_custom_field_config", full=True)
     created_by = fields.ForeignKey(UserResource, "created_by")
-    attachment_metadata = fields.ToOneField("cbh_datastore_ws.resources.DataPointResource", attribute="attachment_metadata", full=True)
 
     class Meta:
         queryset = Attachment.objects.all().select_related(
@@ -1413,6 +1412,7 @@ class BaseAttachmentResource(ModelResource):
         default_format = 'application/json'
         serializer = Serializer()
         authentication = SessionAuthentication()
+        #need to replace this authorization with a custom one to check user can access the DPC
         authorization = Authorization()
 
     def prepend_urls(self):
@@ -1422,6 +1422,50 @@ class BaseAttachmentResource(ModelResource):
             # url(r"^(?P<resource_name>%s)__(?P<pk>\d[\d]*)/_search$" % self._meta.resource_name,
             #     self.wrap_view('search_temp_data'), name="search_temp_data"),
         ]
+
+    #this is to render
+    def get_detail(self, request, **kwargs):
+        """
+        Returns a single serialized resource.
+        Calls ``cached_obj_get/obj_get`` to provide the data, then handles that result
+        set and serializes it.
+        Should return a HttpResponse (200 OK).
+        """
+        basic_bundle = self.build_bundle(request=request)
+
+        try:
+            obj = self.cached_obj_get(bundle=basic_bundle, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        bundle = self.build_bundle(obj=obj, request=request)
+        bundle = self.full_dehydrate(bundle)
+        bundle = self.alter_detail_data_to_serialize(request, bundle)
+
+        #return our response here
+        #get extension from the FlowFile object
+        #match this to a dictionary of mimetypes with extensions
+        fb = open(flowfile.file).read()
+        return HttpResponse(fb, mimetype="image/png")
+
+
+        #return self.create_response(request, bundle)
+
+
+    # #override create_response
+    # def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+    #     """
+    #     Extracts the common "which-format/serialize/return-response" cycle.
+    #     Mostly a useful shortcut/hook.
+    #     """
+    #     #if mime type is specified in kwargs
+
+    #     #if mime type not specified in url, do default
+    #     desired_format = self.determine_format(request)
+    #     serialized = self.serialize(request, data, desired_format)
+    #     return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
 
 
