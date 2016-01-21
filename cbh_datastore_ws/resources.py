@@ -1360,24 +1360,16 @@ class AttachmentResource(UserHydrate, ModelResource):
         if bundle.obj.attachment_custom_field_config_id is None:
             data, names, data_types, widths = get_sheet(
                 flowfile.path, bundle.data["sheet_name"])
-            custom_field_config, created = CustomFieldConfig.objects.get_or_create(
-                created_by=bundle.request.user, name="%s>>%d>>%s>>%s" % (bundle.obj.created, flowfile.id, flowfile.path, bundle.data["sheet_name"]))
-            if  created:
-
-                for colindex, pandas_dtype in enumerate(data_types):
-                    pcf = PinnedCustomField()
-                    pcf.field_type = pcf.pandas_converter(
-                        widths[colindex], pandas_dtype)
-                    pcf.name = names[colindex]
-                    pcf.position = colindex
-                    pcf.custom_field_config = custom_field_config
-                    custom_field_config.pinned_custom_field.add(pcf)
-                custom_field_config.save()
-            bundle.obj.attachment_custom_field_config = custom_field_config
+            name = "%s>>%d>>%s>>%s" % (bundle.obj.created, flowfile.id, flowfile.path, bundle.data["sheet_name"])
+            bundle.obj.attachment_custom_field_config = CustomFieldConfig.objects.from_schema_lists(data, 
+                                                                                                    names, 
+                                                                                                    data_types,
+                                                                                                    widths,
+                                                                                                     name, 
+                                                                                                     bundle.request.user)
             #Add 2 to the index number in order to make the row number in Excels
             tempobjects = [{
                 "id": index +2,
-                
                 "attachment_data": {"project_data": item, "created_by_id": bundle.obj.created_by_id,"id": index +2, },
                 "created_by_id": bundle.obj.created_by_id,
             } for index, item in enumerate(data)]
