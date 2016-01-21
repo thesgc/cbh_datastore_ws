@@ -21,5 +21,7 @@ api.register(SimpleCustomFieldConfigResource())
 api.register(FlowFileResource())
 api.register(QueryResource())
 api.register(AttachmentResource())
+api.register(BaseAttachmentResource())
+#api.register(DraftDataPointResource())
 
 urlpatterns = api.urls
