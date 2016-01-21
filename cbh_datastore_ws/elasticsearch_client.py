@@ -88,16 +88,18 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
             ignore=400)
 
     bulk_items = []
-    for item in batches:
-        bulk_items.append({
-            "index":
-                {
-                    "_id": str(item["id"]),
-                    "_index": index_name,
-                    "_type": "data_point_classifications"
-                }
-        })
-        bulk_items.append(item)
-    data = es.bulk(body=bulk_items, refresh=refresh)
-    if data["errors"]:
-        raise BadRequest(data)
+    if len(batches) > 0:
+        for item in batches:
+            bulk_items.append({
+                "index":
+                    {
+                        "_id": str(item["id"]),
+                        "_index": index_name,
+                        "_type": "data_point_classifications"
+                    }
+            })
+            bulk_items.append(item)
+        data = es.bulk(body=bulk_items, refresh=refresh)
+        if data["errors"]:
+            raise BadRequest(data)
+

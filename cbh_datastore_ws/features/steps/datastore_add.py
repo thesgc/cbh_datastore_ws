@@ -27,17 +27,17 @@ def step(context):
 @then("I get a project list Given I am an admin JSON data is available The first form from the test fixtures has the given URI")
 def step(context):
     """"""
-    result = context.api_client.get("/dev/datastore/cbh_projects_with_forms")
+    result = context.api_client.get("/dev/api/datastore/cbh_projects_with_forms")
 
     data = json.loads(result.content)
     context.test_case.assertEqual(data["objects"][0]["enabled_forms"][0][
-                                  "resource_uri"], u"/dev/datastore/cbh_data_form_config/4")
+                                  "resource_uri"], u"/dev/api/datastore/cbh_data_form_config/4")
 
 
 @then("Given I have loaded one classification record into the database  Given I am an adminWhen I call get classifier I see no records")
 def step(context):
     classif = context.api_client.get(
-        "/dev/datastore/cbh_datapoint_classifications")
+        "/dev/api/datastore/cbh_datapoint_classifications")
     classif = json.loads(classif.content)
     context.test_case.assertEquals(classif["meta"]["total_count"], 0)
 
@@ -45,16 +45,16 @@ def step(context):
 @then("I post and the response is valid JSON")
 def step(context):
     print("mytest")
-    post_data = {"data_form_config": "/dev/datastore/cbh_data_form_config/4",
+    post_data = {"data_form_config": "/dev/api/datastore/cbh_data_form_config/4",
 
-                 "l0_permitted_projects": ["/dev/datastore/cbh_projects_with_forms/8"]}
-    created = context.api_client.post("/dev/datastore/cbh_datapoint_classifications",
+                 "l0_permitted_projects": ["/dev/api/datastore/cbh_projects_with_forms/8"]}
+    created = context.api_client.post("/dev/api/datastore/cbh_datapoint_classifications",
                                       format="json",
                                       data=post_data)
     context.test_case.assertHttpCreated(created)
     data = json.loads(created.content)
     context.test_case.assertEquals(
-        data["l0_permitted_projects"], ["/dev/datastore/cbh_projects_with_forms/8"])
+        data["l0_permitted_projects"], ["/dev/api/datastore/cbh_projects_with_forms/8"])
 
 
 # @given("a valid project myproj where i have editor permissions as creator")
