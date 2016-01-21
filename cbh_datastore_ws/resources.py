@@ -1231,6 +1231,81 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
         # self.authorized_read_detail(self.get_object_list(bundle.request), bundle)
         return self.create_response(request, self.build_schema())
 
+    ###
+    # DRAFT STUFF HERE
+    ###
+    import time
+    current_milli_time = lambda: int(round(time.time() * 1000))
+
+    #using this to accept autosave/draft save requests
+    #and also return a list of saved drafts if required
+    #and also return a single cached draft if reverting to a previous version
+    class dict2obj(object):
+        """
+        Convert dictionary to object
+        @source http://stackoverflow.com/a/1305561/383912
+        """
+        def __init__(self, d):
+            self.__dict__['d'] = d
+
+        def __getattr__(self, key):
+            value = self.__dict__['d'][key]
+            if type(value) == type({}):
+                return dict2obj(value)
+
+            return value
+
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/save_draft/$" % self._meta.resource_name,
+                self.wrap_view('save_draft'), name="api_save_draft"),
+            url(r"^(?P<resource_name>%s)/get_draft_list/$" % self._meta.resource_name,
+                self.wrap_view('get_draft_list'), name="api_get_draft_list"),
+            url(r"^(?P<resource_name>%s)/get_draft/$" % self._meta.resource_name,
+                self.wrap_view('get_draft'), name="api_get_draft"),
+
+        ]
+
+    def save_draft(self, request, **kwargs):
+        #take the json data supplied and save to the session
+        #use the timestamp or current millis as a key - may be able to generate this in the front end
+        #print(request.GET)
+
+        if request.GET.get('content'):
+            #does drafts exist? if not, create it
+            drafts_obj = request.session.get('drafts', [])
+            if drafts_obj.length > 0:
+                request.session['drafts'] = []
+
+            draft_obj = {}
+            draft_obj['draft_key'] = current_milli_time()
+            draft_obj['content'] = request.GET.get('content')
+        
+        request.session[drafts].append(draft_obj)            
+
+        return HttpResponse(content=draft_key, content_type=self._meta.default_format)
+
+    def get_draft_list(self, request, **kwargs):
+        #get all of the drafts within the current session, if any
+        return_item = []
+        if request.session[drafts]:
+            return_item = request.session[drafts]
+        
+        return HttpResponse(content=return_item, content_type=self._meta.default_format)
+
+    def get_draft(self, request, **kwargs):
+        #get the draft matching the timestamp based key (or other key)
+        if request.GET.get('draft_key'):
+            drafts = request.session[drafts]
+            for draft in drafts:
+                if draft['draft_key'] == request.GET.get('draft_key'):
+                    return HttpResponse(content=draft['content'], content_type=self._meta.default_format)
+            #no match? send empty response
+            return HttpResponse(content={}, content_type=self._meta.default_format)
+        else:
+            return HttpResponse(content={}, content_type=self._meta.default_format)
+
+
 
 def chunks(l, n):
     """Yield successive n-sized chunks from l."""
@@ -1307,6 +1382,58 @@ def test_fields(bundles_lists, objects):
             bundle_list[0].obj.attachment_field_mapped_to_id = None
 
 
+
+class BaseAttachmentResource(ModelResource):
+    data_point_classification = fields.ForeignKey(
+        "cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification", full=True)
+    flowfile = fields.ForeignKey(
+        "cbh_datastore_ws.resources.FlowFileResource", attribute="flowfile")
+    attachment_custom_field_config = fields.ForeignKey(
+        SimpleCustomFieldConfigResource, readonly=True, attribute="attachment_custom_field_config", full=True)
+    created_by = fields.ForeignKey(UserResource, "created_by")
+    attachment_metadata = fields.ToOneField("cbh_datastore_ws.resources.DataPointResource", attribute="attachment_metadata", full=True)
+
+    class Meta:
+        queryset = Attachment.objects.all().select_related(
+            "chosen_data_form_config__l0__pinned_custom_field",
+            "chosen_data_form_config__l1__pinned_custom_field",
+            "chosen_data_form_config__l2__pinned_custom_field",
+            "chosen_data_form_config__l3__pinned_custom_field",
+            "chosen_data_form_config__l4__pinned_custom_field",
+            "chosen_data_form_config__l0__created_by",
+            "chosen_data_form_config__l1__created_by",
+            "chosen_data_form_config__l2__created_by",
+            "chosen_data_form_config__l3__created_by",
+            "chosen_data_form_config__l4__created_by",
+            "chosen_data_form_config__l0__data_type",
+            "chosen_data_form_config__l1__data_type",
+            "chosen_data_form_config__l2__data_type",
+            "chosen_data_form_config__l3__data_type",
+            "chosen_data_form_config__l4__data_type",
+            "chosen_data_form_config__created_by",
+            "created_by",
+            "flowfile",
+            "attachment_custom_field_config__created_by",
+            "attachment_custom_field_config__data_type",
+            "attachment_custom_field_config__pinned_custom_field",
+        )
+        always_return_data = True  # required to add the elasticsearch data
+        resource_name = 'cbh_base_attachments'
+        default_format = 'application/json'
+        include_resource_uri = True
+        allowed_methods = ['post', 'get']
+        default_format = 'application/json'
+        serializer = Serializer()
+        authentication = SessionAuthentication()
+        authorization = Authorization()
+
+    def prepend_urls(self):
+        return [
+            # url(r"^(?P<resource_name>%s)/save_temporary_data$" % self._meta.resource_name,
+            #     self.wrap_view('post_save_temp_data'), name="save_temporary_data"),
+            # url(r"^(?P<resource_name>%s)__(?P<pk>\d[\d]*)/_search$" % self._meta.resource_name,
+            #     self.wrap_view('search_temp_data'), name="search_temp_data"),
+        ]
 
 
 
@@ -1780,3 +1907,105 @@ class NestedDataPointClassificationResource(Resource):
             else:
                 l0_objects.append(obj)
         return HttpResponse(json.dumps({"objects": l0_objects}))
+
+# #using this to accept autosave/draft save requests
+# #and also return a list of saved drafts if required
+# #and also return a single cached draft if reverting to a previous version
+# class dict2obj(object):
+#     """
+#     Convert dictionary to object
+#     @source http://stackoverflow.com/a/1305561/383912
+#     """
+#     def __init__(self, d):
+#         self.__dict__['d'] = d
+
+#     def __getattr__(self, key):
+#         value = self.__dict__['d'][key]
+#         if type(value) == type({}):
+#             return dict2obj(value)
+
+#         return value
+
+# class DraftDataPointResource(Resource):
+#     import time
+
+#     current_milli_time = lambda: int(round(time.time() * 1000))
+
+#     #setting up the fields I will be using so I don't have to create an unused Model
+#     draft_key = fields.CharField(attribute='draft_key')
+#     content = fields.CharField(attribute='content')
+
+#     class Meta:
+#         default_format = 'application/json'
+#         resource_name = 'cbh_draft_data'
+#         allowed_methods = ['get','post']
+#         authentication = SessionAuthentication()
+#         authorization = Authorization()
+
+
+#     def prepend_urls(self):
+#         return [
+#             url(r"^(?P<resource_name>%s)/save_draft/$" % self._meta.resource_name,
+#                 self.wrap_view('save_draft'), name="api_save_draft"),
+#             url(r"^(?P<resource_name>%s)/$" % self._meta.resource_name,
+#                 self.wrap_view('get_draft_list'), name="api_get_draft_list"),
+#             url(r"^(?P<resource_name>%s)/get_draft/$" % self._meta.resource_name,
+#                 self.wrap_view('get_draft'), name="api_get_draft"),
+
+#         ]
+#     """
+#     item in the sesssion ('drafts') needs to be a list of dictionaries
+#     each item contains draft_key (a millisecond timestamp) and the content
+#     save_draft adds an entry to drafts
+#     get_draft_list returns drafts
+#     get draft looks for a supplied draft_key in drafts objects.
+
+#     """
+
+#     def save_draft(self, request, **kwargs):
+#         #take the json data supplied and save to the session
+#         #use the timestamp or current millis as a key - may be able to generate this in the front end
+#         #print(request.GET)
+
+#         if request.GET.get('content'):
+#             #does drafts exist? if not, create it
+#             drafts_obj = request.session.get('drafts', [])
+#             if drafts_obj.length > 0:
+#                 request.session['drafts'] = []
+
+#             draft_obj = {}
+#             draft_obj['draft_key'] = current_milli_time()
+#             draft_obj['content'] = request.GET.get('content')
+        
+#         request.session[drafts].append(draft_obj)            
+
+#         return HttpResponse(content=draft_key, content_type=self._meta.default_format)
+
+#     def get_draft_list(self, request, **kwargs):
+#         #get all of the drafts within the current session, if any
+#         return_item = []
+#         if request.session[drafts]:
+#             return_item = request.session[drafts]
+        
+#         return HttpResponse(content=return_item, content_type=self._meta.default_format)
+
+#     def get_draft(self, request, **kwargs):
+#         #get the draft matching the timestamp based key (or other key)
+#         if request.GET.get('draft_key'):
+#             drafts = request.session[drafts]
+#             for draft in drafts:
+#                 if draft['draft_key'] == request.GET.get('draft_key'):
+#                     return HttpResponse(content=draft['content'], content_type=self._meta.default_format)
+#             #no match? send empty response
+#             return HttpResponse(content={}, content_type=self._meta.default_format)
+#         else:
+#             return HttpResponse(content={}, content_type=self._meta.default_format)
+
+
+#     def get_list(self, request):
+#         drafts = request.session.get('drafts', [])
+#         draft_list = []
+#         for draft in drafts:
+#             draft_list.append(dict2obj(draft))
+#         return draft_list
+
