@@ -1375,7 +1375,7 @@ def test_fields(bundles_lists, objects):
 
 class BaseAttachmentResource(UserHydrate, ModelResource):
     data_point_classification = fields.ForeignKey(
-        "cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification", full=True)
+        "cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification")
     flowfile = fields.ForeignKey(
         "cbh_datastore_ws.resources.FlowFileResource", attribute="flowfile")
     created_by = fields.ForeignKey(UserResource, "created_by")
