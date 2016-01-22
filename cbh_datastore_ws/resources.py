@@ -74,8 +74,10 @@ class FlowFileResource(ModelResource):
 
     def dehydrate_sheet_names(self, bundle):
         try:
-            sheetnames = get_sheetnames(bundle.obj.path)
-            return sheetnames
+            if bundle.obj.extension == "xlsx":
+                sheetnames = get_sheetnames(bundle.obj.path)
+                return sheetnames
+            return []
         except XLRDError:
             raise BadRequest("Incorrect format or corrupt file")
 
@@ -1371,13 +1373,11 @@ def test_fields(bundles_lists, objects):
 
 
 
-class BaseAttachmentResource(ModelResource):
+class BaseAttachmentResource(UserHydrate, ModelResource):
     data_point_classification = fields.ForeignKey(
         "cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification", full=True)
     flowfile = fields.ForeignKey(
         "cbh_datastore_ws.resources.FlowFileResource", attribute="flowfile")
-    attachment_custom_field_config = fields.ForeignKey(
-        SimpleCustomFieldConfigResource, readonly=True, attribute="attachment_custom_field_config", full=True)
     created_by = fields.ForeignKey(UserResource, "created_by")
 
     class Meta:

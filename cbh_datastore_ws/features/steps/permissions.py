@@ -5,14 +5,14 @@ from cbh_datastore_model.models import DataPoint, DataPointClassification, DataP
 from django.db import IntegrityError
 from django.contrib.auth.models import User
 
-@given("testuser")
-def step(context):
-    pass
+# @given("testuser")
+# def step(context):
+#     pass
 
 
-@when("I log in testuser")
-def logintestuser(context):
-    context.api_client.client.login(username="testuser", password="testuser")
+# @when("I log in testuser")
+# def logintestuser(context):
+#     context.api_client.client.login(username="testuser", password="testuser")
 
 
 @then("I get a project list and I cannot see the project I do not have viewer rights on")

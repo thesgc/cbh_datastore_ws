@@ -25,10 +25,8 @@ def get_index_name():
 
 def delete_main_index():
     es = elasticsearch.Elasticsearch()
-    try:
-        es.indices.delete(get_index_name())
-    except:
-        pass
+    es.indices.delete(get_index_name(),  ignore=[400, 404])
+    
 
 
 def get_client():
