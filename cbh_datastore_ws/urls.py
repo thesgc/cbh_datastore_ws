@@ -1,5 +1,6 @@
 from tastypie.api import Api
 from cbh_datastore_ws.resources import *
+from cbh_core_ws.resources import DataTypeResource
 from django.conf import settings
 DEFAULT_API_NAME = 'chemblws'
 
@@ -22,6 +23,7 @@ api.register(FlowFileResource())
 api.register(QueryResource())
 api.register(AttachmentResource())
 api.register(BaseAttachmentResource())
+api.register(DataTypeResource())
 #api.register(DraftDataPointResource())
 
 urlpatterns = api.urls

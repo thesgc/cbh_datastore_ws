@@ -310,7 +310,7 @@ class SimpleCustomFieldConfigResource(UserHydrate, ModelResource):
         queryset = CustomFieldConfig.objects.select_related(
             "created_by", "data_type",)
         excludes = ("schemaform")
-        include_resource_uri = False
+        always_return_data = True
         resource_name = 'cbh_custom_field_config'
         authentication = SessionAuthentication()
         authorization = Authorization()
@@ -401,20 +401,21 @@ The fields that are in this particular custom field config:
         return rc
 
 
-class DataFormConfigResource(ModelResource):
+class DataFormConfigResource(UserHydrate, ModelResource):
     name = fields.CharField(null=True, blank=True)
     last_level = fields.CharField(null=True, blank=True)
     l0 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",
-                           'l0', readonly=True, null=True, blank=False, help_text=None, full=True)
+                           'l0',  null=True, blank=False, help_text=None, full=True)
     l1 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",
-                           'l1', readonly=True, null=True, blank=False, help_text=None, full=True)
+                           'l1', null=True, blank=False, help_text=None, full=True)
     l2 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",
-                           'l2', readonly=True, null=True, blank=False, help_text=None, full=True)
+                           'l2',  null=True, blank=False, help_text=None, full=True)
     l3 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",
-                           'l3', readonly=True,  null=True, blank=False, help_text=None, full=True)
+                           'l3',   null=True, blank=False, help_text=None, full=True)
     l4 = fields.ForeignKey("cbh_datastore_ws.resources.SimpleCustomFieldConfigResource",
-                           'l4', readonly=True, null=True, blank=False,  help_text=None, full=True)
-
+                           'l4',  null=True, blank=False,  help_text=None, full=True)
+    created_by = fields.ForeignKey(
+        "cbh_core_ws.resources.UserResource", 'created_by')
     class Meta:
         filtering = {
             "id": ALL
@@ -434,7 +435,6 @@ class DataFormConfigResource(ModelResource):
             "l4__data_type",
             "created_by",)
         resource_name = 'cbh_data_form_config'
-        authorization = Authorization()
         include_resource_uri = True
         allowed_methods = ['get', 'post', 'put']
         default_format = 'application/json'
