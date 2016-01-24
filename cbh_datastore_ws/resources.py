@@ -1017,6 +1017,13 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
 
                        }
 
+    def hydrate(self, bundle):
+        default = DataPoint.objects.get(pk=1)
+        for level in ["l1", "12", "l3", "l4"]:
+            if bundle.data.get(level, None) is None:
+                setattr(bundle.obj, level , default)
+        return bundle
+
     def obj_create(self, bundle, **kwargs):
         """
         A ORM-specific implementation of ``obj_create``.
@@ -1166,10 +1173,12 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
                     continue
                 if related_obj.__class__.__name__ == "DataPoint":
                     if obj_id == "cbh_datastore_model.datapoint.1":
-                        if related_obj.project_data != {}:
-                            raise ImmediateHttpResponse(HttpConflict(
-                                "You are trying to update the default datapoint, this is not allowed, remove the id from the default datapoint before updating")
-                            )
+                        if related_obj.project_data != {} and related_obj.project_data != "" :
+                            if related_obj.custom_field_config_id == -1:
+                                logger.warn("Default datapoint must not be updated")
+                                raise ImmediateHttpResponse(HttpConflict(
+                                    "You are trying to update the default datapoint, this is not allowed, remove the id from the default datapoint before updating")
+                                )
 
             if bundle.data.get(field_name) and hasattr(bundle.data[field_name], 'keys'):
                 # Only build & save if there's data, not just a URI.
@@ -1184,7 +1193,10 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
                 related_resource.save(related_bundle)
 
                 related_obj = related_bundle.obj
-
+                print "is l0?"
+                print field_object.attribute
+            print "stuff"
+            print field_object.attribute
             if related_obj:
                 setattr(bundle.obj, field_object.attribute, related_obj)
 
