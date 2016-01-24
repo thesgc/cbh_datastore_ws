@@ -4,7 +4,7 @@ import logging
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-
+import mimetypes
 from django_rq import job
 from django.conf.urls import url
 import json
@@ -29,7 +29,7 @@ from tastypie.authorization import Authorization
 from tastypie.http import HttpConflict
 from tastypie.exceptions import ImmediateHttpResponse
 
-from cbh_datastore_ws.authorization import DataClassificationProjectAuthorization
+from cbh_datastore_ws.authorization import DataClassificationProjectAuthorization, AttachmentAuthorization
 
 from cbh_core_ws.authorization import ProjectListAuthorization
 from django.http import HttpResponse
@@ -1425,7 +1425,7 @@ class BaseAttachmentResource(UserHydrate, ModelResource):
         serializer = Serializer()
         authentication = SessionAuthentication()
         #need to replace this authorization with a custom one to check user can access the DPC
-        authorization = Authorization()
+        authorization = AttachmentAuthorization()
 
     def prepend_urls(self):
         return [
@@ -1445,12 +1445,7 @@ class BaseAttachmentResource(UserHydrate, ModelResource):
         """
         basic_bundle = self.build_bundle(request=request)
 
-        try:
-            obj = self.cached_obj_get(bundle=basic_bundle, **self.remove_api_resource_names(kwargs))
-        except ObjectDoesNotExist:
-            return http.HttpNotFound()
-        except MultipleObjectsReturned:
-            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+        obj = self._meta.queryset.get(pk=kwargs.get("pk" ,None))
 
         bundle = self.build_bundle(obj=obj, request=request)
         bundle = self.full_dehydrate(bundle)
@@ -1459,25 +1454,9 @@ class BaseAttachmentResource(UserHydrate, ModelResource):
         #return our response here
         #get extension from the FlowFile object
         #match this to a dictionary of mimetypes with extensions
-        fb = open(flowfile.file).read()
-        return HttpResponse(fb, mimetype="image/png")
-
-
-        #return self.create_response(request, bundle)
-
-
-    # #override create_response
-    # def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
-    #     """
-    #     Extracts the common "which-format/serialize/return-response" cycle.
-    #     Mostly a useful shortcut/hook.
-    #     """
-    #     #if mime type is specified in kwargs
-
-    #     #if mime type not specified in url, do default
-    #     desired_format = self.determine_format(request)
-    #     serialized = self.serialize(request, data, desired_format)
-    #     return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
+        fb = obj.flowfile.file.read()
+        response = HttpResponse(fb, content_type=mimetypes.guess_type(obj.flowfile.full_path)[0])
+        return response
 
 
 
@@ -1524,7 +1503,7 @@ class AttachmentResource(UserHydrate, ModelResource):
         default_format = 'application/json'
         serializer = Serializer()
         authentication = SessionAuthentication()
-        authorization = Authorization()
+        authorization = AttachmentAuthorization()
 
     def prepend_urls(self):
         return [
@@ -1559,6 +1538,8 @@ class AttachmentResource(UserHydrate, ModelResource):
             bundle.data["tempobjects"] = tempobjects
             bundle.obj.number_of_rows = len(tempobjects)
         return bundle
+
+
 
     def prepare_newly_saved_data(self, bundle):
         """Get the related fields and make them into a list of possibilities"""
