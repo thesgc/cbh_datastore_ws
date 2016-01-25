@@ -62,6 +62,7 @@ def index_datapoint_classification(data, index_name=get_index_name(), refresh=Tr
                 "dynamic_templates": [
 
                     {
+
                         "string_fields": {
                             "match": "*",
                             "match_mapping_type": "string",

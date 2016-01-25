@@ -11,7 +11,6 @@ import json
 from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from django.core.exceptions import ObjectDoesNotExist
 from tastypie.serializers import Serializer
-from cbh_core_ws.resources import UserResource
 from cbh_datastore_model.models import DataPoint, DataPointClassification, DataPointClassificationPermission, Query, Attachment
 from cbh_core_model.models import CustomFieldConfig
 from cbh_core_model.models import DataFormConfig
@@ -1390,7 +1389,7 @@ class BaseAttachmentResource(UserHydrate, ModelResource):
         "cbh_datastore_ws.resources.DataPointClassificationResource", attribute="data_point_classification")
     flowfile = fields.ForeignKey(
         "cbh_datastore_ws.resources.FlowFileResource", attribute="flowfile")
-    created_by = fields.ForeignKey(UserResource, "created_by")
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", "created_by")
 
     class Meta:
         queryset = Attachment.objects.all().select_related(
@@ -1492,7 +1491,7 @@ class AttachmentResource(UserHydrate, ModelResource):
         SimpleCustomFieldConfigResource, readonly=True, attribute="attachment_custom_field_config", full=True)
     chosen_data_form_config = fields.ForeignKey(
         DataFormConfigResource, attribute="chosen_data_form_config", full=True)
-    created_by = fields.ForeignKey(UserResource, "created_by")
+    created_by = fields.ForeignKey("cbh_core_ws.resources.UserResource", "created_by")
 
     class Meta:
         queryset = Attachment.objects.all().select_related(
