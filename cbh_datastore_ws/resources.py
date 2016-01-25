@@ -1445,7 +1445,7 @@ class BaseAttachmentResource(UserHydrate, ModelResource):
         """
         basic_bundle = self.build_bundle(request=request)
 
-        obj = self.obj_get(bundle, **kwargs)
+        obj = self.obj_get(basic_bundle, **kwargs)
 
         bundle = self.build_bundle(obj=obj, request=request)
         bundle = self.full_dehydrate(bundle)
