@@ -1445,7 +1445,7 @@ class BaseAttachmentResource(UserHydrate, ModelResource):
         """
         basic_bundle = self.build_bundle(request=request)
 
-        obj = self._meta.queryset.get(pk=kwargs.get("pk" ,None))
+        obj = self.obj_get(bundle, **kwargs)
 
         bundle = self.build_bundle(obj=obj, request=request)
         bundle = self.full_dehydrate(bundle)
@@ -1458,7 +1458,30 @@ class BaseAttachmentResource(UserHydrate, ModelResource):
         response = HttpResponse(fb, content_type=mimetypes.guess_type(obj.flowfile.full_path)[0])
         return response
 
+    def obj_get(self, bundle, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_get``.
+        Takes optional ``kwargs``, which are used to narrow the query to find
+        the instance.
+        """
+        # prevents FieldError when looking up nested resources containing extra data
+        field_names = self._meta.object_class._meta.get_all_field_names()
+        field_names.append('pk')
 
+        kwargs = {k: v for k, v in kwargs.items() if k in field_names}
+
+        try:
+            object_list = self.get_object_list(bundle.request).filter(**kwargs)
+            stringified_kwargs = ', '.join(["%s=%s" % (k, v) for k, v in kwargs.items()])
+
+            if len(object_list) <= 0:
+                raise self._meta.object_class.DoesNotExist("Couldn't find an instance of '%s' which matched '%s'." % (self._meta.object_class.__name__, stringified_kwargs))
+
+            bundle.obj = object_list[0]
+            self.authorized_read_detail(object_list, bundle)
+            return bundle.obj
+        except ValueError:
+            raise NotFound("Invalid resource lookup data provided (mismatched type).")
 
 class AttachmentResource(UserHydrate, ModelResource):
     data_point_classification = fields.ForeignKey(
