@@ -1192,10 +1192,7 @@ If there is NO ID or URI or pk in the l1 object then a new leaf will be created
                 related_resource.save(related_bundle)
 
                 related_obj = related_bundle.obj
-                print "is l0?"
-                print field_object.attribute
-            print "stuff"
-            print field_object.attribute
+
             if related_obj:
                 setattr(bundle.obj, field_object.attribute, related_obj)
 
