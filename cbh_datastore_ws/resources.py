@@ -1451,7 +1451,14 @@ class BaseAttachmentResource(UserHydrate, ModelResource):
         #get extension from the FlowFile object
         #match this to a dictionary of mimetypes with extensions
         fb = obj.flowfile.file.read()
+        mimetype = mimetypes.guess_type(obj.flowfile.full_path)[0]
+        print(obj.flowfile.original_filename)
+        #if mimetype.index('spreadsheetml') > 0:
+        
         response = HttpResponse(fb, content_type=mimetypes.guess_type(obj.flowfile.full_path)[0])
+        #if it's not an image, it is a download link - add the necessary content disposition info
+        if(mimetype.count('image') == 0):
+            response['Content-Disposition'] = 'attachment; filename=%s' % obj.flowfile.original_filename
         return response
 
     def obj_get(self, bundle, **kwargs):
