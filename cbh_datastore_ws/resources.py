@@ -5,7 +5,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 import mimetypes
-from django_rq import job
 from django.conf.urls import url
 import json
 from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
@@ -1332,7 +1331,6 @@ def reindex_datapoint_classifications():
     time.sleep(1)
 
 
-@job
 def index_filter_dict(filter_dict, dpcs=None):
     """When a datapointclassification is updated we know that the front end only targets the 
     level_from datapoint. The specific datapoint will be updated in realtime however 

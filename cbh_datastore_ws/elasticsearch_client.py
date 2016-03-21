@@ -1,7 +1,6 @@
 from django.conf import settings
 import elasticsearch
 from django.core.exceptions import ImproperlyConfigured
-from django_rq import job
 import json
 from tastypie.exceptions import BadRequest
 
@@ -34,7 +33,6 @@ def get_client():
     return es
 
 
-@job
 def index_datapoint_classification(data, index_name=get_index_name(), refresh=True, decode_json=True):
     if decode_json:
         data = json.loads(data)
