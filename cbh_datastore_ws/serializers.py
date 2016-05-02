@@ -4,7 +4,15 @@ import dpath
 from cbh_core_model.models import PinnedCustomField
 from django.conf import settings
 from django.db import models
+try:
+    # django >= 1.7
+    from django.apps import apps
+    get_model = apps.get_model
+except ImportError:
+    # django < 1.7
+    from django.db.models import get_model
 
+#---------------
 class DataPointClassificationSerializer(Serializer):
 
     def to_json(self, data, options=None):
@@ -23,7 +31,7 @@ class DataPointClassificationSerializer(Serializer):
                             for field in cfc["project_data_fields"]:
                                 if "uox" in field["name"].lower():
                                     if "cbh_chembl_ws_extension" in settings.INSTALLED_APPS:
-                                        CBHCompoundBatch = models.get_model("cbh_chembl_model_extension", "cbhcompoundbatch")
+                                        CBHCompoundBatch = get_model("cbh_chembl_model_extension", "cbhcompoundbatch")
                                         image = CBHCompoundBatch.objects.get_image_for_assayreg(field, dpc, level)
                                         dpc["imgSrc"] = image
                                 if field["standardised_alias"]:
